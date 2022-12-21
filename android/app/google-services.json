@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1059564578399",
+    "project_id": "chatpost-aee73",
+    "storage_bucket": "chatpost-aee73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1059564578399:android:f40dacc56679d116421dea",
+        "android_client_info": {
+          "package_name": "com.chatpost"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1059564578399-nlgbvrpgobs8731jbm566r3s7f5crlfs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIcIa1pf6E-izk0xltb4L_K6XR4V4jfeE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1059564578399-nlgbvrpgobs8731jbm566r3s7f5crlfs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
