@@ -50,7 +50,10 @@ const LoginScreen = () => {
   };
 
   return (
-    <View className="flex items-center justify-center h-screen space-y-5 dark:bg-[#151515]">
+    <View
+      className={`flex-1 ${
+        scheme === 'dark' ? 'bg-[#151515]' : 'bg-white'
+      } items-center justify-center space-y-5`}>
       <StatusBar
         barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
         backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
