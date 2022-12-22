@@ -8,9 +8,14 @@ import {
   StatusBar,
 } from 'react-native';
 import React, {useLayoutEffect, useState} from 'react';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {
+  CompositeNavigationProp,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../components/Navigator';
+import {RootStackParamList} from '../navigator/RootNavigator';
 import {Friend, Post} from '../../typings';
 import PostComponent from '../components/PostComponent';
 import {
@@ -20,13 +25,20 @@ import {
   renderers,
 } from 'react-native-popup-menu';
 import FriendComponent from '../components/FriendComponent';
+import {MaterialTopTabNavigationProp} from '@react-navigation/material-top-tabs';
+import {TabStackParamList} from '../navigator/TabNavigator';
 
-export type UserScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'UserProfile'
+// export type UserScreenNavigationProp = NativeStackNavigationProp<
+//   RootStackParamList,
+//   'UserProfile'
+// >;
+
+export type UserScreenNavigationProp = CompositeNavigationProp<
+  MaterialTopTabNavigationProp<TabStackParamList, 'UserProfile'>,
+  NativeStackNavigationProp<RootStackParamList>
 >;
 
-type UserScreenRouteProp = RouteProp<RootStackParamList, 'UserProfile'>;
+// type UserScreenRouteProp = RouteProp<TabStackParamList, 'UserProfile'>;
 
 const friends: Friend[] = [
   {
@@ -67,11 +79,43 @@ const friends: Friend[] = [
   },
 ];
 
+const infoUser = {
+  user: {
+    userImage:
+      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
+    userName: 'Black Panther',
+  },
+  userPosts: [
+    {
+      id: '1',
+      title: 'This is DEMO POST',
+      subTitle:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+      imageUrl:
+        'https://cdn.vox-cdn.com/thumbor/IDuU1a0FYBrTb_X0tt5gCyTeALU=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/10164247/BlackPanther596d2f04d1540_2040.jpg',
+      timestamp: Date.now(),
+      userImage:
+        'https://cdn.vox-cdn.com/thumbor/IDuU1a0FYBrTb_X0tt5gCyTeALU=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/10164247/BlackPanther596d2f04d1540_2040.jpg',
+      userName: 'Black Panther',
+    },
+    {
+      id: '2',
+      title: 'This is DEMO POST',
+      subTitle:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+      timestamp: Date.now(),
+      userImage:
+        'https://cdn.vox-cdn.com/thumbor/IDuU1a0FYBrTb_X0tt5gCyTeALU=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/10164247/BlackPanther596d2f04d1540_2040.jpg',
+      userName: 'Black Panther',
+    },
+  ],
+};
+
 const UserProfileScreen = () => {
   const navigation = useNavigation<UserScreenNavigationProp>();
-  const {
-    params: {userInfo},
-  } = useRoute<UserScreenRouteProp>();
+  // const {
+  //   params: {userInfo},
+  // } = useRoute<UserScreenRouteProp>();
   const [friendButtonClick, setFriendButtonClick] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
   const yourAccount = true;
@@ -92,23 +136,26 @@ const UserProfileScreen = () => {
     <ScrollView
       contentContainerStyle={{paddingBottom: 15}}
       className="bg-gray-300 relative dark:bg-[#151515]">
-      <StatusBar barStyle="light-content" backgroundColor="#694242" />
+      <StatusBar
+        barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
+        backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
+      />
       <Image
         className="h-20 w-20 absolute z-10 top-5 rounded-full ml-3"
-        source={{uri: userInfo.user.userImage}}
+        source={{uri: infoUser?.user.userImage}}
       />
 
-      <View className="h-16 bg-[#694242]">
+      <View className="h-16 bg-[#4c3737]">
         <Text className="mt-auto ml-[100px] text-white mb-1 font-bold text-lg">
-          {userInfo.user.userName}
+          {infoUser?.user.userName}
         </Text>
       </View>
 
       <Text className="ml-[100px] text-base text-gray-600 dark:text-gray-400">
-        {userInfo.userPosts.length > 0 && userInfo.userPosts.length}
-        {userInfo.userPosts.length === 0
+        {infoUser?.userPosts.length > 0 && infoUser?.userPosts.length}
+        {infoUser?.userPosts.length === 0
           ? 'No Posts'
-          : userInfo.userPosts.length === 1
+          : infoUser?.userPosts.length === 1
           ? ' Post'
           : ' Posts'}
       </Text>
@@ -157,7 +204,7 @@ const UserProfileScreen = () => {
       </View>
 
       <View>
-        {userInfo.userPosts.map((post: Post) => (
+        {infoUser?.userPosts.map((post: Post) => (
           <PostComponent
             key={post.id}
             post={post}

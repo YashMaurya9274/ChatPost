@@ -2,9 +2,7 @@ import {useColorScheme} from 'react-native';
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import HomeScreen from '../screens/HomeScreen';
-import UserProfileScreen from '../screens/UserProfileScreen';
-import {Message, UserInfo} from '../../typings';
+import {Message} from '../../typings';
 import {MenuProvider} from 'react-native-popup-menu';
 import ChatsScreen from '../screens/ChatsScreen';
 import MessageScreen from '../screens/MessageScreen';
@@ -12,11 +10,11 @@ import LoginScreen from '../screens/LoginScreen';
 import auth from '@react-native-firebase/auth';
 import {selectUser, setUser} from '../slices/userSlice';
 import {useDispatch, useSelector} from 'react-redux';
+import TabNavigator from './TabNavigator';
 
 export type RootStackParamList = {
+  Main: undefined;
   Login: undefined;
-  Home: undefined;
-  UserProfile: {userInfo: UserInfo};
   Chats: undefined;
   Messages: {messages: Message[]};
 };
@@ -54,11 +52,9 @@ export default function Navigator() {
             <RootStack.Screen name="Login" component={LoginScreen} />
           ) : (
             <>
-              <RootStack.Screen name="Home" component={HomeScreen} />
-              <RootStack.Screen
-                name="UserProfile"
-                component={UserProfileScreen}
-              />
+              <RootStack.Group>
+                <RootStack.Screen name="Main" component={TabNavigator} />
+              </RootStack.Group>
               <RootStack.Screen name="Chats" component={ChatsScreen} />
               <RootStack.Screen name="Messages" component={MessageScreen} />
             </>

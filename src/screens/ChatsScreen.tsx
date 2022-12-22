@@ -4,7 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Chat} from '../../typings';
 import ChatComponent from '../components/ChatComponent';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../components/Navigator';
+import {RootStackParamList} from '../navigator/RootNavigator';
 
 const chats: Chat[] = [
   {

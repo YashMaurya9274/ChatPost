@@ -6,6 +6,8 @@ const ImageLinks = {
   },
   commentsSolid: require('./images/commentsSolid.png'),
   messages: {
+    messagesOutlineLightMode: require('./images/messageOutlineLightMode.png'),
+    messagesOutlineDarkMode: require('./images/messageOutlineDarkMode.png'),
     messagesSolidLightMode: require('./images/messageSolidLightMode.png'),
     messagesSolidDarkMode: require('./images/messageSolidDarkMode.png'),
   },

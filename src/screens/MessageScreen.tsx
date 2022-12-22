@@ -7,7 +7,7 @@ import {
   FlatList,
 } from 'react-native';
 import React, {useState} from 'react';
-import {RootStackParamList} from '../components/Navigator';
+import {RootStackParamList} from '../navigator/RootNavigator';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {Message} from '../../typings';
 import MessageComponent from '../components/MessageComponent';

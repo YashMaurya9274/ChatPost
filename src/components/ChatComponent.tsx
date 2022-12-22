@@ -3,7 +3,7 @@ import React from 'react';
 import {Chat} from '../../typings';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from './Navigator';
+import {RootStackParamList} from '../navigator/RootNavigator';
 
 export type MessageScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
