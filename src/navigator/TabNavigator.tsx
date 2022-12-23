@@ -3,15 +3,14 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useLayoutEffect} from 'react';
 import {Image, Text, TouchableOpacity, useColorScheme} from 'react-native';
-import {UserInfo} from '../../typings';
 import ImageLinks from '../assets/images';
+import CreatePostScreen from '../screens/CreatePostScreen';
 import HomeScreen from '../screens/HomeScreen';
-import UserProfileScreen from '../screens/UserProfileScreen';
 import {RootStackParamList} from './RootNavigator';
 
 export type TabStackParamList = {
   Home: undefined;
-  UserProfile: {userInfo: UserInfo};
+  ['Create Post']: undefined;
 };
 
 const Tab = createMaterialTopTabNavigator<TabStackParamList>();
@@ -86,7 +85,7 @@ const TabNavigator = () => {
         },
         tabBarActiveTintColor: scheme === 'dark' ? '#bb9090' : '#9e6969',
         tabBarInactiveTintColor: scheme === 'dark' ? '#9e6969' : '#bb9090',
-        tabBarLabelStyle: {fontSize: 14, fontWeight: '500'},
+        tabBarLabelStyle: {fontSize: 14, fontWeight: '600'},
         // tabBarIcon: ({focused, color}) => {
         //   if (route.name === 'Home') {
         //     return <Text>Home</Text>;
@@ -96,7 +95,7 @@ const TabNavigator = () => {
         // },
       })}>
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="UserProfile" component={UserProfileScreen} />
+      <Tab.Screen name="Create Post" component={CreatePostScreen} />
     </Tab.Navigator>
   );
 };

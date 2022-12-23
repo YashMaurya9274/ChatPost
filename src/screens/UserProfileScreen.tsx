@@ -25,20 +25,13 @@ import {
   renderers,
 } from 'react-native-popup-menu';
 import FriendComponent from '../components/FriendComponent';
-import {MaterialTopTabNavigationProp} from '@react-navigation/material-top-tabs';
-import {TabStackParamList} from '../navigator/TabNavigator';
 
-// export type UserScreenNavigationProp = NativeStackNavigationProp<
-//   RootStackParamList,
-//   'UserProfile'
-// >;
-
-export type UserScreenNavigationProp = CompositeNavigationProp<
-  MaterialTopTabNavigationProp<TabStackParamList, 'UserProfile'>,
-  NativeStackNavigationProp<RootStackParamList>
+export type UserScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'UserProfile'
 >;
 
-// type UserScreenRouteProp = RouteProp<TabStackParamList, 'UserProfile'>;
+type UserScreenRouteProp = RouteProp<RootStackParamList, 'UserProfile'>;
 
 const friends: Friend[] = [
   {
@@ -113,9 +106,9 @@ const infoUser = {
 
 const UserProfileScreen = () => {
   const navigation = useNavigation<UserScreenNavigationProp>();
-  // const {
-  //   params: {userInfo},
-  // } = useRoute<UserScreenRouteProp>();
+  const {
+    params: {userInfo},
+  } = useRoute<UserScreenRouteProp>();
   const [friendButtonClick, setFriendButtonClick] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
   const yourAccount = true;
@@ -136,10 +129,7 @@ const UserProfileScreen = () => {
     <ScrollView
       contentContainerStyle={{paddingBottom: 15}}
       className="bg-gray-300 relative dark:bg-[#151515]">
-      <StatusBar
-        barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
-        backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
-      />
+      <StatusBar barStyle="light-content" backgroundColor="#4c3737" />
       <Image
         className="h-20 w-20 absolute z-10 top-5 rounded-full ml-3"
         source={{uri: infoUser?.user.userImage}}

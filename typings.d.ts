@@ -1,7 +1,7 @@
 export type Post = {
   id: string;
   title: string;
-  subTitle: string;
+  subTitle?: string;
   imageUrl?: string;
   timestamp: number;
   userImage: string;

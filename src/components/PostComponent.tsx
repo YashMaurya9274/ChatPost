@@ -56,7 +56,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const scheme = useColorScheme();
 
   useEffect(() => {
-    if (post.subTitle.length > 200) {
+    if (post.subTitle!.length > 200) {
       setShowMore(true);
     }
   }, []);
@@ -105,17 +105,19 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         <Text className="text-gray-500 text-sm dark:text-gray-400">
           {showWholeContent
             ? post.subTitle
-            : post.subTitle.slice(0, 200) + '...'}
+            : post.subTitle?.slice(0, 200) + '...'}
         </Text>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => setShowWholeContent(!showWholeContent)}>
-          {showMore && (
-            <Text className="underline text-gray-500 font-bold dark:text-gray-400">
-              {!showWholeContent ? 'Show More' : 'Show Less'}
-            </Text>
-          )}
-        </TouchableOpacity>
+        {post.subTitle && (
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => setShowWholeContent(!showWholeContent)}>
+            {showMore && (
+              <Text className="underline text-gray-500 font-bold dark:text-gray-400">
+                {!showWholeContent ? 'Show More' : 'Show Less'}
+              </Text>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* IMAGE PART */}
