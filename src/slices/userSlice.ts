@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {RootState} from '../store';
 
-const initialState = {
+const initialState: any = {
   user: null,
 };
 

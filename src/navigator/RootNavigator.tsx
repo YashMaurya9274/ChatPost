@@ -7,7 +7,7 @@ import {MenuProvider} from 'react-native-popup-menu';
 import ChatsScreen from '../screens/ChatsScreen';
 import MessageScreen from '../screens/MessageScreen';
 import LoginScreen from '../screens/LoginScreen';
-import auth from '@react-native-firebase/auth';
+import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import {selectUser, setUser} from '../slices/userSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import TabNavigator from './TabNavigator';
@@ -37,7 +37,7 @@ export default function Navigator() {
   };
 
   // Handle user state changes
-  const onAuthStateChanged = (user: any) => {
+  const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
     dispatch(setUser(user));
   };
 

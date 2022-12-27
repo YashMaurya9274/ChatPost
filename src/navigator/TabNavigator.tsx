@@ -6,11 +6,13 @@ import {Image, Text, TouchableOpacity, useColorScheme} from 'react-native';
 import ImageLinks from '../assets/images';
 import CreatePostScreen from '../screens/CreatePostScreen';
 import HomeScreen from '../screens/HomeScreen';
+import ProfileOptionsScreen from '../screens/ProfileOptionsScreen';
 import {RootStackParamList} from './RootNavigator';
 
 export type TabStackParamList = {
   Home: undefined;
   ['Create Post']: undefined;
+  Options: undefined;
 };
 
 const Tab = createMaterialTopTabNavigator<TabStackParamList>();
@@ -96,6 +98,7 @@ const TabNavigator = () => {
       })}>
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Create Post" component={CreatePostScreen} />
+      <Tab.Screen name="Options" component={ProfileOptionsScreen} />
     </Tab.Navigator>
   );
 };

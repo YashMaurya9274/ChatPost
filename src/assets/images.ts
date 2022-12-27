@@ -11,6 +11,14 @@ const ImageLinks = {
     messagesSolidLightMode: require('./images/messageSolidLightMode.png'),
     messagesSolidDarkMode: require('./images/messageSolidDarkMode.png'),
   },
+  reload: require('./images/reload.png'),
+  cross: require('./images/cross.png'),
+  volume: {
+    volumeUp: require('./images/volumeUp.png'),
+    volumeMute: require('./images/volumeMute.png'),
+  },
+  pauseIcon: require('./images/pause.png'),
+  playIcon: require('./images/play.png'),
 };
 
 export default ImageLinks;

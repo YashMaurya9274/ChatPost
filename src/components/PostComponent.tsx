@@ -4,12 +4,17 @@ import {
   Image,
   TouchableOpacity,
   useColorScheme,
+  Animated,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {Post, UserInfo} from '../../typings';
 import ImageLinks from '../assets/images';
 import {useNavigation} from '@react-navigation/native';
 import {UserScreenNavigationProp} from '../screens/UserProfileScreen';
+import Video from 'react-native-video';
+import VisibilitySensor from '@svanboxel/visibility-sensor-react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {selectMuteVideo, setMuteVideo} from '../slices/muteVideoSlice';
 
 type Props = {
   post: Post;
@@ -18,9 +23,11 @@ type Props = {
 
 const userInfo: UserInfo = {
   user: {
-    userImage:
+    photoURL:
       'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-    userName: 'Black Panther',
+    displayName: 'Black Panther',
+    email: '',
+    uid: '123',
   },
   userPosts: [
     {
@@ -54,6 +61,10 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const [showWholeContent, setShowWholeContent] = useState(false);
   const [likeClicked, setLikeClicked] = useState(false);
   const scheme = useColorScheme();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [pauseVideo, setPauseVideo] = useState(false);
+  const muteVideo = useSelector(selectMuteVideo);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (post.subTitle!.length > 200) {
@@ -62,6 +73,38 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   }, []);
 
   // homescreen-bg-gray-300 bg-[#E9E9E9]
+
+  const fadeIn = () => {
+    // Will change fadeAnim value to 1 in 0 seconds
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const fadeOut = () => {
+    // Will change fadeAnim value to 0 in 1.1 seconds
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 1100,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const playPauseVideoFunction = () => {
+    if (post.videoUrl) {
+      setPauseVideo(!pauseVideo);
+      if (pauseVideo) fadeOut();
+      else fadeIn();
+    }
+  };
+
+  const handleImageVisibility = (visible: any) => {
+    // handle visibility change
+    if (visible) setPauseVideo(false);
+    else setPauseVideo(true);
+  };
 
   return (
     <View className="rounded-lg shadow-slate-900 shadow-2xl bg-[#E9E9E9] mx-4 mt-4 last:mb-4 dark:bg-[#262626]">
@@ -129,8 +172,59 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         />
       )}
 
+      {post.videoUrl && (
+        <TouchableOpacity onPress={playPauseVideoFunction} activeOpacity={1}>
+          <Animated.View
+            style={{opacity: fadeAnim}}
+            className={`bg-[#353535]/80 p-3 bottom-5 left-5 rounded-full absolute z-10`}>
+            {pauseVideo ? (
+              <Image
+                style={{height: 30, width: 30}}
+                source={ImageLinks.playIcon}
+              />
+            ) : (
+              <Image
+                style={{height: 30, width: 30}}
+                source={ImageLinks.pauseIcon}
+              />
+            )}
+          </Animated.View>
+
+          <TouchableOpacity
+            onPress={() => dispatch(setMuteVideo(!muteVideo))}
+            activeOpacity={0.3}
+            className="bg-[#353535]/80 p-[5px] right-5 bottom-5 rounded-full absolute z-10">
+            {muteVideo ? (
+              <Image
+                style={{height: 18, width: 18}}
+                source={ImageLinks.volume.volumeMute}
+              />
+            ) : (
+              <Image
+                style={{height: 18, width: 18}}
+                source={ImageLinks.volume.volumeUp}
+              />
+            )}
+          </TouchableOpacity>
+          <VisibilitySensor
+            key={post.id}
+            onChange={isVisible => handleImageVisibility(isVisible)}>
+            <View>
+              <Video
+                source={{uri: post.videoUrl}}
+                resizeMode="stretch"
+                className="relative h-60"
+                muted={muteVideo}
+                paused={pauseVideo}
+                repeat
+              />
+            </View>
+          </VisibilitySensor>
+        </TouchableOpacity>
+      )}
+
       {/* BOTTOM PART */}
-      <View className="flex flex-row justify-evenly items-center border-t border-gray-400 dark:border-gray-600">
+      <View className="flex flex-row justify-evenly items-center border-t border-gray-300 dark:border-[#383838]">
         {/* LIKE */}
         <TouchableOpacity
           activeOpacity={0.5}
@@ -158,7 +252,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         </TouchableOpacity>
 
         {/* SEPARATOR */}
-        <View className="w-[1px] h-full bg-gray-400 dark:bg-gray-600" />
+        <View className="w-[1px] h-full bg-gray-300 dark:bg-[#383838]" />
 
         {/* COMMENT */}
         <TouchableOpacity

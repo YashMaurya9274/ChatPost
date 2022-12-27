@@ -3,19 +3,22 @@ export type Post = {
   title: string;
   subTitle?: string;
   imageUrl?: string;
+  videoUrl?: string;
   timestamp: number;
   userImage: string;
   userName: string;
 };
 
 export type User = {
-  userName: string;
-  userImage: string;
+  displayName: string;
+  email: string;
+  photoURL: string;
+  uid: string;
 };
 
 export type UserInfo = {
   user: User;
-  userPosts: Post[];
+  userPosts?: Post[];
 };
 
 export type Friend = {

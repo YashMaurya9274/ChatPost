@@ -6,6 +6,7 @@ import {
   ScrollView,
   Text,
   useColorScheme,
+  FlatList,
 } from 'react-native';
 import React, {useLayoutEffect} from 'react';
 import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
@@ -49,6 +50,41 @@ const posts: Post[] = [
       'https://superstarsbio.com/wp-content/uploads/2019/04/Robert-Downey-Jr.-Smile.jpg',
     userName: 'Robert Downey Jr.',
   },
+  {
+    id: '3',
+    title: 'This is DEMO POST',
+    subTitle:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500ssheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+    videoUrl:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+    timestamp: Date.now(),
+    userImage:
+      'https://superstarsbio.com/wp-content/uploads/2019/04/Robert-Downey-Jr.-Smile.jpg',
+    userName: 'Robert Downey Jr.',
+  },
+  {
+    id: '4',
+    title: 'This is DEMO POST',
+    subTitle:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500ssheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+    videoUrl: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+    timestamp: Date.now(),
+    userImage:
+      'https://superstarsbio.com/wp-content/uploads/2019/04/Robert-Downey-Jr.-Smile.jpg',
+    userName: 'Robert Downey Jr.',
+  },
+  {
+    id: '5',
+    title: 'This is DEMO POST',
+    subTitle:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+    timestamp: Date.now(),
+    videoUrl:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
+    userImage:
+      'https://cdn.vox-cdn.com/thumbor/IDuU1a0FYBrTb_X0tt5gCyTeALU=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/10164247/BlackPanther596d2f04d1540_2040.jpg',
+    userName: 'Black Panther',
+  },
 ];
 
 const HomeScreen = () => {
@@ -56,8 +92,6 @@ const HomeScreen = () => {
   const noOfMessages = 100;
   const scheme = useColorScheme();
   const user = useSelector(selectUser);
-
-  console.log('USER......', user);
 
   const signOutWithGoogle = async () => {
     await GoogleSignin.revokeAccess();
@@ -96,17 +130,29 @@ const HomeScreen = () => {
     });
   }, [navigation, scheme]);
 
+  const renderPost = ({item}: any) => (
+    <PostComponent key={item.id} post={item} />
+  );
+
   return (
     <View className="bg-white min-h-full dark:bg-[#151515]">
       <StatusBar
         barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
         backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
       />
-      <ScrollView bounces contentContainerStyle={{paddingBottom: 15}}>
+      {/* <ScrollView bounces contentContainerStyle={{paddingBottom: 15}}>
         {posts.map((post: Post) => (
           <PostComponent key={post.id} post={post} />
         ))}
-      </ScrollView>
+      </ScrollView> */}
+
+      <FlatList
+        data={posts}
+        renderItem={renderPost}
+        keyExtractor={item => item.id}
+        scrollEventThrottle={16}
+        contentContainerStyle={{paddingBottom: 15}}
+      />
     </View>
   );
 };

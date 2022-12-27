@@ -25,6 +25,8 @@ import {
   renderers,
 } from 'react-native-popup-menu';
 import FriendComponent from '../components/FriendComponent';
+import {useSelector} from 'react-redux';
+import {selectUser} from '../slices/userSlice';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -110,8 +112,9 @@ const UserProfileScreen = () => {
     params: {userInfo},
   } = useRoute<UserScreenRouteProp>();
   const [friendButtonClick, setFriendButtonClick] = useState(false);
+  const user = useSelector(selectUser);
   const [showFriends, setShowFriends] = useState(false);
-  const yourAccount = true;
+  const yourAccount = userInfo.user.uid === user.uid;
   const scheme = useColorScheme();
 
   useLayoutEffect(() => {
@@ -132,18 +135,18 @@ const UserProfileScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor="#4c3737" />
       <Image
         className="h-20 w-20 absolute z-10 top-5 rounded-full ml-3"
-        source={{uri: infoUser?.user.userImage}}
+        source={{uri: userInfo?.user.photoURL}}
       />
 
       <View className="h-16 bg-[#4c3737]">
         <Text className="mt-auto ml-[100px] text-white mb-1 font-bold text-lg">
-          {infoUser?.user.userName}
+          {userInfo?.user.displayName}
         </Text>
       </View>
 
       <Text className="ml-[100px] text-base text-gray-600 dark:text-gray-400">
-        {infoUser?.userPosts.length > 0 && infoUser?.userPosts.length}
-        {infoUser?.userPosts.length === 0
+        {userInfo?.userPosts?.length! > 0 && userInfo?.userPosts?.length}
+        {userInfo?.userPosts?.length === 0
           ? 'No Posts'
           : infoUser?.userPosts.length === 1
           ? ' Post'
@@ -194,7 +197,7 @@ const UserProfileScreen = () => {
       </View>
 
       <View>
-        {infoUser?.userPosts.map((post: Post) => (
+        {userInfo?.userPosts?.map((post: Post) => (
           <PostComponent
             key={post.id}
             post={post}
