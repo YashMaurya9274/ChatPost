@@ -17,6 +17,8 @@ import {
   launchImageLibrary,
 } from 'react-native-image-picker';
 import Video from 'react-native-video';
+import { selectUser } from '../slices/userSlice';
+import { useSelector } from 'react-redux';
 
 const CreatePostScreen = () => {
   const scheme = useColorScheme();
@@ -24,6 +26,7 @@ const CreatePostScreen = () => {
   const [muteVideo, setMuteVideo] = useState(false);
   const [pauseVideo, setPauseVideo] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const user = useSelector(selectUser);
 
   const uploadMedia = async () => {
     const options: CameraOptions = {
@@ -82,13 +85,13 @@ const CreatePostScreen = () => {
               <Image
                 className="h-10 w-10 rounded-full"
                 source={{
-                  uri: 'https://cdn.vox-cdn.com/thumbor/IDuU1a0FYBrTb_X0tt5gCyTeALU=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/10164247/BlackPanther596d2f04d1540_2040.jpg',
+                  uri: user?.photoURL,
                 }}
               />
             </TouchableOpacity>
             <View className="w-[70%]">
               <Text className="text-gray-700 text-base font-bold w-full dark:text-gray-200">
-                T'Chala
+                {user?.displayName}
               </Text>
             </View>
           </View>

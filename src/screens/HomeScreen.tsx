@@ -12,13 +12,10 @@ import React, {useLayoutEffect} from 'react';
 import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
 import {Post} from '../../typings';
 import PostComponent from '../components/PostComponent';
-import ImageLinks from '../assets/images';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import {useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
-import auth from '@react-native-firebase/auth';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {MaterialTopTabNavigationProp} from '@react-navigation/material-top-tabs';
 import {TabStackParamList} from '../navigator/TabNavigator';
 
@@ -89,44 +86,11 @@ const posts: Post[] = [
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
-  const noOfMessages = 100;
-  const scheme = useColorScheme();
-  const user = useSelector(selectUser);
-
-  const signOutWithGoogle = async () => {
-    await GoogleSignin.revokeAccess();
-    await GoogleSignin.signOut();
-    auth()
-      .signOut()
-      .then(() => console.log('User signed out!'));
-  };
+  const scheme = useColorScheme();  
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Posts',
-      // headerTitleStyle:
-      //   {fontWeight: 'bold'} && scheme === 'dark'
-      //     ? {color: '#bb9090'}
-      //     : {color: '#9e6969'},
-      // headerRight: () => (
-      //   <TouchableOpacity
-      //     activeOpacity={0.5}
-      //     onPress={() => navigation.navigate('Chats')}
-      //     // onPress={signOutWithGoogle}
-      //     className="flex flex-row items-center mr-1">
-      //     <Text className="w-fit p-1 text-center rounded-full absolute bg-[#9e6969] text-[10px] text-white z-10 bottom-4 left-4 font-bold">
-      //       {noOfMessages}
-      //     </Text>
-      //     <Image
-      //       className="h-7 w-7 relative"
-      //       source={
-      //         scheme === 'dark'
-      //           ? ImageLinks.messages.messagesSolidDarkMode
-      //           : ImageLinks.messages.messagesSolidLightMode
-      //       }
-      //     />
-      //   </TouchableOpacity>
-      // ),
     });
   }, [navigation, scheme]);
 

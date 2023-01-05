@@ -19,6 +19,10 @@ const ImageLinks = {
   },
   pauseIcon: require('./images/pause.png'),
   playIcon: require('./images/play.png'),
+  logoutIcon: {
+    logoutDarkMode: require('./images/logoutDarkMode.png'),
+    logoutLightMode: require('./images/logoutLightMode.png'),
+  },
 };
 
 export default ImageLinks;
