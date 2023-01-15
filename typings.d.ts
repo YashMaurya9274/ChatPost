@@ -3,7 +3,7 @@ export type Post = {
   title: string;
   subTitle?: string;
   imageUrl?: string;
-  videoUrl?: string;
+  // videoUrl?: string;
   timestamp: number;
   userImage: string;
   userName: string;
