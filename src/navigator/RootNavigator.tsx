@@ -12,6 +12,12 @@ import {selectUser, setUser} from '../slices/userSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import TabNavigator from './TabNavigator';
 import UserProfileScreen from '../screens/UserProfileScreen';
+import {
+  NEXT_PUBLIC_SANITY_API_VERSION,
+  NEXT_PUBLIC_SANITY_DATASET,
+  NEXT_PUBLIC_SANITY_PROJECT_ID,
+  SANITY_API_TOKEN,
+} from '@env';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -52,13 +58,13 @@ export default function Navigator() {
       },
     ];
 
-    const url = `https://sg8behyd.api.sanity.io/v2023-01-19/data/mutate/production`;
+    const url = `https://${NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v${NEXT_PUBLIC_SANITY_API_VERSION}/data/mutate/${NEXT_PUBLIC_SANITY_DATASET}`;
 
     const response = await fetch(url, {
       method: 'post',
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer skNUqVNIS3w1VQ8CH5CCG4aQHNeKqtZrkrk6ezIEJ2FlCKyJSQloUJ0SqXp8N1H2q5sWT8YhF9jmM0MzZgwKDjbT5uwfqqeeLBIUaHSY2bp8OHv7CKyDvu8iPrlfaK5bowNHvQyI86QmlaO12cYPWF9RGrZUIbaxyPLmXDyNk1d9JaHFDIET`,
+        Authorization: `Bearer ${SANITY_API_TOKEN}`,
       },
       body: JSON.stringify({mutations}),
     });

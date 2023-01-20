@@ -1,12 +1,18 @@
+import {
+  NEXT_PUBLIC_SANITY_API_VERSION,
+  NEXT_PUBLIC_SANITY_DATASET,
+  NEXT_PUBLIC_SANITY_PROJECT_ID,
+  SANITY_API_TOKEN,
+} from '@env';
 import sanityClient from '@sanity/client';
 import imageUrlBuilder from '@sanity/image-url';
 
 export const client = sanityClient({
-  projectId: 'sg8behyd',
-  dataset: 'production',
-  apiVersion: '2023-01-19',
+  projectId: NEXT_PUBLIC_SANITY_PROJECT_ID,
+  dataset: NEXT_PUBLIC_SANITY_DATASET,
+  apiVersion: NEXT_PUBLIC_SANITY_API_VERSION,
   useCdn: true,
-  token: process.env.SANITY_API_TOKEN,
+  token: SANITY_API_TOKEN,
 });
 
 const builder = imageUrlBuilder(client);
