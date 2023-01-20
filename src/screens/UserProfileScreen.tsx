@@ -109,12 +109,12 @@ const infoUser = {
 const UserProfileScreen = () => {
   const navigation = useNavigation<UserScreenNavigationProp>();
   const {
-    params: {userInfo},
+    params: {userData},
   } = useRoute<UserScreenRouteProp>();
   const [friendButtonClick, setFriendButtonClick] = useState(false);
   const user = useSelector(selectUser);
   const [showFriends, setShowFriends] = useState(false);
-  const yourAccount = userInfo.user.uid === user.uid;
+  const yourAccount = userData?._id === user.uid;
   const scheme = useColorScheme();
 
   useLayoutEffect(() => {
@@ -135,18 +135,18 @@ const UserProfileScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor="#4c3737" />
       <Image
         className="h-20 w-20 absolute z-10 top-5 rounded-full ml-3"
-        source={{uri: userInfo?.user.photoURL}}
+        source={{uri: userData?.photoURL}}
       />
 
       <View className="h-16 bg-[#4c3737]">
         <Text className="mt-auto ml-[100px] text-white mb-1 font-bold text-lg">
-          {userInfo?.user.displayName}
+          {userData?.displayName}
         </Text>
       </View>
 
       <Text className="ml-[100px] text-base text-gray-600 dark:text-gray-400">
-        {userInfo?.userPosts?.length! > 0 && userInfo?.userPosts?.length}
-        {userInfo?.userPosts?.length === 0
+        {userData?.posts?.length! > 0 && userData?.posts?.length}
+        {userData?.posts?.length === 0
           ? 'No Posts'
           : infoUser?.userPosts.length === 1
           ? ' Post'
@@ -197,9 +197,9 @@ const UserProfileScreen = () => {
       </View>
 
       <View>
-        {userInfo?.userPosts?.map((post: Post) => (
+        {userData?.posts?.map((post: Post) => (
           <PostComponent
-            key={post.id}
+            key={post._id}
             post={post}
             fromUserProfileScreen={true}
           />

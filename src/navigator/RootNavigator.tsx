@@ -2,7 +2,7 @@ import {useColorScheme} from 'react-native';
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Message, UserInfo} from '../../typings';
+import {Message, UserData} from '../../typings';
 import {MenuProvider} from 'react-native-popup-menu';
 import ChatsScreen from '../screens/ChatsScreen';
 import MessageScreen from '../screens/MessageScreen';
@@ -18,7 +18,7 @@ export type RootStackParamList = {
   Login: undefined;
   Chats: undefined;
   Messages: {messages: Message[]};
-  UserProfile: {userInfo: UserInfo};
+  UserProfile: {userData: UserData};
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -37,8 +37,32 @@ export default function Navigator() {
   };
 
   // Handle user state changes
-  const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
+  const onAuthStateChanged = async (user: FirebaseAuthTypes.User | null) => {
     dispatch(setUser(user));
+
+    const mutations = [
+      {
+        createIfNotExists: {
+          _type: 'users',
+          _id: user?.uid!,
+          displayName: user?.displayName,
+          email: user?.email,
+          photoURL: user?.photoURL,
+        },
+      },
+    ];
+
+    const url = `https://sg8behyd.api.sanity.io/v2023-01-19/data/mutate/production`;
+
+    const response = await fetch(url, {
+      method: 'post',
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer skNUqVNIS3w1VQ8CH5CCG4aQHNeKqtZrkrk6ezIEJ2FlCKyJSQloUJ0SqXp8N1H2q5sWT8YhF9jmM0MzZgwKDjbT5uwfqqeeLBIUaHSY2bp8OHv7CKyDvu8iPrlfaK5bowNHvQyI86QmlaO12cYPWF9RGrZUIbaxyPLmXDyNk1d9JaHFDIET`,
+      },
+      body: JSON.stringify({mutations}),
+    });
+    const result = await response.json();
   };
 
   React.useEffect(() => {
