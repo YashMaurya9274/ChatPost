@@ -1,24 +1,32 @@
-export type Post = {
-  id: string;
-  title: string;
-  subTitle?: string;
-  imageUrl?: string;
-  // videoUrl?: string;
-  timestamp: number;
-  userImage: string;
-  userName: string;
+type Base = {
+  _createdAt: string;
+  _id: string;
+  _rev: string;
+  _type: string;
+  _updatedAt: string;
 };
 
-export type User = {
+interface Image {
+  _type: 'image';
+  asset: Reference;
+}
+
+interface Post extends Base {
+  title: string;
+  subTitle?: string;
+  imageUrl?: Image;
+  // videoUrl?: string;
+  user: User;
+}
+
+interface User extends Base {
   displayName: string;
   email: string;
   photoURL: string;
-  uid: string;
-};
+}
 
-export type UserInfo = {
-  user: User;
-  userPosts?: Post[];
+interface UserData extends User {
+  posts?: Post[];
 };
 
 export type Friend = {

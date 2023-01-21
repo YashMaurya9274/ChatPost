@@ -19,3 +19,5 @@
 node - v18.12.1
 npm - 8.19.2
 yarn - 1.22.19
+java version "1.8.0_251"
+jdk version 8

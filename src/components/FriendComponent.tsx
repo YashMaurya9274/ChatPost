@@ -1,6 +1,6 @@
 import {View, Text, Image} from 'react-native';
 import React from 'react';
-import {Friend} from '../../typings';
+import {Friend} from '../types/typings';
 
 type Props = {
   friend: Friend;
