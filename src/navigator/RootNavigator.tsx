@@ -2,7 +2,7 @@ import {useColorScheme} from 'react-native';
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Message, UserData} from '../../typings';
+import {Message, UserData} from '../types/typings';
 import {MenuProvider} from 'react-native-popup-menu';
 import ChatsScreen from '../screens/ChatsScreen';
 import MessageScreen from '../screens/MessageScreen';

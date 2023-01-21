@@ -16,7 +16,7 @@ import {
 } from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
-import {Friend, Post} from '../../typings';
+import {Friend, Post} from '../types/typings';
 import PostComponent from '../components/PostComponent';
 import {
   Menu,

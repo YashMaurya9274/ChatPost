@@ -9,7 +9,6 @@ import {
 import React, {useState} from 'react';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import {RouteProp, useRoute} from '@react-navigation/native';
-import {Message} from '../../typings';
 import MessageComponent from '../components/MessageComponent';
 
 type MessageScreenRouteProp = RouteProp<RootStackParamList, 'Messages'>;

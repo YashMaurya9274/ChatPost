@@ -1,12 +1,7 @@
-import {
-  View,
-  StatusBar,
-  useColorScheme,
-  FlatList,
-} from 'react-native';
+import {View, StatusBar, useColorScheme, FlatList} from 'react-native';
 import React, {useLayoutEffect, useState, useEffect} from 'react';
 import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
-import {Post} from '../../typings';
+import {Post} from '../types/typings';
 import PostComponent from '../components/PostComponent';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
@@ -31,12 +26,12 @@ const HomeScreen = () => {
   }, [navigation, scheme]);
 
   const getPosts = async () => {
-    const resPosts = await fetchPosts()
-    setPosts(resPosts)
-  }
+    const resPosts = await fetchPosts();
+    setPosts(resPosts);
+  };
 
   useEffect(() => {
-    getPosts()
+    getPosts();
   }, []);
 
   const renderPost = ({item}: any) => (

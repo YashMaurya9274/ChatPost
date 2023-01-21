@@ -7,7 +7,7 @@ import {
   Animated,
 } from 'react-native';
 import React, {useEffect, useState, useRef} from 'react';
-import {Post, User, UserData} from '../../typings';
+import {Post, User, UserData} from '../types/typings';
 import ImageLinks from '../assets/images';
 import {useNavigation} from '@react-navigation/native';
 import {UserScreenNavigationProp} from '../screens/UserProfileScreen';

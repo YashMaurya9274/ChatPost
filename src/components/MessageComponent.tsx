@@ -1,6 +1,6 @@
 import {View, Text, Image} from 'react-native';
 import React from 'react';
-import {Message} from '../../typings';
+import {Message} from '../types/typings';
 
 type Props = {
   message: Message;

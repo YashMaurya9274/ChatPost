@@ -14,7 +14,7 @@ import {RootStackParamList} from '../navigator/RootNavigator';
 import ImageLinks from '../assets/images';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-import { UserData } from '../../typings';
+import {UserData} from '../types/typings';
 import fetchUserData from '../lib/fetchUserData';
 
 export type ProfileOptionsScreenNavigationProp = NativeStackNavigationProp<
@@ -37,11 +37,11 @@ const ProfileOptionsScreen = () => {
 
   const getUserData = async () => {
     await fetchUserData(user.uid).then((resUserData: UserData) => {
-      navigation.navigate("UserProfile", {
-        userData: resUserData
-      })
-    })
-  }
+      navigation.navigate('UserProfile', {
+        userData: resUserData,
+      });
+    });
+  };
 
   return (
     <View className="bg-white min-h-full dark:bg-[#151515]">

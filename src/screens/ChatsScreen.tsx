@@ -1,7 +1,7 @@
 import {View, ScrollView, useColorScheme} from 'react-native';
 import React, {useLayoutEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {Chat} from '../../typings';
+import {Chat} from '../types/typings';
 import ChatComponent from '../components/ChatComponent';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';

@@ -1,6 +1,6 @@
 import {View, Text, TouchableOpacity, Image} from 'react-native';
 import React from 'react';
-import {Chat} from '../../typings';
+import {Chat} from '../types/typings';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
