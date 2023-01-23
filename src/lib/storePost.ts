@@ -1,17 +1,11 @@
 import {SANITY_API_TOKEN} from '@env';
-import {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import mutationUrl from './mutationUrl';
 
-const storeUser = async (user: FirebaseAuthTypes.User | null) => {
+const storePost = async (post: StorePost) => {
+  console.log(post);
   const mutations = [
     {
-      createIfNotExists: {
-        _type: 'users',
-        _id: user?.uid!,
-        displayName: user?.displayName,
-        email: user?.email,
-        photoURL: user?.photoURL,
-      },
+      create: post,
     },
   ];
 
@@ -27,4 +21,4 @@ const storeUser = async (user: FirebaseAuthTypes.User | null) => {
   console.log(result);
 };
 
-export default storeUser;
+export default storePost;

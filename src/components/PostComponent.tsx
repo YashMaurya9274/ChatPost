@@ -78,7 +78,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
 
   const getUserData = async () => {
     if (!fromUserProfileScreen) {
-      await fetchUserData(post.user._id).then((resUserData: UserData) => {
+      await fetchUserData(post.user._id!).then((resUserData: UserData) => {
         navigation.navigate('UserProfile', {
           userData: resUserData,
         });
@@ -103,7 +103,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
             {post.user.displayName}
           </Text>
           <Text className="text-gray-500 text-[12px] dark:text-gray-400">
-            {new Date(post._createdAt).toLocaleString()}
+            {new Date(post._createdAt!).toLocaleString()}
           </Text>
         </View>
       </View>

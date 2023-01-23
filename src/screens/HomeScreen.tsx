@@ -53,6 +53,7 @@ const HomeScreen = () => {
       <FlatList
         data={posts}
         renderItem={renderPost}
+        // @ts-ignore
         keyExtractor={item => item._id}
         scrollEventThrottle={16}
         contentContainerStyle={{paddingBottom: 15}}
