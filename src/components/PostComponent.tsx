@@ -17,6 +17,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {selectMuteVideo, setMuteVideo} from '../slices/muteVideoSlice';
 import {urlFor} from '../lib/client';
 import fetchUserData from '../lib/fetchUserData';
+import deletePost from '../lib/deletePost';
 
 type Props = {
   post: Post;
@@ -116,7 +117,9 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         <Text className="text-gray-500 text-sm dark:text-gray-400">
           {showWholeContent
             ? post.subTitle
-            : post.subTitle?.slice(0, 200) + '...'}
+            : showMore
+            ? post.subTitle?.slice(0, 200) + '...'
+            : post.subTitle?.slice(0, 200)}
         </Text>
         {post.subTitle && (
           <TouchableOpacity
@@ -224,6 +227,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
 
         {/* COMMENT */}
         <TouchableOpacity
+          onPress={() => deletePost(post._id!)}
           activeOpacity={0.5}
           className="flex flex-row items-center space-x-2 py-3">
           <Image source={ImageLinks.commentsSolid} />

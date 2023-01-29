@@ -7,7 +7,8 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import {MaterialTopTabNavigationProp} from '@react-navigation/material-top-tabs';
 import {TabStackParamList} from '../navigator/TabNavigator';
-import fetchPosts from '../lib/fetchPosts';
+import {client} from '../lib/client';
+import useFetchPostListener from '../lib/useFetchPostListener';
 
 export type HomeScreenNavigationProp = CompositeNavigationProp<
   MaterialTopTabNavigationProp<TabStackParamList, 'Home'>,
@@ -17,22 +18,13 @@ export type HomeScreenNavigationProp = CompositeNavigationProp<
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const scheme = useColorScheme();
-  const [posts, setPosts] = useState<Post[]>();
+  const {posts} = useFetchPostListener(client);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Posts',
     });
   }, [navigation, scheme]);
-
-  const getPosts = async () => {
-    const resPosts = await fetchPosts();
-    setPosts(resPosts);
-  };
-
-  useEffect(() => {
-    getPosts();
-  }, []);
 
   const renderPost = ({item}: any) => (
     <PostComponent key={item._id} post={item} />
