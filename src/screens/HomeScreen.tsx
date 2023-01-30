@@ -1,13 +1,19 @@
-import {View, StatusBar, useColorScheme, FlatList} from 'react-native';
-import React, {useLayoutEffect, useState, useEffect} from 'react';
+import {
+  View,
+  StatusBar,
+  useColorScheme,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
+import React, {useLayoutEffect} from 'react';
 import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
-import {Post} from '../types/typings';
 import PostComponent from '../components/PostComponent';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import {MaterialTopTabNavigationProp} from '@react-navigation/material-top-tabs';
 import {TabStackParamList} from '../navigator/TabNavigator';
-import fetchPosts from '../lib/fetchPosts';
+import {client} from '../lib/client';
+import useFetchPostListener from '../hooks/useFetchPostListener';
 
 export type HomeScreenNavigationProp = CompositeNavigationProp<
   MaterialTopTabNavigationProp<TabStackParamList, 'Home'>,
@@ -17,7 +23,7 @@ export type HomeScreenNavigationProp = CompositeNavigationProp<
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const scheme = useColorScheme();
-  const [posts, setPosts] = useState<Post[]>();
+  const {posts} = useFetchPostListener(client);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -25,18 +31,18 @@ const HomeScreen = () => {
     });
   }, [navigation, scheme]);
 
-  const getPosts = async () => {
-    const resPosts = await fetchPosts();
-    setPosts(resPosts);
-  };
-
-  useEffect(() => {
-    getPosts();
-  }, []);
-
   const renderPost = ({item}: any) => (
     <PostComponent key={item._id} post={item} />
   );
+
+  if (posts?.length === 0)
+    return (
+      <ActivityIndicator
+        className="min-h-full bg-white relative dark:bg-[#151515]"
+        size="large"
+        color="#9e6969"
+      />
+    );
 
   return (
     <View className="bg-white min-h-full dark:bg-[#151515]">
