@@ -1,9 +1,9 @@
 type Base = {
-  _createdAt: string;
-  _id: string;
-  _rev: string;
+  _createdAt?: string;
+  _id?: string;
+  _rev?: string;
   _type: string;
-  _updatedAt: string;
+  _updatedAt?: string;
 };
 
 interface Image {
@@ -27,7 +27,7 @@ interface User extends Base {
 
 interface UserData extends User {
   posts?: Post[];
-};
+}
 
 export type Friend = {
   id: string;

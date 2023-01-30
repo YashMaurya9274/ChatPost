@@ -44,9 +44,7 @@ const LoginScreen = () => {
     if (googleCredential) setDisableLoginButton(true);
 
     // Sign-in the user with the credential
-    const result = auth().signInWithCredential(googleCredential);
-
-    result.then(re => console.log(re));
+    auth().signInWithCredential(googleCredential);
   };
 
   return (

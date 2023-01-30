@@ -7,7 +7,7 @@ import {
   Animated,
 } from 'react-native';
 import React, {useEffect, useState, useRef} from 'react';
-import {Post, User, UserData} from '../types/typings';
+import {Post} from '../types/typings';
 import ImageLinks from '../assets/images';
 import {useNavigation} from '@react-navigation/native';
 import {UserScreenNavigationProp} from '../screens/UserProfileScreen';
@@ -16,7 +16,7 @@ import VisibilitySensor from '@svanboxel/visibility-sensor-react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {selectMuteVideo, setMuteVideo} from '../slices/muteVideoSlice';
 import {urlFor} from '../lib/client';
-import fetchUserData from '../lib/fetchUserData';
+import deletePost from '../lib/deletePost';
 
 type Props = {
   post: Post;
@@ -78,10 +78,13 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
 
   const getUserData = async () => {
     if (!fromUserProfileScreen) {
-      await fetchUserData(post.user._id).then((resUserData: UserData) => {
-        navigation.navigate('UserProfile', {
-          userData: resUserData,
-        });
+      // await fetchUserData(post.user._id!).then((resUserData: UserData) => {
+      //   navigation.navigate('UserProfile', {
+      //     userData: resUserData,
+      //   });
+      // });
+      navigation.navigate('UserProfile', {
+        userId: post.user._id!,
       });
     }
   };
@@ -96,14 +99,14 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
             source={{uri: post.user.photoURL}}
           />
         </TouchableOpacity>
-        <View className="w-[70%]">
+        <View className="max-w-[70%]">
           <Text
             onPress={getUserData}
             className="text-gray-700 text-base font-bold w-full dark:text-gray-200">
             {post.user.displayName}
           </Text>
           <Text className="text-gray-500 text-[12px] dark:text-gray-400">
-            {new Date(post._createdAt).toLocaleString()}
+            {new Date(post._createdAt!).toLocaleString()}
           </Text>
         </View>
       </View>
@@ -116,7 +119,9 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         <Text className="text-gray-500 text-sm dark:text-gray-400">
           {showWholeContent
             ? post.subTitle
-            : post.subTitle?.slice(0, 200) + '...'}
+            : showMore
+            ? post.subTitle?.slice(0, 200) + '...'
+            : post.subTitle?.slice(0, 200)}
         </Text>
         {post.subTitle && (
           <TouchableOpacity
@@ -224,6 +229,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
 
         {/* COMMENT */}
         <TouchableOpacity
+          onPress={() => deletePost(post._id!)}
           activeOpacity={0.5}
           className="flex flex-row items-center space-x-2 py-3">
           <Image source={ImageLinks.commentsSolid} />

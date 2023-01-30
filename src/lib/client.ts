@@ -11,7 +11,7 @@ export const client = sanityClient({
   projectId: NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: NEXT_PUBLIC_SANITY_DATASET,
   apiVersion: NEXT_PUBLIC_SANITY_API_VERSION,
-  useCdn: true,
+  useCdn: false, // use "false" if you want fresh data whenever query is made
   token: SANITY_API_TOKEN,
 });
 
