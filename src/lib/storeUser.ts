@@ -24,7 +24,6 @@ const storeUser = async (user: FirebaseAuthTypes.User | null) => {
     body: JSON.stringify({mutations}),
   });
   const result = await response.json();
-  console.log(result);
 };
 
 export default storeUser;

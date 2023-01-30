@@ -21,10 +21,7 @@ const useSanityListener = (client: SanityClient) => {
     const subscription = client
       .listen(query, params)
       .subscribe(newSanityPosts => {
-        console.log(JSON.stringify(newSanityPosts.result, null, 4));
-
         let sanityPost = newSanityPosts.result;
-
         let sanityPosts: any = [...posts, sanityPost];
         setPosts(sanityPosts);
       });

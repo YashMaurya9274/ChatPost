@@ -37,7 +37,7 @@ const CreatePostScreen = () => {
     const options: CameraOptions = {
       mediaType: 'mixed',
       maxHeight: 240,
-      quality: 0.8,
+      quality: 0.7,
       videoQuality: 'medium',
       durationLimit: 60,
     };
@@ -259,11 +259,12 @@ const CreatePostScreen = () => {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
+              disabled={!title}
               activeOpacity={0.5}
               onPress={uploadMedia}
               className="items-center justify-center bg-gray-300 h-60 w-full dark:bg-[#444444]">
               <Text className="text-[#A5A5A5] dark:text-[#686868] text-xl">
-                Upload Image / Video
+                Upload Image
               </Text>
             </TouchableOpacity>
           )}

@@ -1,7 +1,7 @@
 import {client} from './client';
 
 const deletePost = (postId: string) => {
-  client.delete(postId).then(() => console.log('deleted'));
+  client.delete(postId);
 };
 
 export default deletePost;

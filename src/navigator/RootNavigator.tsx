@@ -19,7 +19,7 @@ export type RootStackParamList = {
   Login: undefined;
   Chats: undefined;
   Messages: {messages: Message[]};
-  UserProfile: {userData: UserData};
+  UserProfile: {userId: string};
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();

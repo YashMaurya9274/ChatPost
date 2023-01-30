@@ -6,14 +6,10 @@ import {
   TouchableOpacity,
   useColorScheme,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useLayoutEffect, useState} from 'react';
-import {
-  CompositeNavigationProp,
-  RouteProp,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import {Friend, Post} from '../types/typings';
@@ -27,6 +23,8 @@ import {
 import FriendComponent from '../components/FriendComponent';
 import {useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
+import useFetchUserDataListener from '../hooks/useFetchUserDataListener';
+import {client} from '../lib/client';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -109,12 +107,13 @@ const infoUser = {
 const UserProfileScreen = () => {
   const navigation = useNavigation<UserScreenNavigationProp>();
   const {
-    params: {userData},
+    params: {userId},
   } = useRoute<UserScreenRouteProp>();
+  const {userData} = useFetchUserDataListener(client, userId);
   const [friendButtonClick, setFriendButtonClick] = useState(false);
   const user = useSelector(selectUser);
   const [showFriends, setShowFriends] = useState(false);
-  const yourAccount = userData?._id === user.uid;
+  const yourAccount = userId === user.uid;
   const scheme = useColorScheme();
 
   useLayoutEffect(() => {
@@ -128,10 +127,19 @@ const UserProfileScreen = () => {
     setFriendButtonClick(!friendButtonClick);
   };
 
+  if (!userData)
+    return (
+      <ActivityIndicator
+        className="h-screen bg-white relative dark:bg-[#151515]"
+        size="large"
+        color="#9e6969"
+      />
+    );
+
   return (
     <ScrollView
       contentContainerStyle={{paddingBottom: 15}}
-      className="bg-gray-300 relative dark:bg-[#151515]">
+      className="bg-white relative dark:bg-[#151515]">
       <StatusBar barStyle="light-content" backgroundColor="#4c3737" />
       <Image
         className="h-20 w-20 absolute z-10 top-5 rounded-full ml-3"

@@ -2,7 +2,6 @@ import {SANITY_API_TOKEN} from '@env';
 import mutationUrl from './mutationUrl';
 
 const storePost = async (post: StorePost) => {
-  console.log(post);
   const mutations = [
     {
       create: post,
@@ -18,7 +17,6 @@ const storePost = async (post: StorePost) => {
     body: JSON.stringify({mutations}),
   });
   const result = await response.json();
-  console.log(result);
 };
 
 export default storePost;

@@ -14,8 +14,6 @@ import {RootStackParamList} from '../navigator/RootNavigator';
 import ImageLinks from '../assets/images';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-import {UserData} from '../types/typings';
-import fetchUserData from '../lib/fetchUserData';
 
 export type ProfileOptionsScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -30,16 +28,12 @@ const ProfileOptionsScreen = () => {
   const handleSignOut = async () => {
     await GoogleSignin.revokeAccess();
     await GoogleSignin.signOut();
-    auth()
-      .signOut()
-      .then(() => console.log('User signed out!'));
+    auth().signOut();
   };
 
   const getUserData = async () => {
-    await fetchUserData(user.uid).then((resUserData: UserData) => {
-      navigation.navigate('UserProfile', {
-        userData: resUserData,
-      });
+    navigation.navigate('UserProfile', {
+      userId: user.uid,
     });
   };
 
