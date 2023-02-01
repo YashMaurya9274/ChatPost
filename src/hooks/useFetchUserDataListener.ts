@@ -18,7 +18,7 @@ const useFetchUserDataListener = (client: SanityClient, userId: string) => {
     `;
   const params = {};
 
-  fetchPosts();
+  getUserData();
 
   useEffect(() => {
     const subscription = client
@@ -32,7 +32,7 @@ const useFetchUserDataListener = (client: SanityClient, userId: string) => {
     };
   }, [client]);
 
-  function fetchPosts() {
+  function getUserData() {
     client.fetch(fetchUserDataQuery, params).then(resUserData => {
       setUserData(resUserData[0]);
     });
