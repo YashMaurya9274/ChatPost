@@ -7,7 +7,7 @@ import {
   Animated,
 } from 'react-native';
 import React, {useEffect, useState, useRef} from 'react';
-import {Post} from '../types/typings';
+import {LikeUser, Post} from '../types/typings';
 import ImageLinks from '../assets/images';
 import {useNavigation} from '@react-navigation/native';
 import {UserScreenNavigationProp} from '../screens/UserProfileScreen';
@@ -17,6 +17,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {selectMuteVideo, setMuteVideo} from '../slices/muteVideoSlice';
 import {urlFor} from '../lib/client';
 import deletePost from '../lib/deletePost';
+import likePostMutation from '../lib/likePostMutation';
+import {selectUser} from '../slices/userSlice';
 
 type Props = {
   post: Post;
@@ -27,22 +29,48 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const navigation = useNavigation<UserScreenNavigationProp>();
   const [showMore, setShowMore] = useState(false);
   const [showWholeContent, setShowWholeContent] = useState(false);
-  const [likeClicked, setLikeClicked] = useState(false);
   const scheme = useColorScheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [pauseVideo, setPauseVideo] = useState(false);
   const muteVideo = useSelector(selectMuteVideo);
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const postLikes = post.likes;
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-    // fetchUserData();
-
     if (post.subTitle!.length > 200) {
       setShowMore(true);
     }
+
+    if (checkUserLiked()) {
+      setLiked(true);
+    }
   }, []);
 
-  // homescreen-bg-gray-300 bg-[#E9E9E9]
+  const checkUserLiked = () => {
+    let result = false;
+    if (postLikes?.length! > 0) {
+      postLikes?.map(postLike => {
+        if (postLike._ref === user.uid) {
+          result = true;
+        }
+      });
+    }
+
+    return result;
+  };
+
+  const getUserLikedIndex = () => {
+    let result = -1;
+    postLikes?.map(postLike => {
+      if (postLike._ref === user.uid) {
+        result = postLikes.indexOf(postLike);
+      }
+    });
+
+    return result;
+  };
 
   const fadeIn = () => {
     // Will change fadeAnim value to 1 in 0 seconds
@@ -87,6 +115,25 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         userId: post.user._id!,
       });
     }
+  };
+
+  const likePost = async () => {
+    let tempLikes: LikeUser[] = postLikes!;
+
+    if (checkUserLiked()) {
+      tempLikes.splice(getUserLikedIndex(), 1);
+      setLiked(false);
+    } else {
+      const userLike: SanityLikeUser = {
+        _type: 'reference',
+        _ref: user.uid,
+        _key: user.uid,
+      };
+      tempLikes = [...tempLikes, userLike];
+      setLiked(true);
+    }
+
+    const res = await likePostMutation(tempLikes, post._id!);
   };
 
   return (
@@ -201,26 +248,36 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         {/* LIKE */}
         <TouchableOpacity
           activeOpacity={0.5}
-          onPress={() => setLikeClicked(!likeClicked)}
+          onPress={likePost}
           className="flex flex-row items-center space-x-2 py-3">
           <Image
             source={
               scheme === 'dark'
-                ? likeClicked
+                ? liked
                   ? ImageLinks.like.likeSolidDarkMode
                   : ImageLinks.like.likeOutline
-                : likeClicked
+                : liked
                 ? ImageLinks.like.likeSolidLightMode
                 : ImageLinks.like.likeOutline
             }
           />
+          {postLikes?.length! > 0 && (
+            <Text
+              className={`${
+                liked
+                  ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
+                  : 'text-gray-500 dark:text-gray-400 font-bold'
+              }`}>
+              {postLikes?.length}
+            </Text>
+          )}
           <Text
             className={`${
-              likeClicked
+              liked
                 ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
                 : 'text-gray-500 dark:text-gray-400 font-bold'
             }`}>
-            Like
+            {postLikes?.length! > 1 ? 'Likes' : 'Like'}
           </Text>
         </TouchableOpacity>
 

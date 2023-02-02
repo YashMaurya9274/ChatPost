@@ -11,6 +11,12 @@ interface Image {
   asset: Reference;
 }
 
+interface SanityLikeUser extends Base {
+  _ref: string;
+  _key: string;
+  _type: Reference;
+}
+
 interface StorePost extends Base {
   title: string;
   subTitle?: string;
@@ -19,4 +25,5 @@ interface StorePost extends Base {
     _ref: string;
     _type: Reference;
   };
+  likes?: SanityLikeUser[];
 }

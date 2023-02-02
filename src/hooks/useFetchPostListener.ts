@@ -3,14 +3,14 @@ import groq from 'groq';
 import {useEffect, useState} from 'react';
 import {Post} from '../types/typings';
 
-const useSanityListener = (client: SanityClient) => {
+const useFetchPostListener = (client: SanityClient) => {
   const [posts, setPosts] = useState<Post[]>([]);
 
   //Listen for data changes in Sanity
   const query = groq`
     *[_type == 'posts'] | order(_createdAt desc)  {
       ...,
-      user->,
+      user->
     }
   `;
   const params = {};
@@ -40,4 +40,4 @@ const useSanityListener = (client: SanityClient) => {
   return {posts, setPosts};
 };
 
-export default useSanityListener;
+export default useFetchPostListener;
