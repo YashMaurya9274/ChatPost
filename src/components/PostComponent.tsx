@@ -37,6 +37,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const user = useSelector(selectUser);
   const postLikes = post.likes;
   const [liked, setLiked] = useState(false);
+  const [totalLikes, setTotalLikes] = useState(0);
 
   useEffect(() => {
     if (post.subTitle!.length > 200) {
@@ -46,6 +47,8 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
     if (checkUserLiked()) {
       setLiked(true);
     }
+
+    setTotalLikes(postLikes?.length!);
   }, []);
 
   const checkUserLiked = () => {
@@ -132,6 +135,8 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
       tempLikes = [...tempLikes, userLike];
       setLiked(true);
     }
+
+    setTotalLikes(tempLikes.length);
 
     const res = await likePostMutation(tempLikes, post._id!);
   };
@@ -261,14 +266,14 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
                 : ImageLinks.like.likeOutline
             }
           />
-          {postLikes?.length! > 0 && (
+          {totalLikes > 0 && (
             <Text
               className={`${
                 liked
                   ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
                   : 'text-gray-500 dark:text-gray-400 font-bold'
               }`}>
-              {postLikes?.length}
+              {totalLikes}
             </Text>
           )}
           <Text
@@ -277,7 +282,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
                 ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
                 : 'text-gray-500 dark:text-gray-400 font-bold'
             }`}>
-            {postLikes?.length! > 1 ? 'Likes' : 'Like'}
+            {totalLikes > 1 ? 'Likes' : 'Like'}
           </Text>
         </TouchableOpacity>
 
