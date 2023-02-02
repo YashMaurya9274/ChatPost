@@ -66,11 +66,13 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
 
   const getUserLikedIndex = () => {
     let result = -1;
-    postLikes?.map(postLike => {
-      if (postLike._ref === user.uid) {
-        result = postLikes.indexOf(postLike);
-      }
-    });
+    if (postLikes?.length! > 0) {
+      postLikes?.map(postLike => {
+        if (postLike._ref === user.uid) {
+          result = postLikes.indexOf(postLike);
+        }
+      });
+    }
 
     return result;
   };
@@ -121,7 +123,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   };
 
   const likePost = async () => {
-    let tempLikes: LikeUser[] = postLikes!;
+    let tempLikes: LikeUser[] = postLikes || [];
 
     if (checkUserLiked()) {
       tempLikes.splice(getUserLikedIndex(), 1);
