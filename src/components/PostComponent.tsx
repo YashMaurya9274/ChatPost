@@ -19,6 +19,7 @@ import {urlFor} from '../lib/client';
 import deletePost from '../lib/deletePost';
 import likePostMutation from '../lib/likePostMutation';
 import {selectUser} from '../slices/userSlice';
+import TimeAgo from 'react-native-timeago';
 
 type Props = {
   post: Post;
@@ -158,7 +159,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
             {post.user.displayName}
           </Text>
           <Text className="text-gray-500 text-[12px] dark:text-gray-400">
-            {new Date(post._createdAt!).toLocaleString()}
+            <TimeAgo time={post._createdAt!} />
           </Text>
         </View>
       </View>
