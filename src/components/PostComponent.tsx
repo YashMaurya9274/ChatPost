@@ -20,6 +20,7 @@ import deletePost from '../lib/deletePost';
 import likePostMutation from '../lib/likePostMutation';
 import {selectUser} from '../slices/userSlice';
 import TimeAgo from 'react-native-timeago';
+import moment from 'moment';
 
 type Props = {
   post: Post;
@@ -161,7 +162,17 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
             {post.user.displayName}
           </Text>
           <Text className="text-gray-500 text-[12px] dark:text-gray-400">
-            <TimeAgo time={post._createdAt!} />
+            {/* SHOW TIME AGO IF POST IS NOT OLDER THAN 1 MONTH ELSO SHOW DATE OF CREATION OF POST */}
+            {Math.ceil(
+              Math.abs(
+                new Date(post._createdAt!).getTime() - new Date().getTime(),
+              ) /
+                (1000 * 60 * 60 * 24),
+            ) > 30 ? (
+              <TimeAgo time={post._createdAt!} />
+            ) : (
+              moment(post._createdAt).format('LL')
+            )}
           </Text>
         </View>
       </View>
