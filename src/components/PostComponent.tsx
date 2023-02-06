@@ -9,7 +9,7 @@ import {
 import React, {useEffect, useState, useRef} from 'react';
 import {LikeUser, Post} from '../types/typings';
 import ImageLinks from '../assets/images';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {UserScreenNavigationProp} from '../screens/UserProfileScreen';
 import Video from 'react-native-video';
 import VisibilitySensor from '@svanboxel/visibility-sensor-react-native';
@@ -20,6 +20,7 @@ import deletePost from '../lib/deletePost';
 import likePostMutation from '../lib/likePostMutation';
 import {selectUser} from '../slices/userSlice';
 import TimeAgo from 'react-native-timeago';
+import moment from 'moment';
 
 type Props = {
   post: Post;
@@ -39,18 +40,23 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const postLikes = post.likes;
   const [liked, setLiked] = useState(false);
   const [totalLikes, setTotalLikes] = useState(0);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (post.subTitle!.length > 200) {
-      setShowMore(true);
-    }
+    if (isFocused) {
+      if (post.subTitle!.length > 200) {
+        setShowMore(true);
+      }
 
-    if (checkUserLiked()) {
-      setLiked(true);
-    }
+      if (checkUserLiked()) {
+        setLiked(true);
+      } else {
+        setLiked(false);
+      }
 
-    setTotalLikes(postLikes?.length!);
-  }, []);
+      setTotalLikes(post.likes?.length!);
+    }
+  }, [isFocused]);
 
   const checkUserLiked = () => {
     let result = false;
@@ -161,7 +167,17 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
             {post.user.displayName}
           </Text>
           <Text className="text-gray-500 text-[12px] dark:text-gray-400">
-            <TimeAgo time={post._createdAt!} />
+            {/* SHOW TIME AGO IF POST IS NOT OLDER THAN 1 MONTH ELSO SHOW DATE OF CREATION OF POST */}
+            {Math.ceil(
+              Math.abs(
+                new Date(post._createdAt!).getTime() - new Date().getTime(),
+              ) /
+                (1000 * 60 * 60 * 24),
+            ) > 30 ? (
+              <TimeAgo time={post._createdAt!} />
+            ) : (
+              moment(post._createdAt).format('LL')
+            )}
           </Text>
         </View>
       </View>
