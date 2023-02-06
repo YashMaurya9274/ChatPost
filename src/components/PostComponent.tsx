@@ -9,7 +9,7 @@ import {
 import React, {useEffect, useState, useRef} from 'react';
 import {LikeUser, Post} from '../types/typings';
 import ImageLinks from '../assets/images';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {UserScreenNavigationProp} from '../screens/UserProfileScreen';
 import Video from 'react-native-video';
 import VisibilitySensor from '@svanboxel/visibility-sensor-react-native';
@@ -40,18 +40,23 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const postLikes = post.likes;
   const [liked, setLiked] = useState(false);
   const [totalLikes, setTotalLikes] = useState(0);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (post.subTitle!.length > 200) {
-      setShowMore(true);
-    }
+    if (isFocused) {
+      if (post.subTitle!.length > 200) {
+        setShowMore(true);
+      }
 
-    if (checkUserLiked()) {
-      setLiked(true);
-    }
+      if (checkUserLiked()) {
+        setLiked(true);
+      } else {
+        setLiked(false);
+      }
 
-    setTotalLikes(postLikes?.length!);
-  }, []);
+      setTotalLikes(post.likes?.length!);
+    }
+  }, [isFocused]);
 
   const checkUserLiked = () => {
     let result = false;

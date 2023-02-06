@@ -298,6 +298,7 @@ const CreatePostScreen = () => {
           </View>
         </View>
         <TouchableOpacity
+          disabled={!title}
           onPress={handlePost}
           activeOpacity={0.2}
           className="bg-[#9e6969] dark:bg-[#694242] p-2 w-[70%] rounded-md mx-auto mt-5">
