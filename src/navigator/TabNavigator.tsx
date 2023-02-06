@@ -30,10 +30,11 @@ const TabNavigator = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'ChatPost',
-      headerTitleStyle:
-        {fontWeight: 'bold'} && scheme === 'dark'
-          ? {color: '#bb9090'}
-          : {color: '#9e6969'},
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        fontSize: 23,
+        color: scheme === 'dark' ? '#bb9090' : '#9e6969',
+      },
       headerRight: () => (
         <TouchableOpacity
           activeOpacity={0.5}

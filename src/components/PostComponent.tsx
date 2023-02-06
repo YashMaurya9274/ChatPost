@@ -7,9 +7,9 @@ import {
   Animated,
 } from 'react-native';
 import React, {useEffect, useState, useRef} from 'react';
-import {Post} from '../types/typings';
+import {LikeUser, Post} from '../types/typings';
 import ImageLinks from '../assets/images';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {UserScreenNavigationProp} from '../screens/UserProfileScreen';
 import Video from 'react-native-video';
 import VisibilitySensor from '@svanboxel/visibility-sensor-react-native';
@@ -17,6 +17,10 @@ import {useDispatch, useSelector} from 'react-redux';
 import {selectMuteVideo, setMuteVideo} from '../slices/muteVideoSlice';
 import {urlFor} from '../lib/client';
 import deletePost from '../lib/deletePost';
+import likePostMutation from '../lib/likePostMutation';
+import {selectUser} from '../slices/userSlice';
+import TimeAgo from 'react-native-timeago';
+import moment from 'moment';
 
 type Props = {
   post: Post;
@@ -27,22 +31,58 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const navigation = useNavigation<UserScreenNavigationProp>();
   const [showMore, setShowMore] = useState(false);
   const [showWholeContent, setShowWholeContent] = useState(false);
-  const [likeClicked, setLikeClicked] = useState(false);
   const scheme = useColorScheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [pauseVideo, setPauseVideo] = useState(false);
   const muteVideo = useSelector(selectMuteVideo);
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const postLikes = post.likes;
+  const [liked, setLiked] = useState(false);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    // fetchUserData();
+    if (isFocused) {
+      if (post.subTitle!.length > 200) {
+        setShowMore(true);
+      }
 
-    if (post.subTitle!.length > 200) {
-      setShowMore(true);
+      if (checkUserLiked()) {
+        setLiked(true);
+      } else {
+        setLiked(false);
+      }
+
+      setTotalLikes(post.likes?.length!);
     }
-  }, []);
+  }, [isFocused]);
 
-  // homescreen-bg-gray-300 bg-[#E9E9E9]
+  const checkUserLiked = () => {
+    let result = false;
+    if (postLikes?.length! > 0) {
+      postLikes?.map(postLike => {
+        if (postLike._ref === user.uid) {
+          result = true;
+        }
+      });
+    }
+
+    return result;
+  };
+
+  const getUserLikedIndex = () => {
+    let result = -1;
+    if (postLikes?.length! > 0) {
+      postLikes?.map(postLike => {
+        if (postLike._ref === user.uid) {
+          result = postLikes.indexOf(postLike);
+        }
+      });
+    }
+
+    return result;
+  };
 
   const fadeIn = () => {
     // Will change fadeAnim value to 1 in 0 seconds
@@ -89,6 +129,27 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
     }
   };
 
+  const likePost = async () => {
+    let tempLikes: LikeUser[] = postLikes || [];
+
+    if (checkUserLiked()) {
+      tempLikes.splice(getUserLikedIndex(), 1);
+      setLiked(false);
+    } else {
+      const userLike: SanityLikeUser = {
+        _type: 'reference',
+        _ref: user.uid,
+        _key: user.uid,
+      };
+      tempLikes = [...tempLikes, userLike];
+      setLiked(true);
+    }
+
+    setTotalLikes(tempLikes.length);
+
+    const res = await likePostMutation(tempLikes, post._id!);
+  };
+
   return (
     <View className="rounded-lg shadow-slate-900 shadow-2xl bg-[#E9E9E9] mx-4 mt-4 last:mb-4 dark:bg-[#262626]">
       {/* UPPER PART */}
@@ -106,7 +167,17 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
             {post.user.displayName}
           </Text>
           <Text className="text-gray-500 text-[12px] dark:text-gray-400">
-            {new Date(post._createdAt!).toLocaleString()}
+            {/* SHOW TIME AGO IF POST IS NOT OLDER THAN 1 MONTH ELSO SHOW DATE OF CREATION OF POST */}
+            {Math.ceil(
+              Math.abs(
+                new Date(post._createdAt!).getTime() - new Date().getTime(),
+              ) /
+                (1000 * 60 * 60 * 24),
+            ) > 30 ? (
+              <TimeAgo time={post._createdAt!} />
+            ) : (
+              moment(post._createdAt).format('LL')
+            )}
           </Text>
         </View>
       </View>
@@ -201,26 +272,36 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         {/* LIKE */}
         <TouchableOpacity
           activeOpacity={0.5}
-          onPress={() => setLikeClicked(!likeClicked)}
+          onPress={likePost}
           className="flex flex-row items-center space-x-2 py-3">
           <Image
             source={
               scheme === 'dark'
-                ? likeClicked
+                ? liked
                   ? ImageLinks.like.likeSolidDarkMode
                   : ImageLinks.like.likeOutline
-                : likeClicked
+                : liked
                 ? ImageLinks.like.likeSolidLightMode
                 : ImageLinks.like.likeOutline
             }
           />
+          {totalLikes > 0 && (
+            <Text
+              className={`${
+                liked
+                  ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
+                  : 'text-gray-500 dark:text-gray-400 font-bold'
+              }`}>
+              {totalLikes}
+            </Text>
+          )}
           <Text
             className={`${
-              likeClicked
+              liked
                 ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
                 : 'text-gray-500 dark:text-gray-400 font-bold'
             }`}>
-            Like
+            {totalLikes > 1 ? 'Likes' : 'Like'}
           </Text>
         </TouchableOpacity>
 

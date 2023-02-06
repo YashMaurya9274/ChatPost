@@ -11,12 +11,19 @@ interface Image {
   asset: Reference;
 }
 
+interface LikeUser {
+  _ref: string;
+  _key: string;
+  _type: Reference;
+}
+
 interface Post extends Base {
   title: string;
   subTitle?: string;
   imageUrl?: Image;
   // videoUrl?: string;
   user: User;
+  likes?: LikeUser[];
 }
 
 interface User extends Base {

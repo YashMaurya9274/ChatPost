@@ -1,7 +1,7 @@
 import {SanityClient} from '@sanity/client';
 import groq from 'groq';
 import {useEffect, useState} from 'react';
-import {Post, UserData} from '../types/typings';
+import {UserData} from '../types/typings';
 
 const useFetchUserDataListener = (client: SanityClient, userId: string) => {
   const [userData, setUserData] = useState<UserData>();
@@ -10,15 +10,16 @@ const useFetchUserDataListener = (client: SanityClient, userId: string) => {
   const fetchUserDataQuery = groq`
     *[_type == 'users' && _id == '${userId}'] {
       ...,
-      "posts": *[_type == "posts" && references(^._id)] | order(_createdAt desc) {
+      "posts": *[_type == "posts" && user._ref == '${userId}'] | order(_createdAt desc) {
         ...,
         user->
       }
     }
     `;
+
   const params = {};
 
-  fetchPosts();
+  getUserData();
 
   useEffect(() => {
     const subscription = client
@@ -32,7 +33,7 @@ const useFetchUserDataListener = (client: SanityClient, userId: string) => {
     };
   }, [client]);
 
-  function fetchPosts() {
+  function getUserData() {
     client.fetch(fetchUserDataQuery, params).then(resUserData => {
       setUserData(resUserData[0]);
     });
