@@ -185,27 +185,29 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
       </View>
 
       {/* MIDDLE PART */}
-      <View className="px-3 mt-3 mb-5">
-        <Text className="text-gray-600 text-lg font-bold dark:text-gray-300">
+      <View className="px-3 mt-3">
+        <Text className="text-gray-600 text-lg font-bold dark:text-gray-300 mb-4">
           {post.title}
         </Text>
-        <Text className="text-gray-500 text-sm dark:text-gray-400">
-          {showWholeContent
-            ? post.subTitle
-            : showMore
-            ? post.subTitle?.slice(0, 200) + '...'
-            : post.subTitle?.slice(0, 200)}
-        </Text>
         {post.subTitle && (
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => setShowWholeContent(!showWholeContent)}>
-            {showMore && (
-              <Text className="underline text-gray-500 font-bold dark:text-gray-400">
-                {!showWholeContent ? 'Show More' : 'Show Less'}
-              </Text>
-            )}
-          </TouchableOpacity>
+          <>
+            <Text className="text-gray-500 text-sm dark:text-gray-400 -mt-4 mb-5">
+              {showWholeContent
+                ? post.subTitle
+                : showMore
+                ? post.subTitle?.slice(0, 200) + '...'
+                : post.subTitle?.slice(0, 200)}
+            </Text>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => setShowWholeContent(!showWholeContent)}>
+              {showMore && (
+                <Text className="underline text-gray-500 font-bold dark:text-gray-400">
+                  {!showWholeContent ? 'Show More' : 'Show Less'}
+                </Text>
+              )}
+            </TouchableOpacity>
+          </>
         )}
       </View>
 

@@ -81,7 +81,7 @@ const CreatePostScreen = () => {
   };
 
   const handlePost = async () => {
-    if (!title || !subTitle) return;
+    if (!title) return;
 
     if (media) {
       const img = await fetch(media?.uri!);

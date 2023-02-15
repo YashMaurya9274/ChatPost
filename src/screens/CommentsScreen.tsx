@@ -90,7 +90,7 @@ const CommentsScreen = () => {
     );
   };
 
-  if (comments.length === 0 && postComments?.length === 0) {
+  if (comments.length === 0 && !postComments) {
     return (
       <View className="bg-white flex-1 dark:bg-[#151515]">
         <View className="flex-1 items-center justify-center">
