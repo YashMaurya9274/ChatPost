@@ -40,6 +40,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const postLikes = post.likes;
   const [liked, setLiked] = useState(false);
   const [totalLikes, setTotalLikes] = useState(0);
+  const [totalComments, setTotalComments] = useState(0);
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -55,6 +56,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
       }
 
       setTotalLikes(post.likes?.length!);
+      setTotalComments(post.postComments?.length!);
     }
   }, [isFocused]);
 
@@ -151,7 +153,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   };
 
   return (
-    <View className="rounded-lg shadow-slate-900 shadow-2xl bg-[#E9E9E9] mx-4 mt-4 last:mb-4 dark:bg-[#262626]">
+    <View className="rounded-lg shadow-slate-900 shadow-2xl bg-[#ebedef] mx-4 mt-4 last:mb-4 dark:bg-[#262626]">
       {/* UPPER PART */}
       <View className="flex flex-row items-center space-x-3 px-3 mt-3">
         <TouchableOpacity activeOpacity={0.5} onPress={getUserData}>
@@ -167,13 +169,13 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
             {post.user.displayName}
           </Text>
           <Text className="text-gray-500 text-[12px] dark:text-gray-400">
-            {/* SHOW TIME AGO IF POST IS NOT OLDER THAN 1 MONTH ELSO SHOW DATE OF CREATION OF POST */}
+            {/* SHOW TIME AGO IF POST IS NOT OLDER THAN 1 MONTH ELSE SHOW DATE OF CREATION OF POST */}
             {Math.ceil(
               Math.abs(
                 new Date(post._createdAt!).getTime() - new Date().getTime(),
               ) /
                 (1000 * 60 * 60 * 24),
-            ) > 30 ? (
+            ) < 30 ? (
               <TimeAgo time={post._createdAt!} />
             ) : (
               moment(post._createdAt).format('LL')
@@ -310,12 +312,22 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
 
         {/* COMMENT */}
         <TouchableOpacity
-          onPress={() => deletePost(post._id!)}
+          onPress={() =>
+            navigation.push('Comments', {
+              postId: post._id!,
+              postComments: post.postComments!,
+            })
+          }
           activeOpacity={0.5}
           className="flex flex-row items-center space-x-2 py-3">
           <Image source={ImageLinks.commentsSolid} />
+          {totalComments > 0 && (
+            <Text className="text-gray-500 dark:text-gray-400 font-semibold">
+              {totalComments}
+            </Text>
+          )}
           <Text className="text-gray-500 dark:text-gray-400 font-semibold">
-            Comments
+            {totalComments > 1 ? 'Comments' : 'Comment'}
           </Text>
         </TouchableOpacity>
       </View>

@@ -24,6 +24,7 @@ interface Post extends Base {
   // videoUrl?: string;
   user: User;
   likes?: LikeUser[];
+  postComments?: StoreComment[];
 }
 
 interface User extends Base {
@@ -34,6 +35,19 @@ interface User extends Base {
 
 interface UserData extends User {
   posts?: Post[];
+}
+
+interface PostComment extends Base {
+  _key: string;
+  comment: string;
+  user: {
+    _ref: string;
+    _type: Reference;
+  };
+  post: {
+    _ref: string;
+    _type: Reference;
+  };
 }
 
 export type Friend = {
