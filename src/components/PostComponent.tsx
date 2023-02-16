@@ -190,8 +190,8 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
           {post.title}
         </Text>
         {post.subTitle && (
-          <>
-            <Text className="text-gray-500 text-sm dark:text-gray-400 -mt-4 mb-5">
+          <View className="-mt-4 mb-5">
+            <Text className="text-gray-500 text-sm dark:text-gray-400">
               {showWholeContent
                 ? post.subTitle
                 : showMore
@@ -207,7 +207,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
                 </Text>
               )}
             </TouchableOpacity>
-          </>
+          </View>
         )}
       </View>
 
@@ -277,8 +277,9 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={likePost}
-          className="flex flex-row items-center space-x-2 py-3">
+          className="flex flex-row items-center space-x-2 py-[10px]">
           <Image
+            className="h-4 w-4"
             source={
               scheme === 'dark'
                 ? liked
@@ -295,7 +296,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
                 liked
                   ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
                   : 'text-gray-500 dark:text-gray-400 font-bold'
-              }`}>
+              } text-xs`}>
               {totalLikes}
             </Text>
           )}
@@ -304,7 +305,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
               liked
                 ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
                 : 'text-gray-500 dark:text-gray-400 font-bold'
-            }`}>
+            } text-xs`}>
             {totalLikes > 1 ? 'Likes' : 'Like'}
           </Text>
         </TouchableOpacity>
@@ -321,14 +322,14 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
             })
           }
           activeOpacity={0.5}
-          className="flex flex-row items-center space-x-2 py-3">
-          <Image source={ImageLinks.commentsSolid} />
+          className="flex flex-row items-center space-x-2 py-[10px]">
+          <Image className="h-4 w-4" source={ImageLinks.commentsSolid} />
           {totalComments > 0 && (
-            <Text className="text-gray-500 dark:text-gray-400 font-semibold">
+            <Text className="text-gray-500 text-xs dark:text-gray-400 font-semibold">
               {totalComments}
             </Text>
           )}
-          <Text className="text-gray-500 dark:text-gray-400 font-semibold">
+          <Text className="text-gray-500 text-xs dark:text-gray-400 font-semibold">
             {totalComments > 1 ? 'Comments' : 'Comment'}
           </Text>
         </TouchableOpacity>

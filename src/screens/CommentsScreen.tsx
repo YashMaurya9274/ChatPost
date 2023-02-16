@@ -17,7 +17,7 @@ import {selectUser} from '../slices/userSlice';
 import storePostComment from '../lib/storePostComment';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
-import useFetchPostComments from '../hooks/useFetchPostComments';
+import getPostComments from '../lib/getPostComments';
 
 type CommentsScreenRouteProp = RouteProp<RootStackParamList, 'Comments'>;
 
@@ -27,7 +27,18 @@ const CommentsScreen = () => {
     params: {postId, postComments},
   } = useRoute<CommentsScreenRouteProp>();
   const user = useSelector(selectUser);
-  const {comments} = useFetchPostComments(client, postId);
+  const [comments, setComments] = useState<PostComment[]>([]);
+
+  const fetchPostComments = async () => {
+    const result = await getPostComments(client, postId);
+    setComments(result!);
+  };
+
+  useEffect(() => {
+    if (postComments.length > 0) {
+      fetchPostComments();
+    }
+  }, []);
 
   const sendComment = async () => {
     if (!comment) return;
@@ -58,6 +69,7 @@ const CommentsScreen = () => {
       : [commentForPost];
 
     setComment('');
+    setComments([commentObj, ...comments]);
     await storePostComment(commentObj, tempComments, postId);
   };
 
@@ -90,7 +102,7 @@ const CommentsScreen = () => {
     );
   };
 
-  if (comments.length === 0 && !postComments) {
+  if (comments.length === 0 && postComments.length === 0) {
     return (
       <View className="bg-white flex-1 dark:bg-[#151515]">
         <View className="flex-1 items-center justify-center">

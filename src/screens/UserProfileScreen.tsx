@@ -156,7 +156,7 @@ const UserProfileScreen = () => {
         {userData?.posts?.length! > 0 && userData?.posts?.length}
         {userData?.posts?.length === 0
           ? 'No Posts'
-          : infoUser?.userPosts.length === 1
+          : userData?.posts?.length === 1
           ? ' Post'
           : ' Posts'}
       </Text>
