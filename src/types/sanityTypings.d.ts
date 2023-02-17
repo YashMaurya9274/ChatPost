@@ -27,3 +27,9 @@ interface StorePost extends Base {
   };
   likes?: SanityLikeUser[];
 }
+
+interface StoreComment extends Base {
+  _ref: string;
+  _key: string;
+  _type: Reference;
+}

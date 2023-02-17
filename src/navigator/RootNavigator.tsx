@@ -2,7 +2,7 @@ import {useColorScheme} from 'react-native';
 import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Message, UserData} from '../types/typings';
+import {Message} from '../types/typings';
 import {MenuProvider} from 'react-native-popup-menu';
 import ChatsScreen from '../screens/ChatsScreen';
 import MessageScreen from '../screens/MessageScreen';
@@ -13,6 +13,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import TabNavigator from './TabNavigator';
 import UserProfileScreen from '../screens/UserProfileScreen';
 import storeUser from '../lib/storeUser';
+import CommentsScreen from '../screens/CommentsScreen';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -20,6 +21,10 @@ export type RootStackParamList = {
   Chats: undefined;
   Messages: {messages: Message[]};
   UserProfile: {userId: string};
+  Comments: {
+    postId: string;
+    postComments: StoreComment[];
+  };
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -65,6 +70,13 @@ export default function Navigator() {
               />
               <RootStack.Screen name="Chats" component={ChatsScreen} />
               <RootStack.Screen name="Messages" component={MessageScreen} />
+              <RootStack.Screen
+                options={{
+                  animation: 'slide_from_bottom',
+                }}
+                name="Comments"
+                component={CommentsScreen}
+              />
             </>
           )}
         </RootStack.Navigator>

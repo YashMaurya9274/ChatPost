@@ -50,7 +50,7 @@ const MessageScreen = () => {
         <TextInput
           value={message}
           onChangeText={text => setMessage(text)}
-          className="flex-1 text-[16px] bg-gray-300 text-gray-700 max-h-20 rounded-lg p-3 dark:bg-gray-800 dark:text-gray-300"
+          className="flex-1 text-[16px] bg-[#F0F2F5] text-gray-700 max-h-20 rounded-lg p-3 dark:bg-[#3A3B3C] dark:text-gray-300"
           placeholder="Enter message here...."
           placeholderTextColor="gray"
           multiline

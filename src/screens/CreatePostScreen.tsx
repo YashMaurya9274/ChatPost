@@ -35,10 +35,10 @@ const CreatePostScreen = () => {
 
   const uploadMedia = async () => {
     const options: CameraOptions = {
-      mediaType: 'mixed',
-      maxHeight: 240,
+      mediaType: 'photo',
+      maxHeight: 350,
       quality: 0.7,
-      videoQuality: 'medium',
+      // videoQuality: 'medium',
       durationLimit: 60,
     };
 
@@ -81,7 +81,7 @@ const CreatePostScreen = () => {
   };
 
   const handlePost = async () => {
-    if (!title || !subTitle) return;
+    if (!title) return;
 
     if (media) {
       const img = await fetch(media?.uri!);
@@ -163,7 +163,7 @@ const CreatePostScreen = () => {
               className="flex-1 text-lg font-bold placeholder:text-[16px] bg-gray-300 text-gray-600 max-h-20 rounded-lg p-2 dark:bg-[#444444] dark:text-gray-300"
               placeholder="Enter Title Here...."
               placeholderTextColor="gray"
-              maxLength={70}
+              maxLength={100}
             />
             <TextInput
               value={subTitle}
@@ -203,8 +203,8 @@ const CreatePostScreen = () => {
               </TouchableOpacity>
               {media.type?.includes('image') ? (
                 <Image
-                  resizeMode="stretch"
-                  className="h-60"
+                  resizeMode="cover"
+                  className="h-[350px] w-full mx-auto"
                   source={{
                     uri: media.uri,
                   }}
@@ -212,7 +212,7 @@ const CreatePostScreen = () => {
               ) : (
                 <>
                   {/* PAUSE/PLAY ICON */}
-                  <Animated.View
+                  {/* <Animated.View
                     style={{opacity: fadeAnim}}
                     className={`bg-[#353535]/80 p-3 bottom-5 left-5 rounded-full absolute z-10`}>
                     {pauseVideo ? (
@@ -226,10 +226,10 @@ const CreatePostScreen = () => {
                         source={ImageLinks.pauseIcon}
                       />
                     )}
-                  </Animated.View>
+                  </Animated.View> */}
 
                   {/* MUTE ICON */}
-                  <TouchableOpacity
+                  {/* <TouchableOpacity
                     onPress={() => setMuteVideo(!muteVideo)}
                     activeOpacity={0.3}
                     className="bg-[#353535]/80 p-[5px] right-5 bottom-5 rounded-full absolute z-10">
@@ -247,13 +247,13 @@ const CreatePostScreen = () => {
                   </TouchableOpacity>
                   <Video
                     source={{uri: media.uri}}
-                    resizeMode="stretch"
+                    resizeMode="contain"
                     // @ts-ignore
-                    className="relative h-60"
+                    className="relative h-[350px] w-full mx-auto"
                     muted={muteVideo}
                     paused={pauseVideo}
                     repeat
-                  />
+                  /> */}
                 </>
               )}
             </TouchableOpacity>
@@ -262,7 +262,7 @@ const CreatePostScreen = () => {
               disabled={!title}
               activeOpacity={0.5}
               onPress={uploadMedia}
-              className="items-center justify-center bg-gray-300 h-60 w-full dark:bg-[#444444]">
+              className="items-center justify-center bg-gray-300 mx-auto h-[350px] w-full dark:bg-[#444444]">
               <Text className="text-[#A5A5A5] dark:text-[#686868] text-xl">
                 Upload Image
               </Text>
@@ -272,15 +272,16 @@ const CreatePostScreen = () => {
           {/* BOTTOM PART */}
           <View className="flex flex-row justify-evenly items-center border-t border-gray-300 dark:border-[#383838]">
             {/* LIKE */}
-            <View className="flex flex-row items-center space-x-2 py-3">
+            <View className="flex flex-row items-center space-x-2 py-[10px]">
               <Image
+                className="h-4 w-4"
                 source={
                   scheme === 'dark'
                     ? ImageLinks.like.likeOutline
                     : ImageLinks.like.likeOutline
                 }
               />
-              <Text className="text-gray-500 dark:text-gray-400 font-bold">
+              <Text className="text-gray-500 text-xs dark:text-gray-400 font-bold">
                 Like
               </Text>
             </View>
@@ -289,9 +290,9 @@ const CreatePostScreen = () => {
             <View className="w-[1px] h-full bg-gray-300 dark:bg-[#383838]" />
 
             {/* COMMENT */}
-            <View className="flex flex-row items-center space-x-2 py-3">
-              <Image source={ImageLinks.commentsSolid} />
-              <Text className="text-gray-500 dark:text-gray-400 font-semibold">
+            <View className="flex flex-row items-center space-x-2 py-[10px]">
+              <Image className="h-4 w-4" source={ImageLinks.commentsSolid} />
+              <Text className="text-gray-500 text-xs dark:text-gray-400 font-semibold">
                 Comments
               </Text>
             </View>
