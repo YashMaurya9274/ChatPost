@@ -1,7 +1,10 @@
 import {useColorScheme} from 'react-native';
 import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack';
 import {Message} from '../types/typings';
 import {MenuProvider} from 'react-native-popup-menu';
 import ChatsScreen from '../screens/ChatsScreen';
@@ -34,11 +37,12 @@ export default function Navigator() {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
 
-  const globalScreenOptions = {
+  const globalScreenOptions: NativeStackNavigationOptions = {
     headerStyle: {backgroundColor: scheme === 'dark' ? '#151515' : 'white'},
     headerTitleStyle: {color: scheme === 'dark' ? 'white' : 'black'},
     headerTintColor: scheme === 'dark' ? 'white' : 'black',
     headerShadowVisible: false,
+    animation: 'slide_from_right',
     // animationEnabled: false,
   };
 

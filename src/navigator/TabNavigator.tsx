@@ -83,8 +83,11 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
-        tabBarContentContainerStyle: {
+        tabBarStyle: {
           backgroundColor: scheme === 'dark' ? '#151515' : 'white',
+        },
+        tabBarIndicatorStyle: {
+          backgroundColor: scheme === 'dark' ? '#bb9090' : '#9e6969',
         },
         tabBarActiveTintColor: scheme === 'dark' ? '#bb9090' : '#9e6969',
         tabBarInactiveTintColor: scheme === 'dark' ? '#9e6969' : '#bb9090',
