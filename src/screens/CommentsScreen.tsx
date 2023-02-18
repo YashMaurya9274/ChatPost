@@ -35,7 +35,7 @@ const CommentsScreen = () => {
   };
 
   useEffect(() => {
-    if (postComments.length > 0) {
+    if (postComments?.length > 0 || postComments) {
       fetchPostComments();
     }
   }, []);
@@ -102,9 +102,10 @@ const CommentsScreen = () => {
     );
   };
 
-  if (comments.length === 0 && postComments.length === 0) {
-    return (
-      <View className="bg-white flex-1 dark:bg-[#151515]">
+  return (
+    <View className="bg-white flex-1 dark:bg-[#151515]">
+      {(postComments?.length === 0 || !postComments) &&
+      comments.length === 0 ? (
         <View className="flex-1 items-center justify-center">
           <Text className="font-bold text-gray-600 dark:text-gray-200 text-xl text-center">
             No Comments yet on this post.
@@ -113,33 +114,19 @@ const CommentsScreen = () => {
             Be the first one to comment.
           </Text>
         </View>
-        {renderCommentInput()}
-      </View>
-    );
-  }
+      ) : (
+        <FlatList
+          data={comments}
+          renderItem={renderComment}
+          ListEmptyComponent={renderEmptyComments}
+          // @ts-ignore
+          keyExtractor={item => item._id}
+          scrollEventThrottle={16}
+          contentContainerStyle={{paddingBottom: 15}}
+        />
+      )}
 
-  // if (!postComments.length)
-  //   return (
-  //     <ActivityIndicator
-  //       className="min-h-full bg-white relative dark:bg-[#151515]"
-  //       size="large"
-  //       color="#9e6969"
-  //     />
-  //   );
-
-  return (
-    <View className="bg-white flex-1 dark:bg-[#151515]">
-      <FlatList
-        data={comments}
-        renderItem={renderComment}
-        ListEmptyComponent={renderEmptyComments}
-        // @ts-ignore
-        keyExtractor={item => item._id}
-        scrollEventThrottle={16}
-        contentContainerStyle={{paddingBottom: 15}}
-      />
-
-      {comments.length > 0 && renderCommentInput()}
+      {renderCommentInput()}
     </View>
   );
 };
