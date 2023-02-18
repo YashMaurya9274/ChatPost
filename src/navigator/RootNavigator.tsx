@@ -42,7 +42,6 @@ export default function Navigator() {
     headerTitleStyle: {color: scheme === 'dark' ? 'white' : 'black'},
     headerTintColor: scheme === 'dark' ? 'white' : 'black',
     headerShadowVisible: false,
-    animation: 'slide_from_right',
     // animationEnabled: false,
   };
 

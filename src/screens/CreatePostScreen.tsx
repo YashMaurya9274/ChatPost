@@ -22,36 +22,49 @@ import {useSelector} from 'react-redux';
 import {client} from '../lib/client';
 import storePost from '../lib/storePost';
 import {SanityImageAssetDocument} from '@sanity/client';
+import ImagePicker, {ImageOrVideo} from 'react-native-image-crop-picker';
 
 const CreatePostScreen = () => {
   const scheme = useColorScheme();
   const [title, setTitle] = useState<string>('');
   const [subTitle, setSubTitle] = useState<string>('');
-  const [media, setMedia] = useState<Asset>();
+  const [media, setMedia] = useState<ImageOrVideo>();
   const [muteVideo, setMuteVideo] = useState(false);
   const [pauseVideo, setPauseVideo] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const user = useSelector(selectUser);
 
   const uploadMedia = async () => {
-    const options: CameraOptions = {
-      mediaType: 'photo',
-      maxHeight: 350,
-      quality: 0.7,
-      // videoQuality: 'medium',
-      durationLimit: 60,
-    };
+    // const options: CameraOptions = {
+    //   mediaType: 'photo',
+    //   maxHeight: 300,
+    //   quality: 0.7,
+    //   // videoQuality: 'medium',
+    //   durationLimit: 60,
+    // };
 
-    const result = await launchImageLibrary(options);
-    if (result.assets) {
-      setMedia(result.assets[0]);
-      // console.log(result.assets[0]?.type);
-      // if (result.assets[0]?.type === 'image/jpeg') {
-      //   setMedia(result.assets[0]);
-      // }
-      // if (result.assets[0]?.type?.includes("video")) {
-      //   setVideo(result.assets[0])
-    }
+    // const result = await launchImageLibrary(options);
+    // if (result.assets) {
+    //   setMedia(result.assets[0]);
+    //   // console.log(result.assets[0]?.type);
+    //   // if (result.assets[0]?.type === 'image/jpeg') {
+    //   //   setMedia(result.assets[0]);
+    //   // }
+    //   // if (result.assets[0]?.type?.includes("video")) {
+    //   //   setVideo(result.assets[0])
+    // }
+
+    ImagePicker.openPicker({
+      width: 709,
+      height: 709,
+      cropping: true,
+      cropperStatusBarColor: scheme === 'dark' ? '#151515' : 'white',
+      cropperToolbarColor: scheme === 'dark' ? '#151515' : 'white',
+      cropperToolbarWidgetColor: '#bb9090',
+      cropperActiveWidgetColor: '#bb9090',
+    }).then(image => {
+      setMedia(image);
+    });
   };
 
   const fadeIn = () => {
@@ -73,7 +86,7 @@ const CreatePostScreen = () => {
   };
 
   const playPauseVideoFunction = () => {
-    if (media?.type?.includes('video')) {
+    if (media?.mime?.includes('video')) {
       setPauseVideo(!pauseVideo);
       if (pauseVideo) fadeOut();
       else fadeIn();
@@ -84,12 +97,12 @@ const CreatePostScreen = () => {
     if (!title) return;
 
     if (media) {
-      const img = await fetch(media?.uri!);
+      const img = await fetch(media?.path!);
       const bytes = await img.blob();
       let tempImgAsset: SanityImageAssetDocument;
       client.assets
         .upload('image', bytes, {
-          filename: media?.fileName,
+          filename: media?.path.substring(media?.path.lastIndexOf('/') + 1),
         })
         .then(imageAsset => (tempImgAsset = imageAsset))
         .then(async () => {
@@ -201,12 +214,12 @@ const CreatePostScreen = () => {
                   source={ImageLinks.cross}
                 />
               </TouchableOpacity>
-              {media.type?.includes('image') ? (
+              {media.mime?.includes('image') ? (
                 <Image
                   resizeMode="cover"
-                  className="h-[350px] w-full mx-auto"
+                  className="h-[300px] w-full mx-auto"
                   source={{
-                    uri: media.uri,
+                    uri: media.path,
                   }}
                 />
               ) : (
@@ -262,7 +275,7 @@ const CreatePostScreen = () => {
               disabled={!title}
               activeOpacity={0.5}
               onPress={uploadMedia}
-              className="items-center justify-center bg-gray-300 mx-auto h-[350px] w-full dark:bg-[#444444]">
+              className="items-center justify-center bg-gray-300 mx-auto h-[300px] w-full dark:bg-[#444444]">
               <Text className="text-[#A5A5A5] dark:text-[#686868] text-xl">
                 Upload Image
               </Text>
