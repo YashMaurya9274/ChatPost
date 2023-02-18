@@ -215,7 +215,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
       {post.imageUrl && (
         <Image
           resizeMode="stretch"
-          className="h-60"
+          className="h-[300px] w-full"
           source={{uri: urlFor(post.imageUrl).url()}}
         />
       )}
