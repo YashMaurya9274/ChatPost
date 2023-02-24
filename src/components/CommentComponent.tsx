@@ -70,15 +70,17 @@ const CommentComponent = ({comment, deleteComment}: Props) => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        activeOpacity={0.4}
-        onPress={() => deleteComment(comment._id)}>
-        <Image
-          className="h-5 w-5 mt-1"
-          style={{tintColor: '#FF5959'}}
-          source={ImageLinks.deleteIcon}
-        />
-      </TouchableOpacity>
+      {(comment.user._id === user.uid || !comment.user._id) && (
+        <TouchableOpacity
+          activeOpacity={0.4}
+          onPress={() => deleteComment(comment._id)}>
+          <Image
+            className="h-5 w-5 mt-1"
+            style={{tintColor: '#FF5959'}}
+            source={ImageLinks.deleteIcon}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

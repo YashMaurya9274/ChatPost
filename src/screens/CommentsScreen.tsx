@@ -82,24 +82,45 @@ const CommentsScreen = () => {
     await storePostComment(commentObj, tempComments, postId);
   };
 
-  const deleteComment = async (commentId: string) => {
-    const cmntIndex = comments.findIndex(comment => comment._id === commentId);
-    setComments([
-      ...comments.slice(0, cmntIndex),
-      ...comments.slice(cmntIndex + 1),
-    ]);
-
-    const postCmntIndex = postComments.findIndex(
-      pCmnt => pCmnt._ref === commentId,
-    );
-
-    let tempPostCmnts = postComments;
-    tempPostCmnts = [
-      ...tempPostCmnts.slice(0, postCmntIndex),
-      ...tempPostCmnts.slice(postCmntIndex + 1),
+  const createTempStoreComments = (
+    tempStoreComments: StoreComment[],
+    key: string,
+    ref: string,
+  ) => {
+    tempStoreComments = [
+      ...tempStoreComments,
+      {
+        _key: key,
+        _ref: ref,
+        _type: 'reference',
+      },
     ];
 
-    await deletePostComment(commentId, tempPostCmnts, postId, client);
+    return tempStoreComments;
+  };
+
+  const deleteComment = async (commentId: string) => {
+    let newComments = comments;
+    const cmntIndex = newComments.findIndex(
+      comment => comment._id === commentId,
+    );
+    newComments = [
+      ...newComments.slice(0, cmntIndex),
+      ...newComments.slice(cmntIndex + 1),
+    ];
+    setComments(newComments);
+
+    let tempStoreComments: StoreComment[] = [];
+
+    newComments.map(comment => {
+      tempStoreComments = createTempStoreComments(
+        tempStoreComments,
+        comment._key,
+        comment._id!,
+      );
+    });
+
+    await deletePostComment(commentId, tempStoreComments!, postId, client);
   };
 
   const renderCommentInput = () => (
