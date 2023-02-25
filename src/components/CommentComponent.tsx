@@ -41,7 +41,7 @@ const CommentComponent = ({comment, deleteComment}: Props) => {
         />
       </TouchableOpacity>
 
-      <View className="flex flex-1 py-2 px-3 bg-[#F0F2F5] dark:bg-[#2c2d2e] rounded-2xl">
+      <View className="flex flex-1 pt-2 pb-3 px-3 bg-[#F0F2F5] dark:bg-[#2c2d2e] rounded-2xl">
         <View className="flex flex-row items-center space-x-3">
           <Text className="font-bold text-[15px] text-gray-700 dark:text-gray-200">
             {comment?.user.displayName || user.displayName}
@@ -52,7 +52,7 @@ const CommentComponent = ({comment, deleteComment}: Props) => {
           </Text>
         </View>
 
-        <Text className="w-[90%] text-gray-700 dark:text-gray-300">
+        <Text className="text-gray-700 dark:text-gray-300">
           {showWholeComment
             ? comment.comment
             : showMore
