@@ -33,6 +33,7 @@ const CreatePostScreen = () => {
   const [pauseVideo, setPauseVideo] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const user = useSelector(selectUser);
+  const [disablePostButton, setDisablePostButton] = useState<boolean>(false);
 
   const uploadMedia = async () => {
     // const options: CameraOptions = {
@@ -96,6 +97,8 @@ const CreatePostScreen = () => {
   const handlePost = async () => {
     if (!title) return;
 
+    setDisablePostButton(true);
+
     if (media) {
       const img = await fetch(media?.path!);
       const bytes = await img.blob();
@@ -127,6 +130,7 @@ const CreatePostScreen = () => {
             setTitle('');
             setMedia(undefined);
             setSubTitle('');
+            setDisablePostButton(false);
           });
         });
     } else {
@@ -143,6 +147,7 @@ const CreatePostScreen = () => {
       await storePost(post).then(() => {
         setTitle('');
         setSubTitle('');
+        setDisablePostButton(false);
       });
     }
   };
@@ -216,8 +221,8 @@ const CreatePostScreen = () => {
               </TouchableOpacity>
               {media.mime?.includes('image') ? (
                 <Image
-                  resizeMode="cover"
-                  className="h-[300px] w-full mx-auto"
+                  resizeMode="contain"
+                  className="mx-auto aspect-square"
                   source={{
                     uri: media.path,
                   }}
@@ -275,8 +280,13 @@ const CreatePostScreen = () => {
               disabled={!title}
               activeOpacity={0.5}
               onPress={uploadMedia}
-              className="items-center justify-center bg-gray-300 mx-auto h-[300px] w-full dark:bg-[#444444]">
-              <Text className="text-[#A5A5A5] dark:text-[#686868] text-xl">
+              className="flex flex-row items-center justify-center bg-gray-300 mr-auto ml-3 mb-5 px-5 py-2 rounded-lg space-x-2 dark:bg-[#444444]">
+              <Image
+                source={ImageLinks.addImage}
+                style={{tintColor: scheme === 'light' ? '#444444' : '#E6E6E6'}}
+                className="h-6 w-6"
+              />
+              <Text className="text-[#444444] dark:text-white text-base">
                 Upload Image
               </Text>
             </TouchableOpacity>
@@ -312,10 +322,12 @@ const CreatePostScreen = () => {
           </View>
         </View>
         <TouchableOpacity
-          disabled={!title}
+          disabled={!title || disablePostButton}
           onPress={handlePost}
           activeOpacity={0.2}
-          className="bg-[#9e6969] dark:bg-[#694242] p-2 w-[70%] rounded-md mx-auto mt-5">
+          className={`bg-[#9e6969] dark:bg-[#694242] p-2 w-[70%] rounded-md mx-auto mt-5 ${
+            disablePostButton && 'bg-gray-400 dark:bg-gray-500'
+          }`}>
           <Text className="text-center font-bold text-white">POST</Text>
         </TouchableOpacity>
       </ScrollView>
