@@ -5,12 +5,14 @@ import {selectUser} from '../slices/userSlice';
 import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {UserScreenNavigationProp} from '../screens/UserProfileScreen';
+import ImageLinks from '../assets/images';
 
 type Props = {
   comment: any;
+  deleteComment: (commentId: string) => void;
 };
 
-const CommentComponent = ({comment}: Props) => {
+const CommentComponent = ({comment, deleteComment}: Props) => {
   const [showWholeComment, setShowWholeComment] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const user = useSelector(selectUser);
@@ -39,7 +41,7 @@ const CommentComponent = ({comment}: Props) => {
         />
       </TouchableOpacity>
 
-      <View className="py-2 px-3 bg-[#F0F2F5] dark:bg-[#2c2d2e] rounded-2xl">
+      <View className="flex flex-1 pt-2 pb-3 px-3 bg-[#F0F2F5] dark:bg-[#2c2d2e] rounded-2xl">
         <View className="flex flex-row items-center space-x-3">
           <Text className="font-bold text-[15px] text-gray-700 dark:text-gray-200">
             {comment?.user.displayName || user.displayName}
@@ -50,7 +52,7 @@ const CommentComponent = ({comment}: Props) => {
           </Text>
         </View>
 
-        <Text className="w-72 text-gray-700 dark:text-gray-300">
+        <Text className="text-gray-700 dark:text-gray-300">
           {showWholeComment
             ? comment.comment
             : showMore
@@ -67,6 +69,18 @@ const CommentComponent = ({comment}: Props) => {
           )}
         </TouchableOpacity>
       </View>
+
+      {(comment.user._id === user.uid || !comment.user._id) && (
+        <TouchableOpacity
+          activeOpacity={0.4}
+          onPress={() => deleteComment(comment._id)}>
+          <Image
+            className="h-5 w-5 mt-1"
+            style={{tintColor: '#FF5959'}}
+            source={ImageLinks.deleteIcon}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

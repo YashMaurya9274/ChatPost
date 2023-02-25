@@ -18,6 +18,7 @@ import storePostComment from '../lib/storePostComment';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import getPostComments from '../lib/getPostComments';
+import deletePostComment from '../lib/deletePostComment';
 
 type CommentsScreenRouteProp = RouteProp<RootStackParamList, 'Comments'>;
 
@@ -28,6 +29,7 @@ const CommentsScreen = () => {
   } = useRoute<CommentsScreenRouteProp>();
   const user = useSelector(selectUser);
   const [comments, setComments] = useState<PostComment[]>([]);
+  const [tempPostComments, setTempPostComments] = useState<StoreComment[]>([]);
 
   const fetchPostComments = async () => {
     const result = await getPostComments(client, postId);
@@ -64,13 +66,61 @@ const CommentsScreen = () => {
       _type: 'reference',
     };
 
-    let tempComments: StoreComment[] = postComments
-      ? [...postComments, commentForPost]
-      : [commentForPost];
+    let tempComments: StoreComment[];
 
+    if (tempPostComments.length > 0) {
+      tempComments = [...tempPostComments, commentForPost];
+    } else {
+      tempComments =
+        postComments?.length > 0 || postComments
+          ? [...postComments, commentForPost]
+          : [commentForPost];
+      setTempPostComments(tempComments);
+    }
     setComment('');
     setComments([commentObj, ...comments]);
     await storePostComment(commentObj, tempComments, postId);
+  };
+
+  const createTempStoreComments = (
+    tempStoreComments: StoreComment[],
+    key: string,
+    ref: string,
+  ) => {
+    tempStoreComments = [
+      ...tempStoreComments,
+      {
+        _key: key,
+        _ref: ref,
+        _type: 'reference',
+      },
+    ];
+
+    return tempStoreComments;
+  };
+
+  const deleteComment = async (commentId: string) => {
+    let newComments = comments;
+    const cmntIndex = newComments.findIndex(
+      comment => comment._id === commentId,
+    );
+    newComments = [
+      ...newComments.slice(0, cmntIndex),
+      ...newComments.slice(cmntIndex + 1),
+    ];
+    setComments(newComments);
+
+    let tempStoreComments: StoreComment[] = [];
+
+    newComments.map(comment => {
+      tempStoreComments = createTempStoreComments(
+        tempStoreComments,
+        comment._key,
+        comment._id!,
+      );
+    });
+
+    await deletePostComment(commentId, tempStoreComments!, postId, client);
   };
 
   const renderCommentInput = () => (
@@ -91,7 +141,11 @@ const CommentsScreen = () => {
   );
 
   const renderComment = ({item}: any) => (
-    <CommentComponent key={item._id} comment={item} />
+    <CommentComponent
+      key={item._id}
+      comment={item}
+      deleteComment={deleteComment}
+    />
   );
 
   const renderEmptyComments = () => {
