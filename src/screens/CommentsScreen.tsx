@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import {RouteProp, useRoute} from '@react-navigation/native';
+import {RouteProp, useIsFocused, useRoute} from '@react-navigation/native';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import CommentComponent from '../components/CommentComponent';
 import {client} from '../lib/client';
@@ -30,6 +30,7 @@ const CommentsScreen = () => {
   const user = useSelector(selectUser);
   const [comments, setComments] = useState<PostComment[]>([]);
   const [tempPostComments, setTempPostComments] = useState<StoreComment[]>([]);
+  const isFocused = useIsFocused();
 
   const fetchPostComments = async () => {
     const result = await getPostComments(client, postId);
@@ -37,10 +38,12 @@ const CommentsScreen = () => {
   };
 
   useEffect(() => {
-    if (postComments?.length > 0 || postComments) {
-      fetchPostComments();
+    if (isFocused) {
+      if (postComments?.length > 0 || postComments) {
+        fetchPostComments();
+      }
     }
-  }, []);
+  }, [isFocused]);
 
   const sendComment = async () => {
     if (!comment) return;
