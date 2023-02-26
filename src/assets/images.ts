@@ -24,6 +24,7 @@ const ImageLinks = {
     logoutLightMode: require('./images/logoutLightMode.png'),
   },
   deleteIcon: require('./images/delete.png'),
+  addImage: require('./images/addImage.png'),
 };
 
 export default ImageLinks;
