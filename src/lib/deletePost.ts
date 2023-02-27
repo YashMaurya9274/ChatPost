@@ -33,13 +33,6 @@ const deletePost = async (postId: string) => {
     },
     body: JSON.stringify({mutations}),
   });
-
-  console.log(response);
-
-  // response.json().then(() => {
-  //   // comments.map(comment => client.delete(comment._ref));
-  //   client.delete(postId);
-  // });
 };
 
 export default deletePost;
