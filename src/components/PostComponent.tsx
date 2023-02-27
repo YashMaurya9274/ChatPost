@@ -21,6 +21,7 @@ import likePostMutation from '../lib/likePostMutation';
 import {selectUser} from '../slices/userSlice';
 import TimeAgo from 'react-native-timeago';
 import moment from 'moment';
+import BottomSheet from './BottomSheet';
 
 type Props = {
   post: Post;
@@ -31,6 +32,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const navigation = useNavigation<UserScreenNavigationProp>();
   const [showMore, setShowMore] = useState(false);
   const [showWholeContent, setShowWholeContent] = useState(false);
+  const [isModalVisible, setModalVisible] = useState<boolean>(false);
   const scheme = useColorScheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [pauseVideo, setPauseVideo] = useState(false);
@@ -131,7 +133,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
     }
   };
 
-  const likePost = async () => {
+  const handleLikePost = async () => {
     let tempLikes: LikeUser[] = postLikes || [];
 
     if (checkUserLiked()) {
@@ -150,6 +152,11 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
     setTotalLikes(tempLikes.length);
 
     const res = await likePostMutation(tempLikes, post._id!);
+  };
+
+  const handleDeletePost = async () => {
+    setModalVisible(false);
+    await deletePost(post._id!);
   };
 
   return (
@@ -276,7 +283,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         {/* LIKE */}
         <TouchableOpacity
           activeOpacity={0.5}
-          onPress={likePost}
+          onPress={handleLikePost}
           className="flex flex-row items-center space-x-2 py-[10px]">
           <Image
             className="h-4 w-4"
@@ -315,11 +322,13 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
 
         {/* COMMENT */}
         <TouchableOpacity
-          onPress={() =>
-            navigation.push('Comments', {
-              postId: post._id!,
-              postComments: post.postComments!,
-            })
+          onPress={
+            () =>
+              navigation.push('Comments', {
+                postId: post._id!,
+                postComments: post.postComments!,
+              })
+            // setModalVisible(true)
           }
           activeOpacity={0.5}
           className="flex flex-row items-center space-x-2 py-[10px]">
@@ -334,6 +343,25 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <BottomSheet
+        isVisible={isModalVisible}
+        onSwipeComplete={() => setModalVisible(false)}
+        onBackdropPress={() => setModalVisible(false)}
+        onBackButtonPress={() => setModalVisible(false)}>
+        <View>
+          <TouchableOpacity
+            className="flex flex-row items-center mr-auto space-x-2 px-4 py-2"
+            onPress={handleDeletePost}>
+            <Image
+              className="h-6 w-6 mt-1"
+              style={{tintColor: '#FF5959'}}
+              source={ImageLinks.deleteIcon}
+            />
+            <Text className="text-[#FF5959] text-lg">Delete Post</Text>
+          </TouchableOpacity>
+        </View>
+      </BottomSheet>
     </View>
   );
 };
