@@ -25,6 +25,7 @@ const ImageLinks = {
   },
   deleteIcon: require('./images/delete.png'),
   addImage: require('./images/addImage.png'),
+  dotsVertical: require('./images/dotsVertical.png'),
 };
 
 export default ImageLinks;
