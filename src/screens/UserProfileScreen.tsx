@@ -14,17 +14,12 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import {Friend, Post} from '../types/typings';
 import PostComponent from '../components/PostComponent';
-import {
-  Menu,
-  MenuOptions,
-  MenuTrigger,
-  renderers,
-} from 'react-native-popup-menu';
 import FriendComponent from '../components/FriendComponent';
 import {useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
 import useFetchUserDataListener from '../hooks/useFetchUserDataListener';
 import {client} from '../lib/client';
+import RNBottomSheet from '../components/RNBottomSheet';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -66,6 +61,18 @@ const friends: Friend[] = [
   },
   {
     id: '6',
+    userName: 'Iron Man',
+    userImage:
+      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
+  },
+  {
+    id: '7',
+    userName: 'Iron Man',
+    userImage:
+      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
+  },
+  {
+    id: '8',
     userName: 'Iron Man',
     userImage:
       'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
@@ -182,33 +189,20 @@ const UserProfileScreen = () => {
         ))}
       </View>
 
-      <Menu
-        name="numbers"
-        renderer={renderers.SlideInMenu}
-        opened={showFriends}
-        onBackdropPress={() => setShowFriends(false)}>
-        <MenuTrigger />
-        <MenuOptions
-          customStyles={{
-            optionsContainer: {
-              borderTopLeftRadius: 15,
-              borderTopRightRadius: 15,
-              backgroundColor: scheme === 'dark' ? '#312F2F' : '#ececec',
-            },
-          }}>
-          <ScrollView
-            bounces
-            className="h-[310px]"
-            showsVerticalScrollIndicator={false}>
-            <Text className="text-gray-500 text-xl mt-3 mx-auto dark:text-gray-400 font-bold">
-              Total Friends - {friends?.length}
-            </Text>
-            {friends.map((friend: Friend) => (
-              <FriendComponent key={friend.id} friend={friend} />
-            ))}
-          </ScrollView>
-        </MenuOptions>
-      </Menu>
+      <RNBottomSheet
+        isVisible={showFriends}
+        onBackdropPress={() => setShowFriends(false)}
+        bottomSheetHeight={400}>
+        <ScrollView
+          bounces
+          contentContainerStyle={{paddingBottom: 10}}
+          className="h-[310px]"
+          showsVerticalScrollIndicator={false}>
+          {friends.map((friend: Friend) => (
+            <FriendComponent key={friend.id} friend={friend} />
+          ))}
+        </ScrollView>
+      </RNBottomSheet>
     </ScrollView>
   );
 };

@@ -21,7 +21,8 @@ import likePostMutation from '../lib/likePostMutation';
 import {selectUser} from '../slices/userSlice';
 import TimeAgo from 'react-native-timeago';
 import moment from 'moment';
-import BottomSheet from './BottomSheet';
+import RNBottomSheet from './RNBottomSheet';
+import {Overlay} from '@rneui/themed';
 
 type Props = {
   post: Post;
@@ -33,6 +34,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
   const [showMore, setShowMore] = useState(false);
   const [showWholeContent, setShowWholeContent] = useState(false);
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const [showDeleteBox, setShowDeleteBox] = useState<boolean>(false);
   const scheme = useColorScheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [pauseVideo, setPauseVideo] = useState(false);
@@ -352,7 +354,38 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         </TouchableOpacity>
       </View>
 
-      <BottomSheet
+      <Overlay
+        overlayStyle={{
+          backgroundColor: scheme === 'dark' ? '#262626' : '#ebedef',
+          paddingHorizontal: 30,
+          paddingVertical: 20,
+          width: 300,
+          borderRadius: 10,
+        }}
+        onBackdropPress={() => setShowDeleteBox(false)}
+        isVisible={showDeleteBox}
+        animationType="fade">
+        <Text className="text-gray-500 dark:text-gray-400 font-semibold text-lg mb-4">
+          Post will be permanently deleted.
+        </Text>
+        <Text className="text-gray-500 text-base dark:text-gray-400 mb-4">
+          Are you sure you want to delete it?
+        </Text>
+        <View className="flex flex-row justify-evenly space-x-4 items-center">
+          <TouchableOpacity
+            className="bg-[#FF5959] w-24 items-center rounded-lg px-3 py-2"
+            onPress={handleDeletePost}>
+            <Text className="text-white">Delete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="border border-[#FF5959] w-24 items-center rounded-lg px-3 py-2"
+            onPress={() => setShowDeleteBox(false)}>
+            <Text className="text-[#FF5959]">Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </Overlay>
+
+      <RNBottomSheet
         isVisible={isModalVisible}
         onSwipeComplete={() => setModalVisible(false)}
         onBackdropPress={() => setModalVisible(false)}
@@ -362,7 +395,10 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
           {post.user._id === user.uid && (
             <TouchableOpacity
               className="flex flex-row items-center mr-auto space-x-2 px-4 py-2"
-              onPress={handleDeletePost}>
+              onPress={() => {
+                setModalVisible(false);
+                setShowDeleteBox(true);
+              }}>
               <Image
                 className="h-6 w-6 mt-1"
                 style={{tintColor: '#FF5959'}}
@@ -372,7 +408,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
             </TouchableOpacity>
           )}
         </View>
-      </BottomSheet>
+      </RNBottomSheet>
     </View>
   );
 };
