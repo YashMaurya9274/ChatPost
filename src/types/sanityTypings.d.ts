@@ -33,3 +33,9 @@ interface StoreComment extends Base {
   _key: string;
   _type: Reference;
 }
+
+interface FriendRequest {
+  _id: string;
+  displayName: string;
+  photoURL: string;
+}
