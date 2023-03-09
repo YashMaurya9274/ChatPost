@@ -6,7 +6,6 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import {Message} from '../types/typings';
-import {MenuProvider} from 'react-native-popup-menu';
 import ChatsScreen from '../screens/ChatsScreen';
 import MessageScreen from '../screens/MessageScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -17,6 +16,7 @@ import TabNavigator from './TabNavigator';
 import UserProfileScreen from '../screens/UserProfileScreen';
 import storeUser from '../lib/storeUser';
 import CommentsScreen from '../screens/CommentsScreen';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -57,7 +57,7 @@ export default function Navigator() {
   }, []);
 
   return (
-    <MenuProvider>
+    <SafeAreaProvider>
       <NavigationContainer>
         <RootStack.Navigator screenOptions={globalScreenOptions}>
           {!user ? (
@@ -84,6 +84,6 @@ export default function Navigator() {
           )}
         </RootStack.Navigator>
       </NavigationContainer>
-    </MenuProvider>
+    </SafeAreaProvider>
   );
 }
