@@ -12,10 +12,7 @@ import removeFriendRequest from '../lib/removeFriendRequest';
 import {client} from '../lib/client';
 import getAllUsers from '../lib/getAllUsers';
 import SearchUserResultComponent from '../components/SearchUserResultComponent';
-import {
-  selectFriendRequests,
-  setFriendRequests,
-} from '../slices/friendRequestsSlice';
+import {selectFriendRequests} from '../slices/friendRequestsSlice';
 import {manageRequests} from '../lib/manageRequests';
 
 export type FriendRequestScreenNavigationProp = NativeStackNavigationProp<

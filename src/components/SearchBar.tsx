@@ -18,7 +18,7 @@ const SearchBar = ({value, onChangeText, onCancelPress}: Props) => {
   const scheme = useColorScheme();
 
   return (
-    <View className="flex flex-row w-[95%] mx-auto items-center bg-gray-200/70 dark:bg-[#282828] px-3 py-1 rounded-full">
+    <View className="flex flex-row w-[95%] mx-auto items-center bg-gray-200/70 dark:bg-[#282828] px-3 py-1 rounded-full mt-5">
       <Image
         source={ImageLinks.searchIcon}
         className="h-5 w-5"
