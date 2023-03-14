@@ -8,14 +8,19 @@ import {
   View,
   TouchableOpacity,
   useColorScheme,
+  StyleSheet,
 } from 'react-native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import ImageLinks from '../assets/images';
 import {client} from '../lib/client';
 import getFriendsRequests from '../lib/getFriendRequests';
 import CreatePostScreen from '../screens/CreatePostScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileOptionsScreen from '../screens/ProfileOptionsScreen';
+import {
+  selectFriendRequests,
+  setFriendRequests,
+} from '../slices/friendRequestsSlice';
 import {selectUser} from '../slices/userSlice';
 import {RootStackParamList} from './RootNavigator';
 
@@ -29,7 +34,8 @@ const Tab = createMaterialTopTabNavigator<TabStackParamList>();
 
 export type TabNavigatorNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  'Chats'
+  'Chats',
+  'FriendRequest'
 >;
 
 const TabNavigator = () => {
@@ -37,14 +43,13 @@ const TabNavigator = () => {
   const noOfMessages = 99;
   const user = useSelector(selectUser);
   const scheme = useColorScheme();
-  const [noOfFriendRequests, setNoOfFriendRequest] = useState<
-    FriendRequest[] | null
-  >(null);
+  const dispatch = useDispatch();
+  const friendRequests = useSelector(selectFriendRequests);
   const isFocused = useIsFocused();
 
   const fetchFriendRequests = async () => {
     const res = await getFriendsRequests(client, user.uid);
-    setNoOfFriendRequest(res);
+    dispatch(setFriendRequests(res));
   };
 
   useEffect(() => {
@@ -63,34 +68,15 @@ const TabNavigator = () => {
         <View style={{display: 'flex', flexDirection: 'row'}}>
           <TouchableOpacity
             activeOpacity={0.5}
-            // onPress={() => navigation.navigate('Chats')}
-            // onPress={signOutWithGoogle}
+            onPress={() => navigation.navigate('FriendRequest')}
             style={{
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
               marginRight: 10,
             }}>
-            {noOfFriendRequests?.length! > 0 && noOfFriendRequests !== null && (
-              <Text
-                style={{
-                  padding: 3,
-                  textAlign: 'center',
-                  borderRadius: 100,
-                  position: 'absolute',
-                  backgroundColor: '#9e6969',
-                  fontSize: 10,
-                  color: 'white',
-                  zIndex: 10,
-                  height: 20,
-                  minWidth: 20,
-                  width: 'auto',
-                  right: 0,
-                  bottom: 15,
-                  fontWeight: '500',
-                }}>
-                {noOfFriendRequests?.length}
-              </Text>
+            {friendRequests?.length! > 0 && friendRequests !== null && (
+              <Text style={styles.iconTextStyle}>{friendRequests?.length}</Text>
             )}
             <Image
               style={{
@@ -106,50 +92,28 @@ const TabNavigator = () => {
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => navigation.navigate('Chats')}
-            // onPress={signOutWithGoogle}
             style={{
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
               marginRight: -5,
             }}>
-            <Text
-              style={{
-                padding: 3,
-                textAlign: 'center',
-                borderRadius: 100,
-                position: 'absolute',
-                backgroundColor: '#9e6969',
-                fontSize: 10,
-                color: 'white',
-                height: 20,
-                minWidth: 20,
-                width: 'auto',
-                zIndex: 10,
-                right: 0,
-                bottom: 15,
-                fontWeight: '500',
-              }}>
-              {noOfMessages}
-            </Text>
+            <Text style={styles.iconTextStyle}>{noOfMessages}</Text>
             <Image
               style={{
                 height: 28,
                 width: 28,
                 position: 'relative',
                 marginRight: 5,
+                tintColor: scheme === 'dark' ? '#bb9090' : '#9e6969',
               }}
-              source={
-                scheme === 'dark'
-                  ? ImageLinks.messages.messagesOutlineDarkMode
-                  : ImageLinks.messages.messagesOutlineLightMode
-              }
+              source={ImageLinks.messages.messagesOutlineLightMode}
             />
           </TouchableOpacity>
         </View>
       ),
     });
-  }, [navigation, scheme, noOfFriendRequests]);
+  }, [navigation, scheme, friendRequests]);
 
   return (
     <Tab.Navigator
@@ -179,3 +143,22 @@ const TabNavigator = () => {
 };
 
 export default TabNavigator;
+
+const styles = StyleSheet.create({
+  iconTextStyle: {
+    padding: 3,
+    textAlign: 'center',
+    borderRadius: 100,
+    position: 'absolute',
+    backgroundColor: '#9e6969',
+    fontSize: 10,
+    color: 'white',
+    zIndex: 10,
+    height: 20,
+    minWidth: 20,
+    width: 'auto',
+    right: 0,
+    bottom: 15,
+    fontWeight: '500',
+  },
+});

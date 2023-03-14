@@ -19,7 +19,7 @@ import {RootStackParamList} from '../navigator/RootNavigator';
 import {Friend, Post} from '../types/typings';
 import PostComponent from '../components/PostComponent';
 import FriendComponent from '../components/FriendComponent';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
 import useFetchUserDataListener from '../hooks/useFetchUserDataListener';
 import {client} from '../lib/client';
@@ -32,6 +32,8 @@ import {FRIEND_REQUEST_STATUS} from '../enums';
 import acceptFriendRequest from '../lib/acceptFriendRequest';
 import getFriendsStatus from '../lib/getFriendsStatus';
 import unfriendFriend from '../lib/unfriendFriend';
+import {selectFriendRequests} from '../slices/friendRequestsSlice';
+import {manageRequests} from '../lib/manageRequests';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -94,7 +96,7 @@ const friends: Friend[] = [
 const UserProfileScreen = () => {
   const navigation = useNavigation<UserScreenNavigationProp>();
   const {
-    params: {userId},
+    params: {userId, fromFriendRequestsScreen},
   } = useRoute<UserScreenRouteProp>();
   const {userData} = useFetchUserDataListener(client, userId);
   const user = useSelector(selectUser);
@@ -102,6 +104,8 @@ const UserProfileScreen = () => {
   const yourAccount = userId === user.uid;
   const friendRequestRef = useRef<FRIEND_REQUEST_STATUS | null>(null);
   const isFocused = useIsFocused();
+  const friendRequests = useSelector(selectFriendRequests);
+  const dispatch = useDispatch();
 
   const fetchFriendRequestStatus = async () => {
     const friendsStatus = await getFriendsStatus(client, user.uid, userId);
@@ -192,6 +196,10 @@ const UserProfileScreen = () => {
     } else if (reqMessage === FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT) {
       await removeFriendRequest(client, user.uid, userData?._id!);
     } else if (reqMessage === FRIEND_REQUEST_STATUS.ACCEPT_REQUEST) {
+      if (fromFriendRequestsScreen) {
+        manageRequests(userId, friendRequests, dispatch);
+      }
+
       await acceptFriendRequest(
         client,
         userData?._id!,

@@ -17,17 +17,22 @@ import UserProfileScreen from '../screens/UserProfileScreen';
 import storeUser from '../lib/storeUser';
 import CommentsScreen from '../screens/CommentsScreen';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import FriendRequestScreen from '../screens/FriendRequestScreen';
 
 export type RootStackParamList = {
   Main: undefined;
   Login: undefined;
   Chats: undefined;
   Messages: {messages: Message[]};
-  UserProfile: {userId: string};
+  UserProfile: {
+    userId: string;
+    fromFriendRequestsScreen?: boolean;
+  };
   Comments: {
     postId: string;
     postComments: StoreComment[];
   };
+  FriendRequest: undefined;
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -79,6 +84,10 @@ export default function Navigator() {
                 }}
                 name="Comments"
                 component={CommentsScreen}
+              />
+              <RootStack.Screen
+                name="FriendRequest"
+                component={FriendRequestScreen}
               />
             </>
           )}
