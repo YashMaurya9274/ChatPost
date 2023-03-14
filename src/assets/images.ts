@@ -27,6 +27,10 @@ const ImageLinks = {
   addImage: require('./images/addImage.png'),
   dotsVertical: require('./images/dotsVertical.png'),
   addFriend: require('./images/addFriend.png'),
+  searchIcon: require('./images/search.png'),
+  chevron: {
+    chevronRight: require('./images/chevronRight.png'),
+  },
 };
 
 export default ImageLinks;
