@@ -14,6 +14,7 @@ import {MaterialTopTabNavigationProp} from '@react-navigation/material-top-tabs'
 import {TabStackParamList} from '../navigator/TabNavigator';
 import {client} from '../lib/client';
 import useFetchPostListener from '../hooks/useFetchPostListener';
+import {COLOR_CODE} from '../enums';
 
 export type HomeScreenNavigationProp = CompositeNavigationProp<
   MaterialTopTabNavigationProp<TabStackParamList, 'Home'>,
@@ -38,17 +39,20 @@ const HomeScreen = () => {
   if (posts?.length === 0)
     return (
       <ActivityIndicator
-        className="min-h-full bg-white relative dark:bg-[#151515]"
+        className={`min-h-full bg-white relative dark:bg-[${COLOR_CODE.BLACK_BACKGROUND}]`}
         size="large"
-        color="#9e6969"
+        color={COLOR_CODE.BROWN_3}
       />
     );
 
   return (
-    <View className="bg-white min-h-full dark:bg-[#151515]">
+    <View
+      className={`bg-white min-h-full dark:bg-[${COLOR_CODE.BLACK_BACKGROUND}]`}>
       <StatusBar
         barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
-        backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
+        backgroundColor={
+          scheme === 'dark' ? `${COLOR_CODE.BLACK_BACKGROUND}` : 'white'
+        }
       />
       {/* <ScrollView bounces contentContainerStyle={{paddingBottom: 15}}>
         {posts.map((post: Post) => (

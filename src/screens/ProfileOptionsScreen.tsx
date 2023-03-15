@@ -14,6 +14,7 @@ import {RootStackParamList} from '../navigator/RootNavigator';
 import ImageLinks from '../assets/images';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import {COLOR_CODE} from '../enums';
 
 export type ProfileOptionsScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -38,7 +39,8 @@ const ProfileOptionsScreen = () => {
   };
 
   return (
-    <View className="bg-white min-h-full dark:bg-[#151515]">
+    <View
+      className={`bg-white min-h-full dark:bg-[${COLOR_CODE.BLACK_BACKGROUND}]`}>
       <TouchableOpacity
         onPress={getUserData}
         activeOpacity={0.4}
@@ -70,7 +72,8 @@ const ProfileOptionsScreen = () => {
           }
           style={{height: 16, width: 16}}
         />
-        <Text className="text-base text-gray-500 font-bold dark:text-[#bebebe]">
+        <Text
+          className={`text-base text-gray-500 font-bold dark:text-[${COLOR_CODE.GREY_11}]`}>
           Log Out
         </Text>
       </TouchableOpacity>

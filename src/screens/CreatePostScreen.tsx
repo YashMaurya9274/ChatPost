@@ -23,6 +23,7 @@ import {client} from '../lib/client';
 import storePost from '../lib/storePost';
 import {SanityImageAssetDocument} from '@sanity/client';
 import ImagePicker, {ImageOrVideo} from 'react-native-image-crop-picker';
+import {COLOR_CODE} from '../enums';
 
 const CreatePostScreen = () => {
   const scheme = useColorScheme();
@@ -59,10 +60,12 @@ const CreatePostScreen = () => {
       width: 709,
       height: 709,
       cropping: true,
-      cropperStatusBarColor: scheme === 'dark' ? '#151515' : 'white',
-      cropperToolbarColor: scheme === 'dark' ? '#151515' : 'white',
-      cropperToolbarWidgetColor: '#bb9090',
-      cropperActiveWidgetColor: '#bb9090',
+      cropperStatusBarColor:
+        scheme === 'dark' ? COLOR_CODE.BLACK_BACKGROUND : 'white',
+      cropperToolbarColor:
+        scheme === 'dark' ? COLOR_CODE.BLACK_BACKGROUND : 'white',
+      cropperToolbarWidgetColor: COLOR_CODE.BROWN_1,
+      cropperActiveWidgetColor: COLOR_CODE.BROWN_1,
     }).then(image => {
       setMedia(image);
     });
@@ -153,9 +156,11 @@ const CreatePostScreen = () => {
   };
 
   return (
-    <View className="bg-white min-h-full dark:bg-[#151515]">
+    <View
+      className={`bg-white min-h-full dark:bg-[${COLOR_CODE.BLACK_BACKGROUND}]`}>
       <ScrollView contentContainerStyle={{paddingBottom: 15}}>
-        <View className="rounded-lg shadow-slate-900 shadow-2xl bg-[#E9E9E9] mx-4 mt-4 dark:bg-[#262626]">
+        <View
+          className={`rounded-lg shadow-slate-900 shadow-2xl bg-[${COLOR_CODE.GREY_4}] mx-4 mt-4 dark:bg-[${COLOR_CODE.GREY_5}]`}>
           {/* UPPER PART */}
           <View className="flex flex-row items-center space-x-3 px-3 mt-3">
             <TouchableOpacity activeOpacity={0.5}>
@@ -178,7 +183,7 @@ const CreatePostScreen = () => {
             <TextInput
               value={title}
               onChangeText={text => setTitle(text)}
-              className="flex-1 text-lg font-bold placeholder:text-[16px] bg-gray-300 text-gray-600 max-h-20 rounded-lg p-2 dark:bg-[#444444] dark:text-gray-300"
+              className={`flex-1 text-lg font-bold placeholder:text-[16px] bg-gray-300 text-gray-600 max-h-20 rounded-lg p-2 dark:bg-[${COLOR_CODE.GREY_6}] dark:text-gray-300`}
               placeholder="Enter Title Here...."
               placeholderTextColor="gray"
               maxLength={100}
@@ -186,7 +191,7 @@ const CreatePostScreen = () => {
             <TextInput
               value={subTitle}
               onChangeText={text => setSubTitle(text)}
-              className="flex-1 text-sm  bg-gray-300 text-gray-500 max-h-48 rounded-lg p-2 dark:bg-[#444444] dark:text-gray-400"
+              className={`flex-1 text-sm  bg-gray-300 text-gray-500 max-h-48 rounded-lg p-2 dark:bg-[${COLOR_CODE.GREY_6}] dark:text-gray-400`}
               placeholder="Enter Description here...."
               placeholderTextColor="gray"
               multiline
@@ -202,7 +207,7 @@ const CreatePostScreen = () => {
               <TouchableOpacity
                 onPress={uploadMedia}
                 activeOpacity={0.3}
-                className="bg-[#353535]/80 p-2 rounded-lg w-auto absolute z-10 right-5 top-5">
+                className={`bg-[${COLOR_CODE.GREY_7}]/80 p-2 rounded-lg w-auto absolute z-10 right-5 top-5`}>
                 <Image
                   className="relative"
                   style={{height: 20, width: 20}}
@@ -280,20 +285,25 @@ const CreatePostScreen = () => {
               disabled={!title}
               activeOpacity={0.5}
               onPress={uploadMedia}
-              className="flex flex-row items-center justify-center bg-gray-300 mr-auto ml-3 mb-5 px-5 py-2 rounded-lg space-x-2 dark:bg-[#444444]">
+              className={`flex flex-row items-center justify-center bg-gray-300 mr-auto ml-3 mb-5 px-5 py-2 rounded-lg space-x-2 dark:bg-[${COLOR_CODE.GREY_6}]`}>
               <Image
                 source={ImageLinks.addImage}
-                style={{tintColor: scheme === 'light' ? '#444444' : '#E6E6E6'}}
+                style={{
+                  tintColor:
+                    scheme === 'light' ? COLOR_CODE.GREY_6 : COLOR_CODE.GREY_8,
+                }}
                 className="h-6 w-6"
               />
-              <Text className="text-[#444444] dark:text-white text-base">
+              <Text
+                className={`text-[${COLOR_CODE.GREY_6}] dark:text-white text-base`}>
                 Upload Image
               </Text>
             </TouchableOpacity>
           )}
 
           {/* BOTTOM PART */}
-          <View className="flex flex-row justify-evenly items-center border-t border-gray-300 dark:border-[#383838]">
+          <View
+            className={`flex flex-row justify-evenly items-center border-t border-gray-300 dark:border-[${COLOR_CODE.GREY_9}]`}>
             {/* LIKE */}
             <View className="flex flex-row items-center space-x-2 py-[10px]">
               <Image
@@ -310,7 +320,9 @@ const CreatePostScreen = () => {
             </View>
 
             {/* SEPARATOR */}
-            <View className="w-[1px] h-full bg-gray-300 dark:bg-[#383838]" />
+            <View
+              className={`w-[1px] h-full bg-gray-300 dark:bg-[${COLOR_CODE.GREY_9}]`}
+            />
 
             {/* COMMENT */}
             <View className="flex flex-row items-center space-x-2 py-[10px]">
@@ -325,7 +337,9 @@ const CreatePostScreen = () => {
           disabled={!title || disablePostButton}
           onPress={handlePost}
           activeOpacity={0.2}
-          className={`bg-[#9e6969] dark:bg-[#694242] p-2 w-[70%] rounded-md mx-auto mt-5 ${
+          className={`bg-[${COLOR_CODE.BROWN_3}] dark:bg-[${
+            COLOR_CODE.BROWN_4
+          }] p-2 w-[70%] rounded-md mx-auto mt-5 ${
             disablePostButton && 'bg-gray-400 dark:bg-gray-500'
           }`}>
           <Text className="text-center font-bold text-white">POST</Text>

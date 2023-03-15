@@ -1,7 +1,7 @@
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {useLayoutEffect, useEffect, useState} from 'react';
+import React, {useLayoutEffect, useEffect} from 'react';
 import {
   Image,
   Text,
@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import ImageLinks from '../assets/images';
+import {COLOR_CODE} from '../enums';
 import {client} from '../lib/client';
 import getFriendsRequests from '../lib/getFriendRequests';
 import CreatePostScreen from '../screens/CreatePostScreen';
@@ -62,7 +63,7 @@ const TabNavigator = () => {
       headerTitleStyle: {
         fontWeight: 'bold',
         fontSize: 23,
-        color: scheme === 'dark' ? '#bb9090' : '#9e6969',
+        color: scheme === 'dark' ? COLOR_CODE.BROWN_1 : COLOR_CODE.BROWN_3,
       },
       headerRight: () => (
         <View style={{display: 'flex', flexDirection: 'row'}}>
@@ -84,7 +85,8 @@ const TabNavigator = () => {
                 width: 28,
                 position: 'relative',
                 marginRight: 5,
-                tintColor: scheme === 'dark' ? '#bb9090' : '#9e6969',
+                tintColor:
+                  scheme === 'dark' ? COLOR_CODE.BROWN_1 : COLOR_CODE.BROWN_3,
               }}
               source={ImageLinks.addFriend}
             />
@@ -105,7 +107,8 @@ const TabNavigator = () => {
                 width: 28,
                 position: 'relative',
                 marginRight: 5,
-                tintColor: scheme === 'dark' ? '#bb9090' : '#9e6969',
+                tintColor:
+                  scheme === 'dark' ? COLOR_CODE.BROWN_1 : COLOR_CODE.BROWN_3,
               }}
               source={ImageLinks.messages.messagesOutlineLightMode}
             />
@@ -122,10 +125,13 @@ const TabNavigator = () => {
           backgroundColor: scheme === 'dark' ? '#151515' : 'white',
         },
         tabBarIndicatorStyle: {
-          backgroundColor: scheme === 'dark' ? '#bb9090' : '#9e6969',
+          backgroundColor:
+            scheme === 'dark' ? COLOR_CODE.BROWN_1 : COLOR_CODE.BROWN_3,
         },
-        tabBarActiveTintColor: scheme === 'dark' ? '#bb9090' : '#9e6969',
-        tabBarInactiveTintColor: scheme === 'dark' ? '#9e6969' : '#bb9090',
+        tabBarActiveTintColor:
+          scheme === 'dark' ? COLOR_CODE.BROWN_1 : COLOR_CODE.BROWN_3,
+        tabBarInactiveTintColor:
+          scheme === 'dark' ? COLOR_CODE.BROWN_3 : COLOR_CODE.BROWN_1,
         tabBarLabelStyle: {fontSize: 14, fontWeight: '600'},
         // tabBarIcon: ({focused, color}) => {
         //   if (route.name === 'Home') {
@@ -150,7 +156,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderRadius: 100,
     position: 'absolute',
-    backgroundColor: '#9e6969',
+    backgroundColor: COLOR_CODE.BROWN_3,
     fontSize: 10,
     color: 'white',
     zIndex: 10,

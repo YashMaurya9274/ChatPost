@@ -14,6 +14,7 @@ import getAllUsers from '../lib/getAllUsers';
 import SearchUserResultComponent from '../components/SearchUserResultComponent';
 import {selectFriendRequests} from '../slices/friendRequestsSlice';
 import {manageRequests} from '../lib/manageRequests';
+import {COLOR_CODE} from '../enums';
 
 export type FriendRequestScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -137,10 +138,13 @@ const FriendRequestScreen = () => {
   );
 
   return (
-    <View className="bg-white min-h-full dark:bg-[#151515]">
+    <View
+      className={`bg-white min-h-full dark:bg-[${COLOR_CODE.BLACK_BACKGROUND}]`}>
       <StatusBar
         barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
-        backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
+        backgroundColor={
+          scheme === 'dark' ? COLOR_CODE.BLACK_BACKGROUND : 'white'
+        }
       />
 
       <SearchBar
@@ -153,7 +157,9 @@ const FriendRequestScreen = () => {
         {searchText ? 'Search Results' : 'Requests'}
       </Text>
 
-      <View className="bg-gray-200 dark:bg-[#323232] mx-auto w-[95%] h-[1px] mb-3" />
+      <View
+        className={`bg-gray-200 dark:bg-[${COLOR_CODE.GREY_10}] mx-auto w-[95%] h-[1px] mb-3`}
+      />
 
       {searchText ? (
         <FlatList

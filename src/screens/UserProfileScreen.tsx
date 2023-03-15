@@ -28,7 +28,7 @@ import sendFriendRequest from '../lib/sendFriendRequest';
 import removeFriendRequest from '../lib/removeFriendRequest';
 import getFriendRequestSentStatus from '../lib/getFriendRequestSentStatus';
 import getFriendRequestReceivingStatus from '../lib/getFriendRequestReceivingStatus';
-import {FRIEND_REQUEST_STATUS} from '../enums';
+import {COLOR_CODE, FRIEND_REQUEST_STATUS} from '../enums';
 import acceptFriendRequest from '../lib/acceptFriendRequest';
 import getFriendsStatus from '../lib/getFriendsStatus';
 import unfriendFriend from '../lib/unfriendFriend';
@@ -215,23 +215,26 @@ const UserProfileScreen = () => {
   if (!userData || friendRequestRef.current === null)
     return (
       <ActivityIndicator
-        className="h-screen bg-white relative dark:bg-[#151515]"
+        className={`h-screen bg-white relative dark:bg-[${COLOR_CODE.BLACK_BACKGROUND}]`}
         size="large"
-        color="#9e6969"
+        color={COLOR_CODE.BROWN_3}
       />
     );
 
   return (
     <ScrollView
       contentContainerStyle={{paddingBottom: 15}}
-      className="bg-white relative dark:bg-[#151515]">
-      <StatusBar barStyle="light-content" backgroundColor="#4c3737" />
+      className={`bg-white relative dark:bg-[${COLOR_CODE.BLACK_BACKGROUND}]`}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={COLOR_CODE.BROWN_5}
+      />
       <Image
         className="h-20 w-20 absolute z-10 top-5 rounded-full ml-3"
         source={{uri: userData?.photoURL}}
       />
 
-      <View className="h-16 bg-[#4c3737]">
+      <View className={`h-16 bg-[${COLOR_CODE.BROWN_5}]`}>
         <Text className="mt-auto ml-[100px] text-white mb-1 font-bold text-lg">
           {userData?.displayName}
         </Text>
@@ -246,22 +249,22 @@ const UserProfileScreen = () => {
           : ' Posts'}
       </Text>
 
-      {/* TODO: Check if it's your profile and show buttons accordingly */}
       <View className="flex justify-evenly flex-row mt-8 w-full">
         {yourAccount ? (
           <>
             <TouchableOpacity
               activeOpacity={0.2}
               onPress={() => setShowFriends(true)}
-              className="bg-[#694242] border p-2 w-[40%] rounded-md">
+              className={`bg-[${COLOR_CODE.BROWN_4}] border p-2 w-[40%] rounded-md`}>
               <Text className="text-center font-bold text-white">
                 See Your Friends
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.2}
-              className="border border-[#694242] p-2 w-[40%] rounded-md dark:border-[#9e6969]">
-              <Text className="text-center text-[#694242] font-bold dark:text-[#9e6969]">
+              className={`border border-[${COLOR_CODE.BROWN_4}] p-2 w-[40%] rounded-md dark:border-[${COLOR_CODE.BROWN_3}]`}>
+              <Text
+                className={`text-center text-[${COLOR_CODE.BROWN_4}] font-bold dark:text-[${COLOR_CODE.BROWN_3}]`}>
                 See Your Groups
               </Text>
             </TouchableOpacity>
@@ -271,7 +274,7 @@ const UserProfileScreen = () => {
             <TouchableOpacity
               activeOpacity={0.2}
               onPress={handleAddFriendClick}
-              className="bg-[#694242] border p-2 w-[40%] rounded-md">
+              className={`bg-[${COLOR_CODE.BROWN_4}] border p-2 w-[40%] rounded-md`}>
               <Text className="text-center font-bold text-white">
                 {friendRequestRef.current}
               </Text>
@@ -279,8 +282,9 @@ const UserProfileScreen = () => {
             {friendRequestRef.current === FRIEND_REQUEST_STATUS.UNFRIEND && (
               <TouchableOpacity
                 activeOpacity={0.2}
-                className="border border-[#694242] p-2 w-[40%] rounded-md dark:border-[#9e6969]">
-                <Text className="text-center text-[#694242] font-bold dark:text-[#9e6969]">
+                className={`border border-[${COLOR_CODE.BROWN_4}] p-2 w-[40%] rounded-md dark:border-[${COLOR_CODE.BROWN_3}]`}>
+                <Text
+                  className={`text-center text-[${COLOR_CODE.BROWN_4}] font-bold dark:text-[${COLOR_CODE.BROWN_3}]`}>
                   Add To Group
                 </Text>
               </TouchableOpacity>

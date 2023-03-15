@@ -12,6 +12,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import {COLOR_CODE} from '../enums';
 
 export type LoginScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -50,22 +51,25 @@ const LoginScreen = () => {
   return (
     <View
       className={`flex-1 ${
-        scheme === 'dark' ? 'bg-[#151515]' : 'bg-white'
+        scheme === 'dark' ? `bg-[${COLOR_CODE.BLACK_BACKGROUND}]` : 'bg-white'
       } items-center justify-center space-y-5`}>
       <StatusBar
         barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
-        backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
+        backgroundColor={
+          scheme === 'dark' ? `${COLOR_CODE.BLACK_BACKGROUND}` : 'white'
+        }
       />
-      <Text className="text-[#9e6969] text-3xl font-semibold dark:text-[#ac6969]">
+      <Text
+        className={`text-[${COLOR_CODE.BROWN_3}] text-3xl font-semibold dark:text-[${COLOR_CODE.BROWN_2}]`}>
         Welcome to ChatPost
       </Text>
       <TouchableOpacity
         disabled={disableLoginButton}
         onPress={signInWithGoogle}
-        className="bg-[#9e6969] p-3 w-1/2 rounded-lg"
+        className={`bg-[${COLOR_CODE.BROWN_3}] p-3 w-1/2 rounded-lg`}
         activeOpacity={0.3}>
         {disableLoginButton ? (
-          <ActivityIndicator size={28} color="#ececec" />
+          <ActivityIndicator size={28} color={COLOR_CODE.GREY_1} />
         ) : (
           <Text className="text-xl text-white text-center">
             Login With Google
