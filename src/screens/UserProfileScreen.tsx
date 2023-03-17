@@ -21,7 +21,7 @@ import PostComponent from '../components/PostComponent';
 import FriendComponent from '../components/FriendComponent';
 import {useDispatch, useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
-import useFetchUserDataListener from '../hooks/useFetchUserDataListener';
+// import useFetchUserDataListener from '../hooks/useFetchUserDataListener';
 import {client} from '../lib/client';
 import RNBottomSheet from '../components/RNBottomSheet';
 import sendFriendRequest from '../lib/sendFriendRequest';
@@ -36,7 +36,7 @@ import {selectFriendRequests} from '../slices/friendRequestsSlice';
 import {manageRequests} from '../lib/manageRequests';
 import getFriends from '../lib/getFriends';
 import getTenUsers from '../lib/getTenUsers';
-// import getUserData from '../lib/getUserData';
+import getUserData from '../lib/getUserData';
 import ImageLinks from '../assets/images';
 import RandomUserComponent from '../components/RandomUserComponent';
 
@@ -52,35 +52,37 @@ const UserProfileScreen = () => {
   const {
     params: {userId, fromFriendRequestsScreen},
   } = useRoute<UserScreenRouteProp>();
-  const {userData} = useFetchUserDataListener(client, userId);
-  // const [userData, setUserData] = useState<UserData>();
+  // const {userData} = useFetchUserDataListener(client, userId);
+  const [userData, setUserData] = useState<UserData>();
   const user = useSelector(selectUser);
   const [showFriends, setShowFriends] = useState(false);
   const yourAccount = userId === user.uid;
-  const friendRequestRef = useRef<FRIEND_REQUEST_STATUS | null>(null);
+  // const friendRequestRef = useRef<FRIEND_REQUEST_STATUS | null>(null);
   const isFocused = useIsFocused();
   const friendRequests = useSelector(selectFriendRequests);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [randomUsers, setRandomUsers] = useState<Friend[]>([]);
+  const [friendRequestStatus, setFriendRequestStatus] =
+    useState<FRIEND_REQUEST_STATUS | null>(null);
   const dispatch = useDispatch();
 
-  // const fetchUserData = async () => {
-  //   const result = await getUserData(client, userId);
-  //   setUserData(result);
-  // };
+  const fetchUserData = async () => {
+    const result = await getUserData(client, userId);
+    setUserData(result);
+  };
 
   useEffect(() => {
     if (yourAccount) fetchFriends();
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     if (yourAccount && friends.length === 0) fetchRandomUsers();
   }, [friends]);
 
   useEffect(() => {
-    if (isFocused && !yourAccount) {
-      if (userId) {
-        // fetchUserData();
+    if (isFocused) {
+      fetchUserData();
+      if (userId && !yourAccount) {
         fetchFriendRequestStatus();
       }
     }
@@ -94,7 +96,7 @@ const UserProfileScreen = () => {
   const fetchFriendRequestStatus = async () => {
     const friendsStatus = await getFriendsStatus(client, user.uid, userId);
     if (friendsStatus) {
-      friendRequestRef.current = friendsStatus;
+      setFriendRequestStatus(friendsStatus);
     } else {
       const friendRequestReceivedStatus = await getFriendRequestReceivingStatus(
         client,
@@ -102,14 +104,14 @@ const UserProfileScreen = () => {
         userId,
       );
       if (friendRequestReceivedStatus) {
-        friendRequestRef.current = friendRequestReceivedStatus;
+        setFriendRequestStatus(friendRequestReceivedStatus);
       } else {
         const friendRequestSentStatus = await getFriendRequestSentStatus(
           client,
           user.uid,
           userId,
         );
-        friendRequestRef.current = friendRequestSentStatus;
+        setFriendRequestStatus(friendRequestSentStatus);
       }
     }
   };
@@ -127,18 +129,18 @@ const UserProfileScreen = () => {
   }, []);
 
   const getFriendRequestMessage = () => {
-    switch (friendRequestRef.current) {
+    switch (friendRequestStatus) {
       case FRIEND_REQUEST_STATUS.ADD_FRIEND:
-        friendRequestRef.current = FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT;
+        setFriendRequestStatus(FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT);
         break;
       case FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT:
-        friendRequestRef.current = FRIEND_REQUEST_STATUS.ADD_FRIEND;
+        setFriendRequestStatus(FRIEND_REQUEST_STATUS.ADD_FRIEND);
         break;
       case FRIEND_REQUEST_STATUS.ACCEPT_REQUEST:
-        friendRequestRef.current = FRIEND_REQUEST_STATUS.UNFRIEND;
+        setFriendRequestStatus(FRIEND_REQUEST_STATUS.UNFRIEND);
         break;
       case FRIEND_REQUEST_STATUS.UNFRIEND:
-        friendRequestRef.current = FRIEND_REQUEST_STATUS.ADD_FRIEND;
+        setFriendRequestStatus(FRIEND_REQUEST_STATUS.ADD_FRIEND);
         break;
       default:
         break;
@@ -147,13 +149,13 @@ const UserProfileScreen = () => {
 
   const navigateToUserProfile = (userId: string) => {
     setShowFriends(false);
-    navigation.replace('UserProfile', {
+    navigation.push('UserProfile', {
       userId,
     });
   };
 
   const handleAddFriendClick = async () => {
-    const reqMessage = friendRequestRef.current;
+    const reqMessage = friendRequestStatus;
 
     getFriendRequestMessage();
 
@@ -202,7 +204,7 @@ const UserProfileScreen = () => {
 
   const navigateToFriendRequest = () => {
     setShowFriends(false);
-    navigation.replace('FriendRequest');
+    navigation.push('FriendRequest');
   };
 
   const renderEmptyFriendsListComponent = () => {
@@ -242,7 +244,7 @@ const UserProfileScreen = () => {
     );
   };
 
-  if (!userData || (!yourAccount && friendRequestRef.current === null))
+  if (!userData || (!yourAccount && friendRequestStatus === null))
     return (
       <ActivityIndicator
         className="h-screen bg-white relative dark:bg-[#151515]"
@@ -304,10 +306,10 @@ const UserProfileScreen = () => {
               onPress={handleAddFriendClick}
               className="bg-[#694242] border p-2 w-[40%] rounded-md">
               <Text className="text-center font-bold text-white">
-                {friendRequestRef.current}
+                {friendRequestStatus}
               </Text>
             </TouchableOpacity>
-            {friendRequestRef.current === FRIEND_REQUEST_STATUS.UNFRIEND && (
+            {friendRequestStatus === FRIEND_REQUEST_STATUS.UNFRIEND && (
               <TouchableOpacity
                 activeOpacity={0.2}
                 className="border border-[#694242] p-2 w-[40%] rounded-md dark:border-[#9e6969]">

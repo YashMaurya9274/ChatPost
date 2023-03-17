@@ -65,7 +65,7 @@ const FriendRequestScreen = () => {
   }, []);
 
   const navigateToUserProfile = (userId: string) => {
-    navigation.navigate('UserProfile', {
+    navigation.push('UserProfile', {
       userId,
       fromFriendRequestsScreen: true,
     });

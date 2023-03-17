@@ -62,7 +62,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
       setTotalLikes(post.likes?.length!);
       setTotalComments(post.postComments?.length!);
     }
-  }, [isFocused]);
+  }, [isFocused, fromUserProfileScreen && post]);
 
   const checkUserLiked = () => {
     let result = false;
