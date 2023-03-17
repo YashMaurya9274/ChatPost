@@ -21,17 +21,17 @@ const useFetchUserDataListener = (client: SanityClient, userId: string) => {
 
   getUserData();
 
-  useEffect(() => {
-    const subscription = client
-      .listen(fetchUserDataQuery, params)
-      .subscribe((resUserData: any) => {
-        setUserData(resUserData[0]);
-      });
+  // useEffect(() => {
+  //   const subscription = client
+  //     .listen(fetchUserDataQuery, params)
+  //     .subscribe((resUserData: any) => {
+  //       setUserData(resUserData[0]);
+  //     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [client]);
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, [client]);
 
   function getUserData() {
     client.fetch(fetchUserDataQuery, params).then(resUserData => {

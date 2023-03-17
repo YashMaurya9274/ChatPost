@@ -50,11 +50,10 @@ interface PostComment extends Base {
   };
 }
 
-export type Friend = {
-  id: string;
-  userName: string;
-  userImage: string;
-};
+interface Friend extends Base {
+  displayName: string;
+  photoURL: string;
+}
 
 export type Chat = {
   id: string;
