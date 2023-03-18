@@ -20,12 +20,6 @@ export type FriendRequestScreenNavigationProp = NativeStackNavigationProp<
   'FriendRequest'
 >;
 
-type SearchUser = {
-  _id: string;
-  displayName: string;
-  photoURL: string;
-};
-
 const FriendRequestScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [users, setUsers] = useState<SearchUser[]>([]);

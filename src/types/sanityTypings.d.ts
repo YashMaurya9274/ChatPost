@@ -38,3 +38,9 @@ interface FriendRequest extends Base {
   displayName: string;
   photoURL: string;
 }
+
+interface SearchUser {
+  _id: string;
+  displayName: string;
+  photoURL: string;
+}
