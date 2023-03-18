@@ -25,7 +25,7 @@ const CommentComponent = ({comment, deleteComment}: Props) => {
   }, []);
 
   const navigateToUserProfile = () => {
-    navigation.navigate('UserProfile', {
+    navigation.push('UserProfile', {
       userId: comment.user._id || user.uid,
     });
   };

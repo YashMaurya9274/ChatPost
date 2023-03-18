@@ -16,12 +16,12 @@ import {
 } from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
-import {Friend, Post} from '../types/typings';
+import {Friend, Post, UserData} from '../types/typings';
 import PostComponent from '../components/PostComponent';
 import FriendComponent from '../components/FriendComponent';
 import {useDispatch, useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
-import useFetchUserDataListener from '../hooks/useFetchUserDataListener';
+// import useFetchUserDataListener from '../hooks/useFetchUserDataListener';
 import {client} from '../lib/client';
 import RNBottomSheet from '../components/RNBottomSheet';
 import sendFriendRequest from '../lib/sendFriendRequest';
@@ -34,6 +34,11 @@ import getFriendsStatus from '../lib/getFriendsStatus';
 import unfriendFriend from '../lib/unfriendFriend';
 import {selectFriendRequests} from '../slices/friendRequestsSlice';
 import {manageRequests} from '../lib/manageRequests';
+import getFriends from '../lib/getFriends';
+import getTenUsers from '../lib/getTenUsers';
+import getUserData from '../lib/getUserData';
+import ImageLinks from '../assets/images';
+import RandomUserComponent from '../components/RandomUserComponent';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -42,75 +47,56 @@ export type UserScreenNavigationProp = NativeStackNavigationProp<
 
 type UserScreenRouteProp = RouteProp<RootStackParamList, 'UserProfile'>;
 
-const friends: Friend[] = [
-  {
-    id: '1',
-    userName: 'Iron Man',
-    userImage:
-      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-  },
-  {
-    id: '2',
-    userName: 'Iron Man',
-    userImage:
-      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-  },
-  {
-    id: '3',
-    userName: 'Iron Man',
-    userImage:
-      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-  },
-  {
-    id: '4',
-    userName: 'Iron Man',
-    userImage:
-      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-  },
-  {
-    id: '5',
-    userName: 'Iron Man',
-    userImage:
-      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-  },
-  {
-    id: '6',
-    userName: 'Iron Man',
-    userImage:
-      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-  },
-  {
-    id: '7',
-    userName: 'Iron Man',
-    userImage:
-      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-  },
-  {
-    id: '8',
-    userName: 'Iron Man',
-    userImage:
-      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-  },
-];
-
 const UserProfileScreen = () => {
   const navigation = useNavigation<UserScreenNavigationProp>();
   const {
     params: {userId, fromFriendRequestsScreen},
   } = useRoute<UserScreenRouteProp>();
-  const {userData} = useFetchUserDataListener(client, userId);
+  // const {userData} = useFetchUserDataListener(client, userId);
+  const [userData, setUserData] = useState<UserData>();
   const user = useSelector(selectUser);
   const [showFriends, setShowFriends] = useState(false);
   const yourAccount = userId === user.uid;
-  const friendRequestRef = useRef<FRIEND_REQUEST_STATUS | null>(null);
+  // const friendRequestRef = useRef<FRIEND_REQUEST_STATUS | null>(null);
   const isFocused = useIsFocused();
   const friendRequests = useSelector(selectFriendRequests);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [randomUsers, setRandomUsers] = useState<Friend[]>([]);
+  const [friendRequestStatus, setFriendRequestStatus] =
+    useState<FRIEND_REQUEST_STATUS | null>(null);
   const dispatch = useDispatch();
+
+  const fetchUserData = async () => {
+    const result = await getUserData(client, userId);
+    setUserData(result);
+  };
+
+  useEffect(() => {
+    if (yourAccount) fetchFriends();
+  }, [isFocused]);
+
+  useEffect(() => {
+    if (yourAccount && friends.length === 0) fetchRandomUsers();
+  }, [friends]);
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchUserData();
+      if (userId && !yourAccount) {
+        fetchFriendRequestStatus();
+      }
+    }
+  }, [userId, isFocused]);
+
+  const fetchRandomUsers = async () => {
+    const result = await getTenUsers(client, userId);
+    setRandomUsers(result);
+  };
 
   const fetchFriendRequestStatus = async () => {
     const friendsStatus = await getFriendsStatus(client, user.uid, userId);
     if (friendsStatus) {
-      friendRequestRef.current = friendsStatus;
+      setFriendRequestStatus(friendsStatus);
     } else {
       const friendRequestReceivedStatus = await getFriendRequestReceivingStatus(
         client,
@@ -118,25 +104,22 @@ const UserProfileScreen = () => {
         userId,
       );
       if (friendRequestReceivedStatus) {
-        friendRequestRef.current = friendRequestReceivedStatus;
+        setFriendRequestStatus(friendRequestReceivedStatus);
       } else {
         const friendRequestSentStatus = await getFriendRequestSentStatus(
           client,
           user.uid,
           userId,
         );
-        friendRequestRef.current = friendRequestSentStatus;
+        setFriendRequestStatus(friendRequestSentStatus);
       }
     }
   };
 
-  useEffect(() => {
-    if (isFocused) {
-      if (userId) {
-        fetchFriendRequestStatus();
-      }
-    }
-  }, [userId, isFocused]);
+  const fetchFriends = async () => {
+    const result = await getFriends(client, user.uid);
+    setFriends(result!);
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -146,26 +129,33 @@ const UserProfileScreen = () => {
   }, []);
 
   const getFriendRequestMessage = () => {
-    switch (friendRequestRef.current) {
+    switch (friendRequestStatus) {
       case FRIEND_REQUEST_STATUS.ADD_FRIEND:
-        friendRequestRef.current = FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT;
+        setFriendRequestStatus(FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT);
         break;
       case FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT:
-        friendRequestRef.current = FRIEND_REQUEST_STATUS.ADD_FRIEND;
+        setFriendRequestStatus(FRIEND_REQUEST_STATUS.ADD_FRIEND);
         break;
       case FRIEND_REQUEST_STATUS.ACCEPT_REQUEST:
-        friendRequestRef.current = FRIEND_REQUEST_STATUS.UNFRIEND;
+        setFriendRequestStatus(FRIEND_REQUEST_STATUS.UNFRIEND);
         break;
       case FRIEND_REQUEST_STATUS.UNFRIEND:
-        friendRequestRef.current = FRIEND_REQUEST_STATUS.ADD_FRIEND;
+        setFriendRequestStatus(FRIEND_REQUEST_STATUS.ADD_FRIEND);
         break;
       default:
         break;
     }
   };
 
+  const navigateToUserProfile = (userId: string) => {
+    setShowFriends(false);
+    navigation.push('UserProfile', {
+      userId,
+    });
+  };
+
   const handleAddFriendClick = async () => {
-    const reqMessage = friendRequestRef.current;
+    const reqMessage = friendRequestStatus;
 
     getFriendRequestMessage();
 
@@ -212,7 +202,49 @@ const UserProfileScreen = () => {
     }
   };
 
-  if (!userData || friendRequestRef.current === null)
+  const navigateToFriendRequest = () => {
+    setShowFriends(false);
+    navigation.push('FriendRequest');
+  };
+
+  const renderEmptyFriendsListComponent = () => {
+    return (
+      <View className="space-y-8">
+        <View className="mt-6">
+          <Text className="font-bold text-gray-600 dark:text-gray-200 text-xl text-center">
+            You have no Friends :(
+          </Text>
+          <Text className="text-base text-gray-600 dark:text-gray-200 text-center mt-2">
+            Let's make some new friends..
+          </Text>
+        </View>
+
+        <ScrollView
+          horizontal
+          bounces
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{padding: 10, alignItems: 'center'}}
+          className="space-x-4">
+          {randomUsers.map(user => (
+            <RandomUserComponent
+              key={user._id}
+              user={user}
+              navigateToUserProfile={navigateToUserProfile}
+            />
+          ))}
+
+          <TouchableOpacity
+            onPress={navigateToFriendRequest}
+            className="flex flex-row items-center p-3 bg-[#9e6969] rounded-lg space-x-3 h-10">
+            {/* <Text>Search</Text> */}
+            <Image source={ImageLinks.searchIcon} className="h-6 w-6" />
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    );
+  };
+
+  if (!userData || (!yourAccount && friendRequestStatus === null))
     return (
       <ActivityIndicator
         className="h-screen bg-white relative dark:bg-[#151515]"
@@ -227,6 +259,7 @@ const UserProfileScreen = () => {
       className="bg-white relative dark:bg-[#151515]">
       <StatusBar barStyle="light-content" backgroundColor="#4c3737" />
       <Image
+        resizeMode="contain"
         className="h-20 w-20 absolute z-10 top-5 rounded-full ml-3"
         source={{uri: userData?.photoURL}}
       />
@@ -273,10 +306,10 @@ const UserProfileScreen = () => {
               onPress={handleAddFriendClick}
               className="bg-[#694242] border p-2 w-[40%] rounded-md">
               <Text className="text-center font-bold text-white">
-                {friendRequestRef.current}
+                {friendRequestStatus}
               </Text>
             </TouchableOpacity>
-            {friendRequestRef.current === FRIEND_REQUEST_STATUS.UNFRIEND && (
+            {friendRequestStatus === FRIEND_REQUEST_STATUS.UNFRIEND && (
               <TouchableOpacity
                 activeOpacity={0.2}
                 className="border border-[#694242] p-2 w-[40%] rounded-md dark:border-[#9e6969]">
@@ -303,15 +336,23 @@ const UserProfileScreen = () => {
         isVisible={showFriends}
         onBackdropPress={() => setShowFriends(false)}
         bottomSheetHeight={400}>
-        <ScrollView
-          bounces
-          contentContainerStyle={{paddingBottom: 10}}
-          className="h-[310px]"
-          showsVerticalScrollIndicator={false}>
-          {friends.map((friend: Friend) => (
-            <FriendComponent key={friend.id} friend={friend} />
-          ))}
-        </ScrollView>
+        {friends.length !== 0 ? (
+          <ScrollView
+            bounces
+            contentContainerStyle={{paddingBottom: 10}}
+            className="h-[310px]"
+            showsVerticalScrollIndicator={false}>
+            {friends.map((friend: Friend) => (
+              <FriendComponent
+                navigateToUserProfile={navigateToUserProfile}
+                key={friend._id}
+                friend={friend}
+              />
+            ))}
+          </ScrollView>
+        ) : (
+          renderEmptyFriendsListComponent()
+        )}
       </RNBottomSheet>
     </ScrollView>
   );
