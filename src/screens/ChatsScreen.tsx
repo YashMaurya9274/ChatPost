@@ -1,109 +1,14 @@
-import {View, ScrollView, useColorScheme} from 'react-native';
-import React, {useLayoutEffect} from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {Chat} from '../types/typings';
+import {View, ActivityIndicator, useColorScheme, FlatList} from 'react-native';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import ChatComponent from '../components/ChatComponent';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
-
-const chats: Chat[] = [
-  {
-    id: '1',
-    friendName: 'Tony',
-    friendImage:
-      'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-    messages: [
-      {
-        id: 'a',
-        message: 'Hello 1',
-        timestamp: Date.now(),
-        userName: 'Tony',
-        userImage:
-          'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-      },
-      {
-        id: 'b',
-        message: 'Hello 2',
-        timestamp: Date.now(),
-        userName: 'Tony',
-        userImage:
-          'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-      },
-      {
-        id: 'c',
-        message: 'Genius Billionaire 😎 Playboy Philanthrophist',
-        timestamp: Date.now(),
-        userName: 'Tony',
-        userImage:
-          'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-      },
-      {
-        id: 'd',
-        message: 'Genius Billionaire 😎 Playboy Philanthrophist',
-        timestamp: Date.now(),
-        userName: 'Tony',
-        userImage:
-          'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-      },
-      {
-        id: 'e',
-        message: 'Genius Billionaire 😎 Playboy Philanthrophist',
-        timestamp: Date.now(),
-        userName: 'Tony',
-        userImage:
-          'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-      },
-      {
-        id: 'f',
-        message: 'Genius Billionaire 😎 Playboy Philanthrophist',
-        timestamp: Date.now(),
-        userName: 'Tony',
-        userImage:
-          'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-      },
-      {
-        id: 'g',
-        message: 'Genius Billionaire 😎 Playboy Philanthrophist',
-        timestamp: Date.now(),
-        userName: 'Tony',
-        userImage:
-          'https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2018/05/02/Pictures/_3ffd628e-4dcc-11e8-a9dc-143d85bacf22.jpg',
-      },
-    ],
-  },
-  {
-    id: '2',
-    friendName: 'Steve',
-    friendImage:
-      'https://netflixjunkie.com/wp-content/uploads/2022/05/captain-america-chris-evans.jpg',
-    messages: [
-      {
-        id: 'a',
-        message: 'Hello 1',
-        timestamp: Date.now(),
-        userName: 'Steve',
-        userImage:
-          'https://netflixjunkie.com/wp-content/uploads/2022/05/captain-america-chris-evans.jpg',
-      },
-      {
-        id: 'b',
-        message: 'Hello 2',
-        timestamp: Date.now(),
-        userName: 'Steve',
-        userImage:
-          'https://netflixjunkie.com/wp-content/uploads/2022/05/captain-america-chris-evans.jpg',
-      },
-      {
-        id: 'c',
-        message: 'Avengers Assemble Yyeeeeeaaaahhhhhhhhh',
-        timestamp: Date.now(),
-        userName: 'Steve',
-        userImage:
-          'https://netflixjunkie.com/wp-content/uploads/2022/05/captain-america-chris-evans.jpg',
-      },
-    ],
-  },
-];
+import getChats from '../lib/getChats';
+import {client} from '../lib/client';
+import {useSelector} from 'react-redux';
+import {selectUser} from '../slices/userSlice';
+import NoDataComponent from '../components/NoDataComponent';
 
 export type ChatsScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -113,6 +18,20 @@ export type ChatsScreenNavigationProp = NativeStackNavigationProp<
 const ChatsScreen = () => {
   const navigation = useNavigation<ChatsScreenNavigationProp>();
   const scheme = useColorScheme();
+  const isFocused = useIsFocused();
+  const user = useSelector(selectUser);
+  const [chats, setChats] = useState([]);
+
+  const fetchChats = async () => {
+    const res = await getChats(client, user.uid);
+    setChats(res?.reverse());
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchChats();
+    }
+  }, [isFocused]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -120,13 +39,34 @@ const ChatsScreen = () => {
     });
   }, [scheme]);
 
+  const renderChats = ({item}: any) => (
+    <ChatComponent key={item._id} chat={item} />
+  );
+
+  const renderEmptyChats = () => (
+    <View className="bg-white h-screen flex-1 justify-center items-center dark:bg-[#151515]">
+      <ActivityIndicator size="large" color="#9e6969" />
+    </View>
+  );
+
   return (
     <View className="bg-white min-h-screen dark:bg-[#151515]">
-      <ScrollView bounces className="pb-5">
-        {chats.map((chat: Chat) => (
-          <ChatComponent key={chat.id} chat={chat} />
-        ))}
-      </ScrollView>
+      {chats ? (
+        <FlatList
+          data={chats}
+          renderItem={renderChats}
+          ListEmptyComponent={renderEmptyChats}
+          // @ts-ignore
+          keyExtractor={item => item._id}
+          scrollEventThrottle={16}
+          contentContainerStyle={{paddingBottom: 15}}
+        />
+      ) : (
+        <NoDataComponent
+          title="No Chats available for you"
+          subTitle="Go to your friends profile to chat...."
+        />
+      )}
     </View>
   );
 };

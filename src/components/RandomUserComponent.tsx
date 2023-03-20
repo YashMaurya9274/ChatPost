@@ -1,6 +1,5 @@
 import {TouchableOpacity, Text, Image} from 'react-native';
 import React from 'react';
-import {Friend} from '../types/typings';
 
 type Props = {
   user: Friend;

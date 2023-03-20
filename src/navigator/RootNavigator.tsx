@@ -5,7 +5,6 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
-import {Message} from '../types/typings';
 import ChatsScreen from '../screens/ChatsScreen';
 import MessageScreen from '../screens/MessageScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -23,7 +22,13 @@ export type RootStackParamList = {
   Main: undefined;
   Login: undefined;
   Chats: undefined;
-  Messages: {messages: Message[]};
+  Messages: {
+    messages: Message[];
+    friendId: string;
+    friendImage: string;
+    friendName: string;
+    notSeenCount: number;
+  };
   UserProfile: {
     userId: string;
     fromFriendRequestsScreen?: boolean;

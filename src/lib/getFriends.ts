@@ -5,9 +5,9 @@ const getFriends = async (client: SanityClient, userId: string) => {
   const query = groq`
         *[_type == 'users' && _id == '${userId}'] {
             friends[]->{
-                _id,
-                displayName,
-                photoURL
+              _id,
+              displayName,
+              photoURL
             }
         }
     `;

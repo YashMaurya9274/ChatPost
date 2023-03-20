@@ -1,13 +1,15 @@
 import {View, Text, Image} from 'react-native';
 import React from 'react';
-import {Message} from '../types/typings';
+import {useSelector} from 'react-redux';
+import {selectUser} from '../slices/userSlice';
 
 type Props = {
   message: Message;
 };
 
 const MessageComponent = ({message}: Props) => {
-  const isUser = false;
+  const user = useSelector(selectUser);
+  const isUser = message.user._id === user.uid;
 
   return (
     <View
@@ -21,7 +23,7 @@ const MessageComponent = ({message}: Props) => {
         className={`h-6 w-6 absolute -bottom-2 rounded-full ${
           isUser && 'right-0'
         }`}
-        source={{uri: message.userImage}}
+        source={{uri: message.user.photoURL}}
       />
 
       <View>
@@ -35,7 +37,7 @@ const MessageComponent = ({message}: Props) => {
           className={`text-xs mt-2 ${
             isUser ? 'text-gray-600 mr-auto' : 'text-gray-50 ml-auto'
           } dark:text-gray-200`}>
-          {new Date(message.timestamp).toLocaleDateString()}
+          {new Date(message._createdAt!).toLocaleDateString()}
         </Text>
       </View>
     </View>

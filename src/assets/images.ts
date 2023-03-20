@@ -31,6 +31,9 @@ const ImageLinks = {
   chevron: {
     chevronRight: require('./images/chevronRight.png'),
   },
+  arrow: {
+    arrowLeft: require('./images/arrowLeft.png'),
+  },
 };
 
 export default ImageLinks;

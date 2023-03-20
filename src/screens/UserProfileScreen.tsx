@@ -16,7 +16,6 @@ import {
 } from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
-import {Friend, Post, UserData} from '../types/typings';
 import PostComponent from '../components/PostComponent';
 import FriendComponent from '../components/FriendComponent';
 import {useDispatch, useSelector} from 'react-redux';

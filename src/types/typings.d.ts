@@ -55,17 +55,14 @@ interface Friend extends Base {
   photoURL: string;
 }
 
-export type Chat = {
-  id: string;
-  friendName: string;
-  friendImage: string;
+interface Chat extends Base {
+  userOne: User;
+  userTwo: User;
   messages: Message[];
-};
+}
 
-export type Message = {
-  id: string;
+interface Message extends Base {
+  user: User;
   message: string;
-  timestamp: number;
-  userName: string;
-  userImage: string;
-};
+  seen: boolean;
+}
