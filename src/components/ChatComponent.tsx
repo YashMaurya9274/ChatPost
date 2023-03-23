@@ -30,7 +30,7 @@ const ChatComponent = ({chat}: Props) => {
 
   const countNotSeenMessages = () => {
     // FINDING HOW MANY MESSAGES ARE UNSEEN
-    const unseenMessageSender = messages.filter(message => !message.seen);
+    const unseenMessageSender = messages.filter(message => !message?.seen);
 
     // CHECKING IF THE ID OF THE SENDER IS SIMILAR TO THE LOGGED IN USER
     if (unseenMessageSender[0]?.user?._id !== user.uid) {
@@ -39,8 +39,10 @@ const ChatComponent = ({chat}: Props) => {
   };
 
   const manageMessages = () => {
-    let msgs = [...chat.messages];
-    setMessages([...msgs.reverse()]);
+    if (chat.messages) {
+      let msgs = [...chat?.messages];
+      setMessages([...msgs.reverse()]);
+    }
   };
 
   const getOtherUser = () => {
@@ -56,6 +58,7 @@ const ChatComponent = ({chat}: Props) => {
 
   const navigateToMessagesScreen = () => {
     navigation.navigate('Messages', {
+      chatId: chat._id!,
       messages: messages,
       friendId: otherUser?._id!,
       friendImage: otherUser?.photoURL!,

@@ -11,12 +11,12 @@ const getChats = async (client: SanityClient, userId: string) => {
           ...,
           user ->
         },
-        userOne-> {
+        userOne -> {
           _id,
           displayName,
           photoURL
         },
-        userTwo->{
+        userTwo -> {
           _id,
           displayName,
           photoURL
@@ -27,7 +27,7 @@ const getChats = async (client: SanityClient, userId: string) => {
   const params = {};
 
   const res = await client.fetch(query, params);
-  return res[0].userChats;
+  return res[0]?.userChats;
 };
 
 export default getChats;

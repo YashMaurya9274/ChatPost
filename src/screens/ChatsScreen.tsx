@@ -49,24 +49,27 @@ const ChatsScreen = () => {
     </View>
   );
 
+  if (chats === undefined) {
+    return (
+      <NoDataComponent
+        title="No Chats available for you"
+        subTitle="Go to your friends profile to chat...."
+      />
+    );
+  }
+
   return (
     <View className="bg-white min-h-screen dark:bg-[#151515]">
-      {chats ? (
-        <FlatList
-          data={chats}
-          renderItem={renderChats}
-          ListEmptyComponent={renderEmptyChats}
-          // @ts-ignore
-          keyExtractor={item => item._id}
-          scrollEventThrottle={16}
-          contentContainerStyle={{paddingBottom: 15}}
-        />
-      ) : (
-        <NoDataComponent
-          title="No Chats available for you"
-          subTitle="Go to your friends profile to chat...."
-        />
-      )}
+      <FlatList
+        data={chats}
+        showsVerticalScrollIndicator={false}
+        renderItem={renderChats}
+        ListEmptyComponent={renderEmptyChats}
+        // @ts-ignore
+        keyExtractor={item => item._id}
+        scrollEventThrottle={16}
+        contentContainerStyle={{paddingBottom: 15}}
+      />
     </View>
   );
 };

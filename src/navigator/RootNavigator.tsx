@@ -23,6 +23,7 @@ export type RootStackParamList = {
   Login: undefined;
   Chats: undefined;
   Messages: {
+    chatId?: string;
     messages: Message[];
     friendId: string;
     friendImage: string;

@@ -6,6 +6,7 @@ import {
   FlatList,
   useColorScheme,
   Image,
+  StatusBar,
 } from 'react-native';
 import React, {useLayoutEffect, useState, useEffect} from 'react';
 import {RootStackParamList} from '../navigator/RootNavigator';
@@ -15,6 +16,11 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import ImageLinks from '../assets/images';
 import updateSeenStatus from '../lib/updateSeenStatus';
 import {client} from '../lib/client';
+import sendMessage from '../lib/sendMessage';
+import {useSelector} from 'react-redux';
+import {selectUser} from '../slices/userSlice';
+import createNewChat from '../lib/createNewChat';
+// import useFetchMessageListener from '../hooks/useFetchMessagesListener';
 
 type MessageScreenRouteProp = RouteProp<RootStackParamList, 'Messages'>;
 
@@ -27,10 +33,13 @@ const MessageScreen = () => {
   const [message, setMessage] = useState('');
   const navigation = useNavigation<MessagesScreenNavigationProp>();
   const scheme = useColorScheme();
-
+  const user = useSelector(selectUser);
   const {
-    params: {messages, friendId, friendImage, friendName, notSeenCount},
+    params: {chatId, messages, friendId, friendImage, friendName, notSeenCount},
   } = useRoute<MessageScreenRouteProp>();
+
+  // const {chatMessages} = useFetchMessageListener(client, user.uid, friendId);
+  const [userMessages, setUserMessages] = useState<Message[]>([]);
 
   const updateSeenStatusOfMessage = async () => {
     if (notSeenCount > 0) {
@@ -41,12 +50,17 @@ const MessageScreen = () => {
   };
 
   useEffect(() => {
+    setUserMessages(messages);
+  }, [messages]);
+
+  useEffect(() => {
     updateSeenStatusOfMessage();
   }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: '',
+      headerStyle: {backgroundColor: scheme === 'dark' ? '#242424' : '#F0F2F5'},
       headerLeft: () => (
         <View className="flex flex-row space-x-5 items-center">
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -61,7 +75,7 @@ const MessageScreen = () => {
             onPress={navigateToUserProfile}
             className="flex flex-row space-x-3 items-center">
             <Image
-              className="h-10 w-10 rounded-full"
+              className="h-8 w-8 rounded-full"
               source={{uri: friendImage}}
             />
             <Text className="text-lg text-gray-800 dark:text-gray-200">
@@ -79,10 +93,52 @@ const MessageScreen = () => {
     });
   };
 
-  const sendMessage = () => {
+  const handleSendMessage = async () => {
     if (!message) return;
 
-    // TODO: Build send message functionality
+    if (!messages || messages?.length === 0) {
+      const userOne = {
+        _ref: user.uid,
+        _type: 'reference',
+      };
+
+      const userTwo = {
+        _ref: friendId,
+        _type: 'reference',
+      };
+
+      await createNewChat(
+        client,
+        user.uid,
+        friendId,
+        userOne,
+        userTwo,
+        message,
+      );
+    } else {
+      if (chatId) {
+        const newMessage: Message = {
+          _type: 'messages',
+          user: {
+            _type: 'users',
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            email: user.email,
+          },
+          message: message,
+          seen: false,
+        };
+
+        setUserMessages([newMessage, ...userMessages]);
+
+        sendMessage(client, chatId, message, {
+          _ref: user.uid,
+          _type: 'reference',
+        });
+      }
+    }
+
+    setMessage('');
   };
 
   const renderMessage = ({item}: any) => (
@@ -91,9 +147,13 @@ const MessageScreen = () => {
 
   return (
     <View className="bg-white flex-1 dark:bg-[#151515]">
+      <StatusBar
+        barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
+        backgroundColor={scheme === 'dark' ? '#242424' : '#F0F2F5'}
+      />
       {/* MESSAGES */}
       <FlatList
-        data={messages}
+        data={userMessages}
         inverted
         renderItem={renderMessage}
         // @ts-ignore
@@ -111,7 +171,7 @@ const MessageScreen = () => {
           multiline
           textAlignVertical="center"
         />
-        <TouchableOpacity onPress={sendMessage} activeOpacity={0.5}>
+        <TouchableOpacity onPress={handleSendMessage} activeOpacity={0.5}>
           <Text className="text-[#9e6969] text-lg">Send</Text>
         </TouchableOpacity>
       </View>
