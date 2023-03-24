@@ -21,6 +21,7 @@ import {useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
 import createNewChat from '../lib/createNewChat';
 // import useFetchMessageListener from '../hooks/useFetchMessagesListener';
+import {v4 as uuidv4} from 'uuid';
 
 type MessageScreenRouteProp = RouteProp<RootStackParamList, 'Messages'>;
 
@@ -40,6 +41,7 @@ const MessageScreen = () => {
 
   // const {chatMessages} = useFetchMessageListener(client, user.uid, friendId);
   const [userMessages, setUserMessages] = useState<Message[]>([]);
+  const [userChatId, setUserChatId] = useState<string>('');
 
   const updateSeenStatusOfMessage = async () => {
     if (notSeenCount > 0) {
@@ -50,8 +52,16 @@ const MessageScreen = () => {
   };
 
   useEffect(() => {
-    setUserMessages(messages);
+    if (messages) {
+      setUserMessages(messages);
+    }
   }, [messages]);
+
+  useEffect(() => {
+    if (chatId) {
+      setUserChatId(chatId);
+    }
+  }, [chatId]);
 
   useEffect(() => {
     updateSeenStatusOfMessage();
@@ -96,7 +106,22 @@ const MessageScreen = () => {
   const handleSendMessage = async () => {
     if (!message) return;
 
-    if (!messages || messages?.length === 0) {
+    const newMessage: Message = {
+      _type: 'messages',
+      _id: uuidv4(),
+      user: {
+        _type: 'users',
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        email: user.email,
+      },
+      message: message,
+      seen: false,
+    };
+
+    setUserMessages([newMessage, ...userMessages]);
+
+    if (!userMessages || userMessages?.length === 0) {
       const userOne = {
         _ref: user.uid,
         _type: 'reference',
@@ -107,7 +132,7 @@ const MessageScreen = () => {
         _type: 'reference',
       };
 
-      await createNewChat(
+      const resultChatId = await createNewChat(
         client,
         user.uid,
         friendId,
@@ -115,23 +140,11 @@ const MessageScreen = () => {
         userTwo,
         message,
       );
+
+      setUserChatId(resultChatId!);
     } else {
-      if (chatId) {
-        const newMessage: Message = {
-          _type: 'messages',
-          user: {
-            _type: 'users',
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            email: user.email,
-          },
-          message: message,
-          seen: false,
-        };
-
-        setUserMessages([newMessage, ...userMessages]);
-
-        sendMessage(client, chatId, message, {
+      if (userChatId) {
+        sendMessage(client, userChatId, message, {
           _ref: user.uid,
           _type: 'reference',
         });

@@ -29,6 +29,7 @@ const ChatComponent = ({chat}: Props) => {
   }, [messages]);
 
   const countNotSeenMessages = () => {
+    setNotSeenCount(0);
     // FINDING HOW MANY MESSAGES ARE UNSEEN
     const unseenMessageSender = messages.filter(message => !message?.seen);
 

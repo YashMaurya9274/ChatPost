@@ -20,7 +20,7 @@ const ChatsScreen = () => {
   const scheme = useColorScheme();
   const isFocused = useIsFocused();
   const user = useSelector(selectUser);
-  const [chats, setChats] = useState([]);
+  const [chats, setChats] = useState<Chat[] | undefined>();
 
   const fetchChats = async () => {
     const res = await getChats(client, user.uid);
@@ -51,10 +51,20 @@ const ChatsScreen = () => {
 
   if (chats === undefined) {
     return (
-      <NoDataComponent
-        title="No Chats available for you"
-        subTitle="Go to your friends profile to chat...."
-      />
+      <View className="bg-white h-screen flex-1 justify-center items-center dark:bg-[#151515]">
+        <ActivityIndicator size="large" color="#9e6969" />
+      </View>
+    );
+  }
+
+  if (chats.length === 0) {
+    return (
+      <View className="bg-white h-screen flex-1 justify-center items-center dark:bg-[#151515]">
+        <NoDataComponent
+          title="No Chats available for you"
+          subTitle="Go to your friends profile to chat...."
+        />
+      </View>
     );
   }
 

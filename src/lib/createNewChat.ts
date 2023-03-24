@@ -46,28 +46,23 @@ const createNewChat = async (
     _type: 'reference',
   };
 
-  client.create(messageObject);
+  client.create(messageObject).then(() => {
+    client.create(chatObject).then(() => {
+      client
+        .patch(userId)
+        .setIfMissing({userChats: []})
+        .insert('after', 'userChats[-1]', [chatObjectForUserDocument])
+        .commit();
 
-  client.create(chatObject).then(() => {
-    client
-      .patch(userId)
-      .setIfMissing({userChats: []})
-      .insert('after', 'userChats[-1]', [chatObjectForUserDocument])
-      .commit();
-
-    client
-      .patch(friendId)
-      .setIfMissing({userChats: []})
-      .insert('after', 'userChats[-1]', [chatObjectForUserDocument])
-      .commit();
+      client
+        .patch(friendId)
+        .setIfMissing({userChats: []})
+        .insert('after', 'userChats[-1]', [chatObjectForUserDocument])
+        .commit();
+    });
   });
 
-  // client
-  //   .patch(friendId)
-  //   .setIfMissing({userChats: []})
-  //   .insert('after', 'userChats[-1]', [chatObjectForUserDocument])
-  //   .commit()
-  //   .catch(err => console.log('ERROR', err));
+  return chatObject._id;
 };
 
 export default createNewChat;
