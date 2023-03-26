@@ -14,6 +14,7 @@ import getAllUsers from '../lib/getAllUsers';
 import SearchUserResultComponent from '../components/SearchUserResultComponent';
 import {selectFriendRequests} from '../slices/friendRequestsSlice';
 import {manageRequests} from '../lib/manageRequests';
+import NoDataComponent from '../components/NoDataComponent';
 
 export type FriendRequestScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -104,14 +105,10 @@ const FriendRequestScreen = () => {
   );
 
   const renderNoFriendRequest = () => (
-    <View className="flex h-screen justify-center items-center">
-      <Text className="font-bold text-gray-600 dark:text-gray-200 text-xl text-center">
-        No Friend Requests
-      </Text>
-      <Text className="text-base text-gray-600 dark:text-gray-200 text-center mt-2 mb-32">
-        Tap on the Search bar to make new friends....
-      </Text>
-    </View>
+    <NoDataComponent
+      title="No Friend Requests"
+      subTitle="Tap on the Search bar to make new friends...."
+    />
   );
 
   const renderSearchUserResults = ({item}: any) => (

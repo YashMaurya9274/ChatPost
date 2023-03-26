@@ -1,7 +1,6 @@
 import {SanityClient} from '@sanity/client';
 import groq from 'groq';
 import {useEffect, useState} from 'react';
-import {Post} from '../types/typings';
 
 const useFetchPostListener = (client: SanityClient) => {
   const [posts, setPosts] = useState<Post[]>([]);

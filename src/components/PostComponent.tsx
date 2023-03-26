@@ -7,7 +7,6 @@ import {
   Animated,
 } from 'react-native';
 import React, {useEffect, useState, useRef} from 'react';
-import {LikeUser, Post} from '../types/typings';
 import ImageLinks from '../assets/images';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {UserScreenNavigationProp} from '../screens/UserProfileScreen';

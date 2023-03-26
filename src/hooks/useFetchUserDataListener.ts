@@ -1,7 +1,6 @@
 import {SanityClient} from '@sanity/client';
 import groq from 'groq';
 import {useEffect, useState} from 'react';
-import {UserData} from '../types/typings';
 
 const useFetchUserDataListener = (client: SanityClient, userId: string) => {
   const [userData, setUserData] = useState<UserData>();

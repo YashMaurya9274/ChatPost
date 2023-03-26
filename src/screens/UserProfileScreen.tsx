@@ -16,7 +16,6 @@ import {
 } from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
-import {Friend, Post, UserData} from '../types/typings';
 import PostComponent from '../components/PostComponent';
 import FriendComponent from '../components/FriendComponent';
 import {useDispatch, useSelector} from 'react-redux';
@@ -39,6 +38,7 @@ import getTenUsers from '../lib/getTenUsers';
 import getUserData from '../lib/getUserData';
 import ImageLinks from '../assets/images';
 import RandomUserComponent from '../components/RandomUserComponent';
+import getChat from '../lib/getChat';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -62,6 +62,12 @@ const UserProfileScreen = () => {
   const friendRequests = useSelector(selectFriendRequests);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [randomUsers, setRandomUsers] = useState<Friend[]>([]);
+  const [chatId, setChatId] = useState<string>('');
+
+  const [existingMessages, setExistingMessages] = useState<
+    Message[] | undefined
+  >();
+  const [notSeenCount, setNotSeenCount] = useState<number>(0);
   const [friendRequestStatus, setFriendRequestStatus] =
     useState<FRIEND_REQUEST_STATUS | null>(null);
   const dispatch = useDispatch();
@@ -72,7 +78,9 @@ const UserProfileScreen = () => {
   };
 
   useEffect(() => {
-    if (yourAccount) fetchFriends();
+    if (yourAccount) {
+      fetchFriends();
+    }
   }, [isFocused]);
 
   useEffect(() => {
@@ -84,13 +92,39 @@ const UserProfileScreen = () => {
       fetchUserData();
       if (userId && !yourAccount) {
         fetchFriendRequestStatus();
+        fetchChat();
       }
     }
   }, [userId, isFocused]);
 
+  const countNotSeenMessages = () => {
+    if (existingMessages) {
+      // FINDING HOW MANY MESSAGES ARE UNSEEN
+      const unseenMessageSender = existingMessages.filter(
+        message => !message.seen,
+      );
+
+      // CHECKING IF THE ID OF THE SENDER IS SIMILAR TO THE LOGGED IN USER
+      if (unseenMessageSender[0]?.user?._id !== user.uid) {
+        setNotSeenCount(unseenMessageSender.length);
+      }
+    }
+  };
+
+  // CALCULATE TOTAL UNSEEN MESSAGES IF THERE IS AN EXISTING CHAT FOR BOTH THE USERS
+  useEffect(() => {
+    countNotSeenMessages();
+  }, [existingMessages]);
+
   const fetchRandomUsers = async () => {
     const result = await getTenUsers(client, userId);
     setRandomUsers(result);
+  };
+
+  const fetchChat = async () => {
+    const result = await getChat(client, user.uid, userId);
+    setChatId(result?._id);
+    setExistingMessages(result?.messages?.reverse());
   };
 
   const fetchFriendRequestStatus = async () => {
@@ -202,6 +236,17 @@ const UserProfileScreen = () => {
     }
   };
 
+  const navigateToMessageScreen = () => {
+    navigation.push('Messages', {
+      chatId: chatId,
+      friendId: userId,
+      messages: existingMessages!,
+      friendImage: userData?.photoURL!,
+      friendName: userData?.displayName!,
+      notSeenCount: notSeenCount,
+    });
+  };
+
   const navigateToFriendRequest = () => {
     setShowFriends(false);
     navigation.push('FriendRequest');
@@ -311,10 +356,11 @@ const UserProfileScreen = () => {
             </TouchableOpacity>
             {friendRequestStatus === FRIEND_REQUEST_STATUS.UNFRIEND && (
               <TouchableOpacity
+                onPress={navigateToMessageScreen}
                 activeOpacity={0.2}
                 className="border border-[#694242] p-2 w-[40%] rounded-md dark:border-[#9e6969]">
                 <Text className="text-center text-[#694242] font-bold dark:text-[#9e6969]">
-                  Add To Group
+                  Message
                 </Text>
               </TouchableOpacity>
             )}

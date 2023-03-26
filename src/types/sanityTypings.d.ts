@@ -44,3 +44,27 @@ interface SearchUser {
   displayName: string;
   photoURL: string;
 }
+
+interface SanityUser {
+  _ref: string;
+  _type: string;
+}
+
+interface SanityChat extends Base {
+  _key: string;
+  userOne: SanityUser;
+  userTwo: SanityUser;
+  messages: SanityMessageForChatDocument[];
+}
+
+interface SanityMessageForChatDocument extends Base {
+  _key: string;
+  _ref: string;
+  _type: Reference;
+}
+
+interface SanityMessage extends Base {
+  user: SanityUser;
+  message: string;
+  seen: boolean;
+}

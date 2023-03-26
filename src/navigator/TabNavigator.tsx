@@ -14,6 +14,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import ImageLinks from '../assets/images';
 import {client} from '../lib/client';
 import getFriendsRequests from '../lib/getFriendRequests';
+import getTotalNewUnseenChats from '../lib/getTotalNewUnseenChats';
 import CreatePostScreen from '../screens/CreatePostScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileOptionsScreen from '../screens/ProfileOptionsScreen';
@@ -40,11 +41,11 @@ export type TabNavigatorNavigationProp = NativeStackNavigationProp<
 
 const TabNavigator = () => {
   const navigation = useNavigation<TabNavigatorNavigationProp>();
-  const noOfMessages = 99;
   const user = useSelector(selectUser);
   const scheme = useColorScheme();
   const dispatch = useDispatch();
   const friendRequests = useSelector(selectFriendRequests);
+  const [totalNewUnseenChats, setTotalNewUnseenChats] = useState<number>(0);
   const isFocused = useIsFocused();
 
   const fetchFriendRequests = async () => {
@@ -52,8 +53,16 @@ const TabNavigator = () => {
     dispatch(setFriendRequests(res));
   };
 
+  const fetchTotalNewUnseenChats = async () => {
+    const result = await getTotalNewUnseenChats(client, user.uid);
+    setTotalNewUnseenChats(result);
+  };
+
   useEffect(() => {
-    if (isFocused) fetchFriendRequests();
+    if (isFocused) {
+      fetchFriendRequests();
+      fetchTotalNewUnseenChats();
+    }
   }, [isFocused]);
 
   useLayoutEffect(() => {
@@ -98,7 +107,9 @@ const TabNavigator = () => {
               alignItems: 'center',
               marginRight: -5,
             }}>
-            <Text style={styles.iconTextStyle}>{noOfMessages}</Text>
+            {totalNewUnseenChats > 0 && (
+              <Text style={styles.iconTextStyle}>{totalNewUnseenChats}</Text>
+            )}
             <Image
               style={{
                 height: 28,
@@ -113,7 +124,7 @@ const TabNavigator = () => {
         </View>
       ),
     });
-  }, [navigation, scheme, friendRequests]);
+  }, [navigation, scheme, friendRequests, totalNewUnseenChats]);
 
   return (
     <Tab.Navigator

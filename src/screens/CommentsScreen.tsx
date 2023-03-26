@@ -11,7 +11,6 @@ import {RouteProp, useIsFocused, useRoute} from '@react-navigation/native';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import CommentComponent from '../components/CommentComponent';
 import {client} from '../lib/client';
-import {PostComment} from '../types/typings';
 import {useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
 import storePostComment from '../lib/storePostComment';
@@ -19,6 +18,7 @@ import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import getPostComments from '../lib/getPostComments';
 import deletePostComment from '../lib/deletePostComment';
+import NoDataComponent from '../components/NoDataComponent';
 
 type CommentsScreenRouteProp = RouteProp<RootStackParamList, 'Comments'>;
 
@@ -163,14 +163,10 @@ const CommentsScreen = () => {
     <View className="bg-white flex-1 dark:bg-[#151515]">
       {(postComments?.length === 0 || !postComments) &&
       comments.length === 0 ? (
-        <View className="flex-1 items-center justify-center">
-          <Text className="font-bold text-gray-600 dark:text-gray-200 text-xl text-center">
-            No Comments yet on this post.
-          </Text>
-          <Text className="text-base text-gray-600 dark:text-gray-200 text-center mt-2">
-            Be the first one to comment.
-          </Text>
-        </View>
+        <NoDataComponent
+          title="No Comments yet on this post."
+          subTitle="Be the first one to comment."
+        />
       ) : (
         <FlatList
           data={comments}
