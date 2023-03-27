@@ -7,7 +7,7 @@ import {
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
-import React, {useLayoutEffect, useRef, useEffect, useState} from 'react';
+import React, {useLayoutEffect, useEffect, useState} from 'react';
 import {
   RouteProp,
   useIsFocused,
@@ -39,6 +39,8 @@ import getUserData from '../lib/getUserData';
 import ImageLinks from '../assets/images';
 import RandomUserComponent from '../components/RandomUserComponent';
 import getChat from '../lib/getChat';
+import DeleteModal from '../components/DeleteModal';
+import deletePost from '../lib/deletePost';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -57,12 +59,14 @@ const UserProfileScreen = () => {
   const user = useSelector(selectUser);
   const [showFriends, setShowFriends] = useState(false);
   const yourAccount = userId === user.uid;
-  // const friendRequestRef = useRef<FRIEND_REQUEST_STATUS | null>(null);
   const isFocused = useIsFocused();
   const friendRequests = useSelector(selectFriendRequests);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [randomUsers, setRandomUsers] = useState<Friend[]>([]);
   const [chatId, setChatId] = useState<string>('');
+  const [showDeleteBox, setShowDeleteBox] = useState<boolean>(false);
+  const [postIdForDeletion, setPostIdForDeletion] = useState<string>('');
+  const [userPosts, setUserPosts] = useState<Post[]>([]);
 
   const [existingMessages, setExistingMessages] = useState<
     Message[] | undefined
@@ -75,6 +79,7 @@ const UserProfileScreen = () => {
   const fetchUserData = async () => {
     const result = await getUserData(client, userId);
     setUserData(result);
+    setUserPosts(result?.posts);
   };
 
   useEffect(() => {
@@ -289,6 +294,27 @@ const UserProfileScreen = () => {
     );
   };
 
+  const displayDeleteModal = (postId: string) => {
+    setPostIdForDeletion(postId);
+    setShowDeleteBox(true);
+  };
+
+  const handleDeletePost = async () => {
+    if (postIdForDeletion) {
+      let newPosts = userPosts;
+      const postIndex = newPosts.findIndex(
+        post => post._id === postIdForDeletion,
+      );
+      newPosts = [
+        ...newPosts.slice(0, postIndex),
+        ...newPosts.slice(postIndex + 1),
+      ];
+      setUserPosts(newPosts);
+      setShowDeleteBox(false);
+      await deletePost(postIdForDeletion);
+    }
+  };
+
   if (!userData || (!yourAccount && friendRequestStatus === null))
     return (
       <ActivityIndicator
@@ -316,10 +342,10 @@ const UserProfileScreen = () => {
       </View>
 
       <Text className="ml-[100px] text-base text-gray-600 dark:text-gray-400">
-        {userData?.posts?.length! > 0 && userData?.posts?.length}
-        {userData?.posts?.length === 0
+        {userPosts?.length! > 0 && userPosts?.length}
+        {userPosts?.length === 0
           ? 'No Posts'
-          : userData?.posts?.length === 1
+          : userPosts?.length === 1
           ? ' Post'
           : ' Posts'}
       </Text>
@@ -369,14 +395,21 @@ const UserProfileScreen = () => {
       </View>
 
       <View>
-        {userData?.posts?.map((post: Post) => (
+        {userPosts?.map((post: Post) => (
           <PostComponent
             key={post._id}
             post={post}
             fromUserProfileScreen={true}
+            displayDeleteModal={displayDeleteModal}
           />
         ))}
       </View>
+
+      <DeleteModal
+        showDeleteBox={showDeleteBox}
+        onBackDropPress={() => setShowDeleteBox(false)}
+        handleDeletePost={handleDeletePost}
+      />
 
       <RNBottomSheet
         isVisible={showFriends}

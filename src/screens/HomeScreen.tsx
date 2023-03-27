@@ -4,8 +4,6 @@ import {
   useColorScheme,
   FlatList,
   ActivityIndicator,
-  Text,
-  TouchableOpacity,
 } from 'react-native';
 import React, {useLayoutEffect, useState, useEffect} from 'react';
 import {
@@ -21,8 +19,8 @@ import {TabStackParamList} from '../navigator/TabNavigator';
 import {client} from '../lib/client';
 // import useFetchPostListener from '../hooks/useFetchPostListener';
 import getPosts from '../lib/getPosts';
-import {Overlay} from '@rneui/themed';
 import deletePost from '../lib/deletePost';
+import DeleteModal from '../components/DeleteModal';
 
 export type HomeScreenNavigationProp = CompositeNavigationProp<
   MaterialTopTabNavigationProp<TabStackParamList, 'Home'>,
@@ -109,36 +107,11 @@ const HomeScreen = () => {
         contentContainerStyle={{paddingBottom: 15}}
       />
 
-      <Overlay
-        overlayStyle={{
-          backgroundColor: scheme === 'dark' ? '#262626' : '#ebedef',
-          paddingHorizontal: 30,
-          paddingVertical: 20,
-          width: 300,
-          borderRadius: 10,
-        }}
-        onBackdropPress={() => setShowDeleteBox(false)}
-        isVisible={showDeleteBox}
-        animationType="fade">
-        <Text className="text-gray-500 dark:text-gray-400 font-semibold text-lg mb-4">
-          Post will be permanently deleted.
-        </Text>
-        <Text className="text-gray-500 text-base dark:text-gray-400 mb-4">
-          Are you sure you want to delete it?
-        </Text>
-        <View className="flex flex-row justify-evenly space-x-4 items-center">
-          <TouchableOpacity
-            className="bg-[#FF5959] w-24 items-center rounded-lg px-3 py-2"
-            onPress={handleDeletePost}>
-            <Text className="text-white">Delete</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="border border-[#FF5959] w-24 items-center rounded-lg px-3 py-2"
-            onPress={() => setShowDeleteBox(false)}>
-            <Text className="text-[#FF5959]">Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </Overlay>
+      <DeleteModal
+        showDeleteBox={showDeleteBox}
+        onBackDropPress={() => setShowDeleteBox(false)}
+        handleDeletePost={handleDeletePost}
+      />
     </View>
   );
 };
