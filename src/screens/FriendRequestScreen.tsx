@@ -111,9 +111,9 @@ const FriendRequestScreen = () => {
     />
   );
 
-  const renderSearchUserResults = ({item}: any) => (
+  const renderSearchUserResults = ({item, index}: any) => (
     <SearchUserResultComponent
-      key={item?._id}
+      key={index}
       user={item!}
       navigateToUserProfile={navigateToUserProfile}
     />

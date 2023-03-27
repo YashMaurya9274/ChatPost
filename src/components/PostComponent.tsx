@@ -15,25 +15,27 @@ import VisibilitySensor from '@svanboxel/visibility-sensor-react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {selectMuteVideo, setMuteVideo} from '../slices/muteVideoSlice';
 import {urlFor} from '../lib/client';
-import deletePost from '../lib/deletePost';
 import likePostMutation from '../lib/likePostMutation';
 import {selectUser} from '../slices/userSlice';
 import TimeAgo from 'react-native-timeago';
 import moment from 'moment';
 import RNBottomSheet from './RNBottomSheet';
-import {Overlay} from '@rneui/themed';
 
 type Props = {
   post: Post;
   fromUserProfileScreen?: boolean;
+  displayDeleteModal: (postId: string) => void;
 };
 
-const PostComponent = ({post, fromUserProfileScreen}: Props) => {
+const PostComponent = ({
+  post,
+  fromUserProfileScreen,
+  displayDeleteModal,
+}: Props) => {
   const navigation = useNavigation<UserScreenNavigationProp>();
   const [showMore, setShowMore] = useState(false);
   const [showWholeContent, setShowWholeContent] = useState(false);
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
-  const [showDeleteBox, setShowDeleteBox] = useState<boolean>(false);
   const scheme = useColorScheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [pauseVideo, setPauseVideo] = useState(false);
@@ -61,7 +63,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
       setTotalLikes(post.likes?.length!);
       setTotalComments(post.postComments?.length!);
     }
-  }, [isFocused, fromUserProfileScreen && post]);
+  }, [isFocused, post]);
 
   const checkUserLiked = () => {
     let result = false;
@@ -153,11 +155,6 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
     setTotalLikes(tempLikes.length);
 
     const res = await likePostMutation(tempLikes, post._id!);
-  };
-
-  const handleDeletePost = async () => {
-    setModalVisible(false);
-    await deletePost(post._id!);
   };
 
   return (
@@ -353,37 +350,6 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
         </TouchableOpacity>
       </View>
 
-      <Overlay
-        overlayStyle={{
-          backgroundColor: scheme === 'dark' ? '#262626' : '#ebedef',
-          paddingHorizontal: 30,
-          paddingVertical: 20,
-          width: 300,
-          borderRadius: 10,
-        }}
-        onBackdropPress={() => setShowDeleteBox(false)}
-        isVisible={showDeleteBox}
-        animationType="fade">
-        <Text className="text-gray-500 dark:text-gray-400 font-semibold text-lg mb-4">
-          Post will be permanently deleted.
-        </Text>
-        <Text className="text-gray-500 text-base dark:text-gray-400 mb-4">
-          Are you sure you want to delete it?
-        </Text>
-        <View className="flex flex-row justify-evenly space-x-4 items-center">
-          <TouchableOpacity
-            className="bg-[#FF5959] w-24 items-center rounded-lg px-3 py-2"
-            onPress={handleDeletePost}>
-            <Text className="text-white">Delete</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="border border-[#FF5959] w-24 items-center rounded-lg px-3 py-2"
-            onPress={() => setShowDeleteBox(false)}>
-            <Text className="text-[#FF5959]">Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </Overlay>
-
       <RNBottomSheet
         isVisible={isModalVisible}
         onSwipeComplete={() => setModalVisible(false)}
@@ -396,7 +362,7 @@ const PostComponent = ({post, fromUserProfileScreen}: Props) => {
               className="flex flex-row items-center mr-auto space-x-2 px-4 py-2"
               onPress={() => {
                 setModalVisible(false);
-                setShowDeleteBox(true);
+                displayDeleteModal(post._id!);
               }}>
               <Image
                 className="h-6 w-6 mt-1"
