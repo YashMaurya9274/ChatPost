@@ -42,9 +42,9 @@ const PostComponent = ({
   const muteVideo = useSelector(selectMuteVideo);
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
-  const postLikes = post.likes;
+  // const postLikes = post.likes;
+  const [likes, setLikes] = useState<LikeUser[] | undefined>(post.likes);
   const [liked, setLiked] = useState(false);
-  const [totalLikes, setTotalLikes] = useState(0);
   const [totalComments, setTotalComments] = useState(0);
   const isFocused = useIsFocused();
 
@@ -54,21 +54,23 @@ const PostComponent = ({
         setShowMore(true);
       }
 
-      if (checkUserLiked()) {
+      setLikes(post.likes);
+
+      if (checkUserLiked(post.likes)) {
         setLiked(true);
       } else {
         setLiked(false);
       }
 
-      setTotalLikes(post.likes?.length!);
       setTotalComments(post.postComments?.length!);
     }
-  }, [isFocused, post]);
+  }, [isFocused, post, post.likes]);
 
-  const checkUserLiked = () => {
+  const checkUserLiked = (postLikes: LikeUser[] | undefined) => {
+    const tempLikes = postLikes;
     let result = false;
-    if (postLikes?.length! > 0) {
-      postLikes?.map(postLike => {
+    if (tempLikes && tempLikes?.length! > 0) {
+      tempLikes?.map(postLike => {
         if (postLike._ref === user.uid) {
           result = true;
         }
@@ -80,10 +82,10 @@ const PostComponent = ({
 
   const getUserLikedIndex = () => {
     let result = -1;
-    if (postLikes?.length! > 0) {
-      postLikes?.map(postLike => {
+    if (likes && likes?.length! > 0) {
+      likes?.map(postLike => {
         if (postLike._ref === user.uid) {
-          result = postLikes.indexOf(postLike);
+          result = likes.indexOf(postLike);
         }
       });
     }
@@ -136,11 +138,17 @@ const PostComponent = ({
     }
   };
 
-  const handleLikePost = async () => {
-    let tempLikes: LikeUser[] = postLikes || [];
+  const navigateToCommentsScreen = () => {
+    navigation.push('Comments', {
+      postId: post._id!,
+      postComments: post.postComments!,
+    });
+  };
 
-    if (checkUserLiked()) {
-      tempLikes.splice(getUserLikedIndex(), 1);
+  const handleLikePost = async () => {
+    let tempLikes = likes;
+    if (checkUserLiked(likes)) {
+      tempLikes?.splice(getUserLikedIndex(), 1);
       setLiked(false);
     } else {
       const userLike: SanityLikeUser = {
@@ -148,13 +156,12 @@ const PostComponent = ({
         _ref: user.uid,
         _key: user.uid,
       };
-      tempLikes = [...tempLikes, userLike];
+      setLikes([...likes!, userLike]);
+      tempLikes = [...tempLikes!, userLike];
       setLiked(true);
     }
 
-    setTotalLikes(tempLikes.length);
-
-    const res = await likePostMutation(tempLikes, post._id!);
+    const res = await likePostMutation(tempLikes!, post._id!);
   };
 
   return (
@@ -286,6 +293,40 @@ const PostComponent = ({
         </TouchableOpacity>
       )} */}
 
+      {(likes?.length! > 0 || totalComments > 0) && (
+        <View className="flex flex-row items-center px-3 h-10">
+          {likes?.length! > 0 && (
+            <TouchableOpacity className="flex flex-row items-center space-x-1">
+              <View className="bg-[#aa6e6e] dark:bg-[#8b6060] p-1 rounded-full">
+                <Image
+                  className="h-3 w-3"
+                  source={ImageLinks.like.likeSolidDarkMode}
+                  style={{tintColor: 'whitesmoke'}}
+                />
+              </View>
+              <Text className="text-gray-500 text-xs dark:text-gray-400 font-semibold">
+                {likes?.length} {likes?.length! > 1 ? 'likes' : 'like'}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {totalComments > 0 && (
+            <TouchableOpacity
+              onPress={navigateToCommentsScreen}
+              className="flex flex-row ml-auto items-center space-x-1">
+              {totalComments > 0 && (
+                <Text className="text-gray-500 text-xs dark:text-gray-400 font-semibold">
+                  {totalComments}
+                </Text>
+              )}
+              <Text className="text-gray-500 text-xs dark:text-gray-400 font-semibold">
+                {totalComments > 1 ? 'comments' : 'comment'}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
       {/* BOTTOM PART */}
       <View className="flex flex-row justify-evenly items-center border-t border-gray-300 dark:border-[#383838]">
         {/* LIKE */}
@@ -304,24 +345,24 @@ const PostComponent = ({
                 ? ImageLinks.like.likeSolidLightMode
                 : ImageLinks.like.likeOutline
             }
+            style={{
+              tintColor:
+                scheme === 'dark'
+                  ? liked
+                    ? '#D89A9A'
+                    : 'gray'
+                  : liked
+                  ? '#8b6060'
+                  : 'gray',
+            }}
           />
-          {totalLikes > 0 && (
-            <Text
-              className={`${
-                liked
-                  ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
-                  : 'text-gray-500 dark:text-gray-400 font-bold'
-              } text-xs`}>
-              {totalLikes}
-            </Text>
-          )}
           <Text
             className={`${
               liked
-                ? 'text-[#694242] dark:text-[#D89A9A] font-bold'
+                ? 'text-[#aa6e6e] dark:text-[#D89A9A] font-bold'
                 : 'text-gray-500 dark:text-gray-400 font-bold'
             } text-xs`}>
-            {totalLikes > 1 ? 'Likes' : 'Like'}
+            Like
           </Text>
         </TouchableOpacity>
 
@@ -330,22 +371,12 @@ const PostComponent = ({
 
         {/* COMMENT */}
         <TouchableOpacity
-          onPress={() =>
-            navigation.push('Comments', {
-              postId: post._id!,
-              postComments: post.postComments!,
-            })
-          }
+          onPress={navigateToCommentsScreen}
           activeOpacity={0.5}
           className="flex flex-row items-center space-x-2 py-[10px]">
           <Image className="h-4 w-4" source={ImageLinks.commentsSolid} />
-          {totalComments > 0 && (
-            <Text className="text-gray-500 text-xs dark:text-gray-400 font-semibold">
-              {totalComments}
-            </Text>
-          )}
           <Text className="text-gray-500 text-xs dark:text-gray-400 font-semibold">
-            {totalComments > 1 ? 'Comments' : 'Comment'}
+            Comment
           </Text>
         </TouchableOpacity>
       </View>
