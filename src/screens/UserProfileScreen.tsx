@@ -58,7 +58,7 @@ const UserProfileScreen = () => {
   const [userData, setUserData] = useState<UserData>();
   const user = useSelector(selectUser);
   const [showFriends, setShowFriends] = useState(false);
-  const yourAccount = userId === user.uid;
+  const myAccount = userId === user.uid;
   const isFocused = useIsFocused();
   const friendRequests = useSelector(selectFriendRequests);
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -83,19 +83,19 @@ const UserProfileScreen = () => {
   };
 
   useEffect(() => {
-    if (yourAccount) {
+    if (myAccount) {
       fetchFriends();
     }
   }, [isFocused]);
 
   useEffect(() => {
-    if (yourAccount && friends.length === 0) fetchRandomUsers();
+    if (myAccount && friends.length === 0) fetchRandomUsers();
   }, [friends]);
 
   useEffect(() => {
     if (isFocused) {
       fetchUserData();
-      if (userId && !yourAccount) {
+      if (userId && !myAccount) {
         fetchFriendRequestStatus();
         fetchChat();
       }
@@ -126,10 +126,18 @@ const UserProfileScreen = () => {
     setRandomUsers(result);
   };
 
-  const fetchChat = async () => {
-    const result = await getChat(client, user.uid, userId);
+  const fetchChat = async (friendId?: string) => {
+    let tempId: string;
+    if (myAccount) {
+      tempId = friendId!;
+    } else {
+      tempId = userId;
+    }
+    const result = await getChat(client, user.uid, tempId);
     setChatId(result?._id);
-    setExistingMessages(result?.messages?.reverse());
+    setExistingMessages(result?.messages);
+
+    return result?.messages?.reverse();
   };
 
   const fetchFriendRequestStatus = async () => {
@@ -241,15 +249,36 @@ const UserProfileScreen = () => {
     }
   };
 
-  const navigateToMessageScreen = () => {
-    navigation.push('Messages', {
-      chatId: chatId,
-      friendId: userId,
-      messages: existingMessages!,
-      friendImage: userData?.photoURL!,
-      friendName: userData?.displayName!,
-      notSeenCount: notSeenCount,
-    });
+  const navigateToMessageScreen = async (
+    friendId?: string,
+    friendDisplayName?: string,
+    friendPhotoURL?: string,
+  ) => {
+    console.log(myAccount);
+    console.log('userId', userId);
+    console.log('friendId', friendId);
+
+    if (myAccount) {
+      await fetchChat(friendId).then((messgs: any) => {
+        navigation.push('Messages', {
+          chatId: chatId,
+          friendId: friendId!,
+          messages: messgs,
+          friendImage: friendPhotoURL!,
+          friendName: friendDisplayName!,
+          notSeenCount: notSeenCount,
+        });
+      });
+    } else {
+      navigation.push('Messages', {
+        chatId: chatId,
+        friendId: userId,
+        messages: existingMessages!,
+        friendImage: userData?.photoURL!,
+        friendName: userData?.displayName!,
+        notSeenCount: notSeenCount,
+      });
+    }
   };
 
   const navigateToFriendRequest = () => {
@@ -315,7 +344,7 @@ const UserProfileScreen = () => {
     }
   };
 
-  if (!userData || (!yourAccount && friendRequestStatus === null))
+  if (!userData || (!myAccount && friendRequestStatus === null))
     return (
       <ActivityIndicator
         className="h-screen bg-white relative dark:bg-[#151515]"
@@ -352,7 +381,7 @@ const UserProfileScreen = () => {
 
       {/* TODO: Check if it's your profile and show buttons accordingly */}
       <View className="flex justify-evenly flex-row mt-8 w-full">
-        {yourAccount ? (
+        {myAccount ? (
           <>
             <TouchableOpacity
               activeOpacity={0.2}
@@ -382,7 +411,7 @@ const UserProfileScreen = () => {
             </TouchableOpacity>
             {friendRequestStatus === FRIEND_REQUEST_STATUS.UNFRIEND && (
               <TouchableOpacity
-                onPress={navigateToMessageScreen}
+                onPress={() => navigateToMessageScreen()}
                 activeOpacity={0.2}
                 className="border border-[#694242] p-2 w-[40%] rounded-md dark:border-[#9e6969]">
                 <Text className="text-center text-[#694242] font-bold dark:text-[#9e6969]">
@@ -423,8 +452,9 @@ const UserProfileScreen = () => {
             showsVerticalScrollIndicator={false}>
             {friends.map((friend: Friend) => (
               <FriendComponent
-                navigateToUserProfile={navigateToUserProfile}
                 key={friend._id}
+                navigateToMessageScreen={navigateToMessageScreen}
+                navigateToUserProfile={navigateToUserProfile}
                 friend={friend}
               />
             ))}
