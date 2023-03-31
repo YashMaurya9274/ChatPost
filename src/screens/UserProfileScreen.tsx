@@ -254,10 +254,6 @@ const UserProfileScreen = () => {
     friendDisplayName?: string,
     friendPhotoURL?: string,
   ) => {
-    console.log(myAccount);
-    console.log('userId', userId);
-    console.log('friendId', friendId);
-
     if (myAccount) {
       await fetchChat(friendId).then((messgs: any) => {
         navigation.push('Messages', {
