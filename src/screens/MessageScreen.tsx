@@ -98,7 +98,7 @@ const MessageScreen = () => {
   }, [scheme]);
 
   const navigateToUserProfile = () => {
-    navigation.navigate('UserProfile', {
+    navigation.push('UserProfile', {
       userId: friendId,
     });
   };

@@ -41,6 +41,8 @@ import RandomUserComponent from '../components/RandomUserComponent';
 import getChat from '../lib/getChat';
 import DeleteModal from '../components/DeleteModal';
 import deletePost from '../lib/deletePost';
+import {Overlay} from '@rneui/themed';
+import SearchBar from '../components/SearchBar';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -67,6 +69,11 @@ const UserProfileScreen = () => {
   const [showDeleteBox, setShowDeleteBox] = useState<boolean>(false);
   const [postIdForDeletion, setPostIdForDeletion] = useState<string>('');
   const [userPosts, setUserPosts] = useState<Post[]>([]);
+  const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
+  const [searchFriendsValue, setSearchFriendsValue] = useState<string>('');
+  const [searchFriendsResult, setSearchFriendsResult] = useState<
+    Friend[] | undefined
+  >();
 
   const [existingMessages, setExistingMessages] = useState<
     Message[] | undefined
@@ -115,6 +122,16 @@ const UserProfileScreen = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (searchFriendsValue) {
+      const res = friends.filter(friend => {
+        if (friend.displayName.includes(searchFriendsValue)) return friend;
+      });
+      if (res.length > 0) setSearchFriendsResult(res);
+      else setSearchFriendsResult(undefined);
+    }
+  }, [searchFriendsValue]);
 
   // CALCULATE TOTAL UNSEEN MESSAGES IF THERE IS AN EXISTING CHAT FOR BOTH THE USERS
   useEffect(() => {
@@ -254,8 +271,11 @@ const UserProfileScreen = () => {
     friendDisplayName?: string,
     friendPhotoURL?: string,
   ) => {
+    setShowFriends(false);
     if (myAccount) {
+      setMessagesLoading(true);
       await fetchChat(friendId).then((messgs: any) => {
+        setMessagesLoading(false);
         navigation.push('Messages', {
           chatId: chatId,
           friendId: friendId!,
@@ -389,9 +409,10 @@ const UserProfileScreen = () => {
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.2}
+              onPress={() => navigation.navigate('Chats')}
               className="border border-[#694242] p-2 w-[40%] rounded-md dark:border-[#9e6969]">
               <Text className="text-center text-[#694242] font-bold dark:text-[#9e6969]">
-                See Your Groups
+                See Your Chats
               </Text>
             </TouchableOpacity>
           </>
@@ -436,25 +457,45 @@ const UserProfileScreen = () => {
         handleDeletePost={handleDeletePost}
       />
 
+      <Overlay
+        isVisible={messagesLoading}
+        fullScreen={true}
+        overlayStyle={{
+          backgroundColor: 'transparent',
+          justifyContent: 'center',
+        }}>
+        <ActivityIndicator size="large" color="#9e6969" />
+      </Overlay>
+
       <RNBottomSheet
         isVisible={showFriends}
         onBackdropPress={() => setShowFriends(false)}
         bottomSheetHeight={400}>
         {friends.length !== 0 ? (
-          <ScrollView
-            bounces
-            contentContainerStyle={{paddingBottom: 10}}
-            className="h-[310px]"
-            showsVerticalScrollIndicator={false}>
-            {friends.map((friend: Friend) => (
-              <FriendComponent
-                key={friend._id}
-                navigateToMessageScreen={navigateToMessageScreen}
-                navigateToUserProfile={navigateToUserProfile}
-                friend={friend}
-              />
-            ))}
-          </ScrollView>
+          <>
+            <SearchBar
+              value={searchFriendsValue}
+              onChangeText={text => setSearchFriendsValue(text)}
+              onCancelPress={() => setSearchFriendsValue('')}
+              style={{marginTop: 1}}
+            />
+            <ScrollView
+              bounces
+              contentContainerStyle={{paddingBottom: 10}}
+              className="h-[310px] mt-2"
+              showsVerticalScrollIndicator={false}>
+              {(searchFriendsValue ? searchFriendsResult! : friends)?.map(
+                (friend: Friend) => (
+                  <FriendComponent
+                    key={friend._id}
+                    navigateToMessageScreen={navigateToMessageScreen}
+                    navigateToUserProfile={navigateToUserProfile}
+                    friend={friend}
+                  />
+                ),
+              )}
+            </ScrollView>
+          </>
         ) : (
           renderEmptyFriendsListComponent()
         )}
