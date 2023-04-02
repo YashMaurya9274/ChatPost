@@ -167,6 +167,7 @@ const MessageScreen = () => {
       {/* MESSAGES */}
       <FlatList
         data={userMessages}
+        contentContainerStyle={{paddingTop: 15}} // Messages are reversed so paddingTop will work as paddingBottom
         inverted
         renderItem={renderMessage}
         // @ts-ignore
