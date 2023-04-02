@@ -4,21 +4,26 @@ import {
   TextInput,
   useColorScheme,
   TouchableOpacity,
+  ViewStyle,
 } from 'react-native';
 import React from 'react';
 import ImageLinks from '../assets/images';
+import {StyleProp} from 'react-native';
 
 type Props = {
   value: string;
   onChangeText: (text: string) => void;
   onCancelPress: () => void;
+  style?: StyleProp<ViewStyle>;
 };
 
-const SearchBar = ({value, onChangeText, onCancelPress}: Props) => {
+const SearchBar = ({value, onChangeText, onCancelPress, style}: Props) => {
   const scheme = useColorScheme();
 
   return (
-    <View className="flex flex-row w-[95%] mx-auto items-center bg-gray-200/70 dark:bg-[#282828] px-3 py-1 rounded-full mt-5">
+    <View
+      className="flex flex-row w-[95%] mx-auto items-center bg-gray-200/70 dark:bg-[#282828] px-3 py-1 rounded-full mt-5"
+      style={style}>
       <Image
         source={ImageLinks.searchIcon}
         className="h-5 w-5"

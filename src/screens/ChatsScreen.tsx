@@ -1,4 +1,10 @@
-import {View, ActivityIndicator, useColorScheme, FlatList} from 'react-native';
+import {
+  View,
+  ActivityIndicator,
+  useColorScheme,
+  FlatList,
+  StatusBar,
+} from 'react-native';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import ChatComponent from '../components/ChatComponent';
@@ -70,6 +76,10 @@ const ChatsScreen = () => {
 
   return (
     <View className="bg-white min-h-screen dark:bg-[#151515]">
+      <StatusBar
+        barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
+        backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
+      />
       <FlatList
         data={chats}
         showsVerticalScrollIndicator={false}

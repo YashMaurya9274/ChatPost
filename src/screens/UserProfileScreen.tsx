@@ -41,6 +41,8 @@ import RandomUserComponent from '../components/RandomUserComponent';
 import getChat from '../lib/getChat';
 import DeleteModal from '../components/DeleteModal';
 import deletePost from '../lib/deletePost';
+import {Overlay} from '@rneui/themed';
+import SearchBar from '../components/SearchBar';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -58,7 +60,7 @@ const UserProfileScreen = () => {
   const [userData, setUserData] = useState<UserData>();
   const user = useSelector(selectUser);
   const [showFriends, setShowFriends] = useState(false);
-  const yourAccount = userId === user.uid;
+  const myAccount = userId === user.uid;
   const isFocused = useIsFocused();
   const friendRequests = useSelector(selectFriendRequests);
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -67,6 +69,11 @@ const UserProfileScreen = () => {
   const [showDeleteBox, setShowDeleteBox] = useState<boolean>(false);
   const [postIdForDeletion, setPostIdForDeletion] = useState<string>('');
   const [userPosts, setUserPosts] = useState<Post[]>([]);
+  const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
+  const [searchFriendsValue, setSearchFriendsValue] = useState<string>('');
+  const [searchFriendsResult, setSearchFriendsResult] = useState<
+    Friend[] | undefined
+  >();
 
   const [existingMessages, setExistingMessages] = useState<
     Message[] | undefined
@@ -83,19 +90,19 @@ const UserProfileScreen = () => {
   };
 
   useEffect(() => {
-    if (yourAccount) {
+    if (myAccount) {
       fetchFriends();
     }
   }, [isFocused]);
 
   useEffect(() => {
-    if (yourAccount && friends.length === 0) fetchRandomUsers();
+    if (myAccount && friends.length === 0) fetchRandomUsers();
   }, [friends]);
 
   useEffect(() => {
     if (isFocused) {
       fetchUserData();
-      if (userId && !yourAccount) {
+      if (userId && !myAccount) {
         fetchFriendRequestStatus();
         fetchChat();
       }
@@ -116,6 +123,16 @@ const UserProfileScreen = () => {
     }
   };
 
+  useEffect(() => {
+    if (searchFriendsValue) {
+      const res = friends.filter(friend => {
+        if (friend.displayName.includes(searchFriendsValue)) return friend;
+      });
+      if (res.length > 0) setSearchFriendsResult(res);
+      else setSearchFriendsResult(undefined);
+    }
+  }, [searchFriendsValue]);
+
   // CALCULATE TOTAL UNSEEN MESSAGES IF THERE IS AN EXISTING CHAT FOR BOTH THE USERS
   useEffect(() => {
     countNotSeenMessages();
@@ -126,10 +143,18 @@ const UserProfileScreen = () => {
     setRandomUsers(result);
   };
 
-  const fetchChat = async () => {
-    const result = await getChat(client, user.uid, userId);
+  const fetchChat = async (friendId?: string) => {
+    let tempId: string;
+    if (myAccount) {
+      tempId = friendId!;
+    } else {
+      tempId = userId;
+    }
+    const result = await getChat(client, user.uid, tempId);
     setChatId(result?._id);
-    setExistingMessages(result?.messages?.reverse());
+    setExistingMessages(result?.messages);
+
+    return result?.messages?.reverse();
   };
 
   const fetchFriendRequestStatus = async () => {
@@ -241,15 +266,35 @@ const UserProfileScreen = () => {
     }
   };
 
-  const navigateToMessageScreen = () => {
-    navigation.push('Messages', {
-      chatId: chatId,
-      friendId: userId,
-      messages: existingMessages!,
-      friendImage: userData?.photoURL!,
-      friendName: userData?.displayName!,
-      notSeenCount: notSeenCount,
-    });
+  const navigateToMessageScreen = async (
+    friendId?: string,
+    friendDisplayName?: string,
+    friendPhotoURL?: string,
+  ) => {
+    setShowFriends(false);
+    if (myAccount) {
+      setMessagesLoading(true);
+      await fetchChat(friendId).then((messgs: any) => {
+        setMessagesLoading(false);
+        navigation.push('Messages', {
+          chatId: chatId,
+          friendId: friendId!,
+          messages: messgs,
+          friendImage: friendPhotoURL!,
+          friendName: friendDisplayName!,
+          notSeenCount: notSeenCount,
+        });
+      });
+    } else {
+      navigation.push('Messages', {
+        chatId: chatId,
+        friendId: userId,
+        messages: existingMessages!,
+        friendImage: userData?.photoURL!,
+        friendName: userData?.displayName!,
+        notSeenCount: notSeenCount,
+      });
+    }
   };
 
   const navigateToFriendRequest = () => {
@@ -315,7 +360,7 @@ const UserProfileScreen = () => {
     }
   };
 
-  if (!userData || (!yourAccount && friendRequestStatus === null))
+  if (!userData || (!myAccount && friendRequestStatus === null))
     return (
       <ActivityIndicator
         className="h-screen bg-white relative dark:bg-[#151515]"
@@ -352,7 +397,7 @@ const UserProfileScreen = () => {
 
       {/* TODO: Check if it's your profile and show buttons accordingly */}
       <View className="flex justify-evenly flex-row mt-8 w-full">
-        {yourAccount ? (
+        {myAccount ? (
           <>
             <TouchableOpacity
               activeOpacity={0.2}
@@ -364,9 +409,10 @@ const UserProfileScreen = () => {
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.2}
+              onPress={() => navigation.navigate('Chats')}
               className="border border-[#694242] p-2 w-[40%] rounded-md dark:border-[#9e6969]">
               <Text className="text-center text-[#694242] font-bold dark:text-[#9e6969]">
-                See Your Groups
+                See Your Chats
               </Text>
             </TouchableOpacity>
           </>
@@ -382,7 +428,7 @@ const UserProfileScreen = () => {
             </TouchableOpacity>
             {friendRequestStatus === FRIEND_REQUEST_STATUS.UNFRIEND && (
               <TouchableOpacity
-                onPress={navigateToMessageScreen}
+                onPress={() => navigateToMessageScreen()}
                 activeOpacity={0.2}
                 className="border border-[#694242] p-2 w-[40%] rounded-md dark:border-[#9e6969]">
                 <Text className="text-center text-[#694242] font-bold dark:text-[#9e6969]">
@@ -411,24 +457,45 @@ const UserProfileScreen = () => {
         handleDeletePost={handleDeletePost}
       />
 
+      <Overlay
+        isVisible={messagesLoading}
+        fullScreen={true}
+        overlayStyle={{
+          backgroundColor: 'transparent',
+          justifyContent: 'center',
+        }}>
+        <ActivityIndicator size="large" color="#9e6969" />
+      </Overlay>
+
       <RNBottomSheet
         isVisible={showFriends}
         onBackdropPress={() => setShowFriends(false)}
         bottomSheetHeight={400}>
         {friends.length !== 0 ? (
-          <ScrollView
-            bounces
-            contentContainerStyle={{paddingBottom: 10}}
-            className="h-[310px]"
-            showsVerticalScrollIndicator={false}>
-            {friends.map((friend: Friend) => (
-              <FriendComponent
-                navigateToUserProfile={navigateToUserProfile}
-                key={friend._id}
-                friend={friend}
-              />
-            ))}
-          </ScrollView>
+          <>
+            <SearchBar
+              value={searchFriendsValue}
+              onChangeText={text => setSearchFriendsValue(text)}
+              onCancelPress={() => setSearchFriendsValue('')}
+              style={{marginTop: 1}}
+            />
+            <ScrollView
+              bounces
+              contentContainerStyle={{paddingBottom: 10}}
+              className="h-[310px] mt-2"
+              showsVerticalScrollIndicator={false}>
+              {(searchFriendsValue ? searchFriendsResult! : friends)?.map(
+                (friend: Friend) => (
+                  <FriendComponent
+                    key={friend._id}
+                    navigateToMessageScreen={navigateToMessageScreen}
+                    navigateToUserProfile={navigateToUserProfile}
+                    friend={friend}
+                  />
+                ),
+              )}
+            </ScrollView>
+          </>
         ) : (
           renderEmptyFriendsListComponent()
         )}
