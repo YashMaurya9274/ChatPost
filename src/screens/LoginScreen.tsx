@@ -56,7 +56,7 @@ const LoginScreen = () => {
         barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
         backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
       />
-      <Text className="text-[#9e6969] text-3xl font-semibold dark:text-[#ac6969]">
+      <Text className="text-[#9e6969] text-3xl font-semibold dark:text-[#c57f7f]">
         Welcome to ChatPost
       </Text>
       <TouchableOpacity

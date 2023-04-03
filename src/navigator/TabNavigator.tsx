@@ -65,6 +65,7 @@ const TabNavigator = () => {
     }
   }, [isFocused]);
 
+  // ChatPost, ConfabPost, PingPost, CapTM -> Chat & Post - The Messenger
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'ChatPost',
