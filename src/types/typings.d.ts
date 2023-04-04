@@ -11,6 +11,11 @@ interface Image {
   asset: Reference;
 }
 
+interface LikedUser extends Base {
+  displayName: string;
+  photoURL: string;
+}
+
 interface LikeUser {
   _ref: string;
   _key: string;

@@ -71,7 +71,7 @@ const PostComponent = ({
     let result = false;
     if (tempLikes && tempLikes?.length! > 0) {
       tempLikes?.map(postLike => {
-        if (postLike._ref === user.uid) {
+        if (postLike?._ref === user.uid) {
           result = true;
         }
       });
@@ -84,7 +84,7 @@ const PostComponent = ({
     let result = -1;
     if (likes && likes?.length! > 0) {
       likes?.map(postLike => {
-        if (postLike._ref === user.uid) {
+        if (postLike?._ref === user.uid) {
           result = likes.indexOf(postLike);
         }
       });
@@ -162,6 +162,13 @@ const PostComponent = ({
     }
 
     const res = await likePostMutation(tempLikes!, post._id!);
+  };
+
+  const navigateToLikesScreen = () => {
+    navigation.navigate('Likes', {
+      postId: post._id!,
+      likesLength: likes?.length!,
+    });
   };
 
   return (
@@ -296,7 +303,9 @@ const PostComponent = ({
       {(likes?.length! > 0 || totalComments > 0) && (
         <View className="flex flex-row items-center px-3 h-10">
           {likes?.length! > 0 && (
-            <TouchableOpacity className="flex flex-row items-center space-x-1">
+            <TouchableOpacity
+              onPress={navigateToLikesScreen}
+              className="flex flex-row items-center space-x-1">
               <View className="bg-[#aa6e6e] dark:bg-[#8b6060] p-1 rounded-full">
                 <Image
                   className="h-3 w-3"
