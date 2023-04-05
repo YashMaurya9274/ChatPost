@@ -19,7 +19,7 @@ type Props = {
   userImageWidth?: number;
 };
 
-const SearchUserResultComponent = ({
+const UserComponent = ({
   user,
   navigateToUserProfile,
   userImageHeight = 40,
@@ -52,4 +52,4 @@ const SearchUserResultComponent = ({
   );
 };
 
-export default SearchUserResultComponent;
+export default UserComponent;
