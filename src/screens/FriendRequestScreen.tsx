@@ -11,7 +11,7 @@ import acceptFriendRequest from '../lib/acceptFriendRequest';
 import removeFriendRequest from '../lib/removeFriendRequest';
 import {client} from '../lib/client';
 import getAllUsers from '../lib/getAllUsers';
-import SearchUserResultComponent from '../components/SearchUserResultComponent';
+import UserComponent from '../components/UserComponent';
 import {selectFriendRequests} from '../slices/friendRequestsSlice';
 import {manageRequests} from '../lib/manageRequests';
 import NoDataComponent from '../components/NoDataComponent';
@@ -112,7 +112,7 @@ const FriendRequestScreen = () => {
   );
 
   const renderSearchUserResults = ({item, index}: any) => (
-    <SearchUserResultComponent
+    <UserComponent
       key={index}
       user={item!}
       navigateToUserProfile={navigateToUserProfile}

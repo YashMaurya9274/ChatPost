@@ -17,6 +17,7 @@ import storeUser from '../lib/storeUser';
 import CommentsScreen from '../screens/CommentsScreen';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import FriendRequestScreen from '../screens/FriendRequestScreen';
+import LikesScreen from '../screens/LikesScreen';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -37,6 +38,10 @@ export type RootStackParamList = {
   Comments: {
     postId: string;
     postComments: StoreComment[];
+  };
+  Likes: {
+    postId: string;
+    likesLength: number;
   };
   FriendRequest: undefined;
 };
@@ -90,6 +95,13 @@ export default function Navigator() {
                 }}
                 name="Comments"
                 component={CommentsScreen}
+              />
+              <RootStack.Screen
+                options={{
+                  animation: 'slide_from_bottom',
+                }}
+                name="Likes"
+                component={LikesScreen}
               />
               <RootStack.Screen
                 name="FriendRequest"

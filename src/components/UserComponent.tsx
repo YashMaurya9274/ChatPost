@@ -15,9 +15,16 @@ type Props = {
     photoURL: string;
   };
   navigateToUserProfile: (userId: string) => void;
+  userImageHeight?: number;
+  userImageWidth?: number;
 };
 
-const SearchUserResultComponent = ({user, navigateToUserProfile}: Props) => {
+const UserComponent = ({
+  user,
+  navigateToUserProfile,
+  userImageHeight = 40,
+  userImageWidth = 40,
+}: Props) => {
   const scheme = useColorScheme();
 
   return (
@@ -28,9 +35,10 @@ const SearchUserResultComponent = ({user, navigateToUserProfile}: Props) => {
       <View className="flex flex-row items-center space-x-3">
         <Image
           source={{uri: user.photoURL}}
-          className="h-10 w-10 rounded-full"
+          style={{width: userImageWidth, height: userImageHeight}}
+          className="rounded-full"
         />
-        <Text className="text-[17px] mb-2 text-gray-700 dark:text-gray-300">
+        <Text className="text-[17px] mb-1 text-gray-700 dark:text-gray-300">
           {user.displayName}
         </Text>
       </View>
@@ -44,4 +52,4 @@ const SearchUserResultComponent = ({user, navigateToUserProfile}: Props) => {
   );
 };
 
-export default SearchUserResultComponent;
+export default UserComponent;
