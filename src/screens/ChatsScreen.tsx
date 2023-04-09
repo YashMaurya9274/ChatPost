@@ -15,6 +15,7 @@ import {client} from '../lib/client';
 import {useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
 import NoDataComponent from '../components/NoDataComponent';
+import LoaderComponent from '../components/LoaderComponent';
 
 export type ChatsScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -49,18 +50,10 @@ const ChatsScreen = () => {
     <ChatComponent key={item._id} chat={item} />
   );
 
-  const renderEmptyChats = () => (
-    <View className="bg-white h-screen flex-1 justify-center items-center dark:bg-[#151515]">
-      <ActivityIndicator size="large" color="#9e6969" />
-    </View>
-  );
+  const renderEmptyChats = () => <LoaderComponent />;
 
   if (chats === undefined) {
-    return (
-      <View className="bg-white h-screen flex-1 justify-center items-center dark:bg-[#151515]">
-        <ActivityIndicator size="large" color="#9e6969" />
-      </View>
-    );
+    return <LoaderComponent />;
   }
 
   if (chats.length === 0) {

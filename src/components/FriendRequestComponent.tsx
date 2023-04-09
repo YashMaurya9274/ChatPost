@@ -26,7 +26,7 @@ const FriendRequestComponent = ({
         />
       </TouchableOpacity>
 
-      <View className="">
+      <View>
         <TouchableOpacity
           className="mr-auto max-w-[250px]"
           onPress={() => navigateToUserProfile(friendRequest._id!)}>

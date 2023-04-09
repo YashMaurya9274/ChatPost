@@ -14,6 +14,9 @@ import {RootStackParamList} from '../navigator/RootNavigator';
 import ImageLinks from '../assets/images';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import {profileOptions} from '../lib/profileOptions';
+import ProfileOptionComponent from '../components/ProfileOptionComponent';
+import {PROFILE_OPTIONS} from '../enums';
 
 export type ProfileOptionsScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -37,6 +40,15 @@ const ProfileOptionsScreen = () => {
     });
   };
 
+  const handleNavigation = (title: string) => {
+    switch (title) {
+      case PROFILE_OPTIONS.MANAGE_SENT_REQUESTS:
+        navigation.navigate('ManageSentRequests');
+      case PROFILE_OPTIONS.ABOUT:
+        navigation.navigate('ManageSentRequests');
+    }
+  };
+
   return (
     <View className="bg-white min-h-full dark:bg-[#151515]">
       <TouchableOpacity
@@ -52,11 +64,24 @@ const ProfileOptionsScreen = () => {
           <Text className="text-gray-600 dark:text-gray-300 text-lg">
             {user?.displayName}
           </Text>
-          <Text className="text-gray-400 dark:text-gray-500 ">
+          <Text className="text-gray-400 dark:text-gray-500">
             {user?.email}
           </Text>
         </View>
       </TouchableOpacity>
+
+      <View className="bg-gray-200 dark:bg-[#323232] mx-auto w-[95%] mt-1 h-[1px] mb-2" />
+
+      <View className="flex">
+        {profileOptions.map((profileOption, index) => (
+          <ProfileOptionComponent
+            key={index}
+            title={profileOption.title}
+            imageSource={profileOption.imageSource}
+            handleNavigation={handleNavigation}
+          />
+        ))}
+      </View>
 
       <TouchableOpacity
         onPress={handleSignOut}

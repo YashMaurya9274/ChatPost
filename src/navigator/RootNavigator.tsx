@@ -18,6 +18,7 @@ import CommentsScreen from '../screens/CommentsScreen';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import FriendRequestScreen from '../screens/FriendRequestScreen';
 import LikesScreen from '../screens/LikesScreen';
+import ManageSentRequestsScreen from '../screens/ManageSentRequestsScreen';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -44,6 +45,7 @@ export type RootStackParamList = {
     likesLength: number;
   };
   FriendRequest: undefined;
+  ManageSentRequests: undefined;
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -106,6 +108,10 @@ export default function Navigator() {
               <RootStack.Screen
                 name="FriendRequest"
                 component={FriendRequestScreen}
+              />
+              <RootStack.Screen
+                name="ManageSentRequests"
+                component={ManageSentRequestsScreen}
               />
             </>
           )}

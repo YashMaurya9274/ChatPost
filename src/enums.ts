@@ -4,3 +4,8 @@ export enum FRIEND_REQUEST_STATUS {
   ACCEPT_REQUEST = 'Accept Request',
   UNFRIEND = 'Unfriend',
 }
+
+export enum PROFILE_OPTIONS {
+  MANAGE_SENT_REQUESTS = 'Manage Sent Requests',
+  ABOUT = 'About',
+}

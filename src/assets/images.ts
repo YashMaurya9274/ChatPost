@@ -34,6 +34,8 @@ const ImageLinks = {
   arrow: {
     arrowLeft: require('./images/arrowLeft.png'),
   },
+  manageFriendRequests: require('./images/manageRequests.png'),
+  aboutInfo: require('./images/aboutInfo.png'),
 };
 
 export default ImageLinks;
