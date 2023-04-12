@@ -92,6 +92,7 @@ const ManageSentRequestsScreen = () => {
   return (
     <View className="bg-white min-h-full dark:bg-[#151515]">
       <FlatList
+        showsVerticalScrollIndicator={false}
         data={sentRequests}
         contentContainerStyle={{paddingTop: 15}} // Messages are reversed so paddingTop will work as paddingBottom
         renderItem={renderRequest}
