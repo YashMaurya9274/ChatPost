@@ -316,7 +316,7 @@ const CreatePostScreen = () => {
             <View className="flex flex-row items-center space-x-2 py-[10px]">
               <Image className="h-4 w-4" source={ImageLinks.commentsSolid} />
               <Text className="text-gray-500 text-xs dark:text-gray-400 font-semibold">
-                Comments
+                Comment
               </Text>
             </View>
           </View>

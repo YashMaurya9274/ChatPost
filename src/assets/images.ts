@@ -36,6 +36,9 @@ const ImageLinks = {
   },
   manageFriendRequests: require('./images/manageRequests.png'),
   aboutInfo: require('./images/aboutInfo.png'),
+  share: {
+    curvedRightShareArrow: require('./images/curvedRightShareArrow.png'),
+  },
 };
 
 export default ImageLinks;

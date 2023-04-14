@@ -12,6 +12,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import {appName} from '../constants';
 
 export type LoginScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -57,7 +58,7 @@ const LoginScreen = () => {
         backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
       />
       <Text className="text-[#9e6969] text-3xl font-semibold dark:text-[#c57f7f]">
-        Welcome to ChatPost
+        Welcome to {appName}
       </Text>
       <TouchableOpacity
         disabled={disableLoginButton}
