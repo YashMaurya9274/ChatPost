@@ -24,6 +24,7 @@ import {
 } from '../slices/friendRequestsSlice';
 import {selectUser} from '../slices/userSlice';
 import {RootStackParamList} from './RootNavigator';
+import {appName} from '../constants';
 
 export type TabStackParamList = {
   Home: undefined;
@@ -68,7 +69,7 @@ const TabNavigator = () => {
   // ChatPost, ConfabPost, PingPost, CapTM -> Chat & Post - The Messenger
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'ChatPost',
+      title: appName,
       headerTitleStyle: {
         fontWeight: 'bold',
         fontSize: 23,

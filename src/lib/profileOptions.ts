@@ -7,6 +7,10 @@ export const profileOptions = [
     imageSource: ImageLinks.manageFriendRequests,
   },
   {
+    title: PROFILE_OPTIONS.INVITE_YOUR_FRIENDS,
+    imageSource: ImageLinks.share.curvedRightShareArrow,
+  },
+  {
     title: PROFILE_OPTIONS.ABOUT,
     imageSource: ImageLinks.aboutInfo,
   },

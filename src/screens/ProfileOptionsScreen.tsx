@@ -17,6 +17,8 @@ import auth from '@react-native-firebase/auth';
 import {profileOptions} from '../lib/profileOptions';
 import ProfileOptionComponent from '../components/ProfileOptionComponent';
 import {PROFILE_OPTIONS} from '../enums';
+import Share, {ShareOptions} from 'react-native-share';
+import {appName, appURL} from '../constants';
 
 export type ProfileOptionsScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -40,12 +42,33 @@ const ProfileOptionsScreen = () => {
     });
   };
 
+  const inviteFriends = async () => {
+    const shareOptions: ShareOptions = {
+      title: 'App Invite',
+      message: `Hi there, I'm inviting you to ${appName} \nClick on this URL to download the app - `,
+      url: appURL,
+      subject: `${appName} App Invite`,
+      failOnCancel: true,
+    };
+
+    try {
+      const ShareResponse = await Share.open(shareOptions);
+    } catch (err) {
+      console.log('INVITE ERROR', err);
+    }
+  };
+
   const handleNavigation = (title: string) => {
     switch (title) {
       case PROFILE_OPTIONS.MANAGE_SENT_REQUESTS:
         navigation.navigate('ManageSentRequests');
+        break;
+      case PROFILE_OPTIONS.INVITE_YOUR_FRIENDS:
+        inviteFriends();
+        break;
       case PROFILE_OPTIONS.ABOUT:
         navigation.navigate('ManageSentRequests');
+        break;
     }
   };
 

@@ -7,5 +7,6 @@ export enum FRIEND_REQUEST_STATUS {
 
 export enum PROFILE_OPTIONS {
   MANAGE_SENT_REQUESTS = 'Manage Sent Requests',
+  INVITE_YOUR_FRIENDS = 'Invite Your Friends',
   ABOUT = 'About',
 }
