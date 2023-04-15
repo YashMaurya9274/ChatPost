@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StatusBar,
   ActivityIndicator,
+  useColorScheme,
 } from 'react-native';
 import React, {useLayoutEffect, useEffect, useState} from 'react';
 import {
@@ -20,7 +21,6 @@ import PostComponent from '../components/PostComponent';
 import FriendComponent from '../components/FriendComponent';
 import {useDispatch, useSelector} from 'react-redux';
 import {selectUser} from '../slices/userSlice';
-// import useFetchUserDataListener from '../hooks/useFetchUserDataListener';
 import {client} from '../lib/client';
 import RNBottomSheet from '../components/RNBottomSheet';
 import sendFriendRequest from '../lib/sendFriendRequest';
@@ -56,7 +56,7 @@ const UserProfileScreen = () => {
   const {
     params: {userId, fromFriendRequestsScreen},
   } = useRoute<UserScreenRouteProp>();
-  // const {userData} = useFetchUserDataListener(client, userId);
+  const scheme = useColorScheme();
   const [userData, setUserData] = useState<UserData>();
   const user = useSelector(selectUser);
   const [showFriends, setShowFriends] = useState(false);
@@ -69,6 +69,8 @@ const UserProfileScreen = () => {
   const [showDeleteBox, setShowDeleteBox] = useState<boolean>(false);
   const [postIdForDeletion, setPostIdForDeletion] = useState<string>('');
   const [userPosts, setUserPosts] = useState<Post[]>([]);
+  const [disableRefreshRandomUsers, setDisableRefreshRandomUsers] =
+    useState<boolean>(false);
   const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
   const [searchFriendsValue, setSearchFriendsValue] = useState<string>('');
   const [searchFriendsResult, setSearchFriendsResult] = useState<
@@ -139,8 +141,10 @@ const UserProfileScreen = () => {
   }, [existingMessages]);
 
   const fetchRandomUsers = async () => {
+    setDisableRefreshRandomUsers(true);
     const result = await getTenUsers(client, userId);
     setRandomUsers(result);
+    setDisableRefreshRandomUsers(false);
   };
 
   const fetchChat = async (friendId?: string) => {
@@ -192,20 +196,18 @@ const UserProfileScreen = () => {
     });
   }, []);
 
-  const getFriendRequestMessage = () => {
-    switch (friendRequestStatus) {
+  const getFriendRequestMessage = (
+    requestStatus: FRIEND_REQUEST_STATUS | null,
+  ) => {
+    switch (requestStatus) {
       case FRIEND_REQUEST_STATUS.ADD_FRIEND:
-        setFriendRequestStatus(FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT);
-        break;
+        return FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT;
       case FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT:
-        setFriendRequestStatus(FRIEND_REQUEST_STATUS.ADD_FRIEND);
-        break;
+        return FRIEND_REQUEST_STATUS.ADD_FRIEND;
       case FRIEND_REQUEST_STATUS.ACCEPT_REQUEST:
-        setFriendRequestStatus(FRIEND_REQUEST_STATUS.UNFRIEND);
-        break;
+        return FRIEND_REQUEST_STATUS.UNFRIEND;
       case FRIEND_REQUEST_STATUS.UNFRIEND:
-        setFriendRequestStatus(FRIEND_REQUEST_STATUS.ADD_FRIEND);
-        break;
+        return FRIEND_REQUEST_STATUS.ADD_FRIEND;
       default:
         break;
     }
@@ -218,52 +220,61 @@ const UserProfileScreen = () => {
     });
   };
 
-  const handleAddFriendClick = async () => {
-    const reqMessage = friendRequestStatus;
-
-    getFriendRequestMessage();
-
+  const initiateRequestProcess = async (
+    reqMessage: FRIEND_REQUEST_STATUS | null,
+    currentUserId: string,
+    otherUserId: string,
+  ) => {
     const requestReceiverUser: any = {
       _ref:
         reqMessage === FRIEND_REQUEST_STATUS.ACCEPT_REQUEST
-          ? user.uid
-          : userData?._id!,
+          ? currentUserId
+          : otherUserId,
       _type: 'reference',
     };
 
     const requestSenderUser: any = {
       _ref:
         reqMessage === FRIEND_REQUEST_STATUS.ACCEPT_REQUEST
-          ? userData?._id!
-          : user.uid,
+          ? otherUserId
+          : currentUserId,
       _type: 'reference',
     };
 
     if (reqMessage === FRIEND_REQUEST_STATUS.ADD_FRIEND) {
       await sendFriendRequest(
         client,
-        user.uid,
-        userData?._id!,
+        currentUserId,
+        otherUserId,
         requestReceiverUser,
         requestSenderUser,
       );
     } else if (reqMessage === FRIEND_REQUEST_STATUS.FRIEND_REQUEST_SENT) {
-      await removeFriendRequest(client, user.uid, userData?._id!);
+      await removeFriendRequest(client, currentUserId, otherUserId);
     } else if (reqMessage === FRIEND_REQUEST_STATUS.ACCEPT_REQUEST) {
       if (fromFriendRequestsScreen) {
-        manageRequests(userId, friendRequests, dispatch);
+        manageRequests(otherUserId, friendRequests, dispatch);
       }
 
       await acceptFriendRequest(
         client,
-        userData?._id!,
-        user.uid,
+        otherUserId,
+        currentUserId,
         requestReceiverUser,
         requestSenderUser,
       );
     } else if (reqMessage === FRIEND_REQUEST_STATUS.UNFRIEND) {
-      await unfriendFriend(client, user.uid, userData?._id!);
+      await unfriendFriend(client, user.uid, otherUserId);
     }
+  };
+
+  const handleAddFriendClick = async () => {
+    const reqMessage = friendRequestStatus;
+
+    const res = getFriendRequestMessage(friendRequestStatus);
+    setFriendRequestStatus(res!);
+
+    initiateRequestProcess(reqMessage, user.uid, userId);
   };
 
   const navigateToMessageScreen = async (
@@ -304,7 +315,7 @@ const UserProfileScreen = () => {
 
   const renderEmptyFriendsListComponent = () => {
     return (
-      <View className="space-y-8">
+      <View className="space-y-6">
         <View className="mt-6">
           <Text className="font-bold text-gray-600 dark:text-gray-200 text-xl text-center">
             You have no Friends :(
@@ -313,6 +324,22 @@ const UserProfileScreen = () => {
             Let's make some new friends..
           </Text>
         </View>
+
+        <TouchableOpacity
+          disabled={disableRefreshRandomUsers}
+          onPress={fetchRandomUsers}
+          className={`flex flex-row items-center space-x-2 ml-auto mr-5 px-3 py-2 rounded-lg bg-gray-200 dark:bg-[#383838] ${
+            disableRefreshRandomUsers && 'opacity-30'
+          }`}>
+          <Image
+            source={ImageLinks.reload}
+            style={{tintColor: scheme === 'dark' ? '#e6e6e6' : '#4B5558'}}
+            className="h-5 w-5"
+          />
+          <Text className="text-base text-gray-600 dark:text-gray-200">
+            Refresh
+          </Text>
+        </TouchableOpacity>
 
         <ScrollView
           horizontal
@@ -325,6 +352,8 @@ const UserProfileScreen = () => {
               key={user._id}
               user={user}
               navigateToUserProfile={navigateToUserProfile}
+              getFriendRequestMessage={getFriendRequestMessage}
+              initiateRequestProcess={initiateRequestProcess}
             />
           ))}
 
