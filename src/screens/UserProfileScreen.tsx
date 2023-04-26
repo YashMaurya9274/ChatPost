@@ -43,6 +43,9 @@ import DeleteModal from '../components/DeleteModal';
 import deletePost from '../lib/deletePost';
 import {Overlay} from '@rneui/themed';
 import SearchBar from '../components/SearchBar';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
+import Share, {ShareOptions} from 'react-native-share';
+import {appName} from '../constants';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -368,6 +371,50 @@ const UserProfileScreen = () => {
     );
   };
 
+  async function buildProfileLink() {
+    const link = await dynamicLinks().buildLink({
+      link: `https://chatpost/profile/${userId}`,
+      // domainUriPrefix is created in your Firebase console
+      domainUriPrefix: 'https://chatpost.page.link',
+      android: {
+        packageName: 'com.chatpost',
+        fallbackUrl: 'https://www.youtube.com',
+      },
+      // social: {}
+      // analytics: {
+      //   campaign: userId,
+      // },
+      // optional setup which updates Firebase analytics campaign
+      // "banner". This also needs setting up before hand
+      analytics: {
+        campaign: 'banner',
+      },
+    });
+
+    return link;
+  }
+
+  const shareProfile = async () => {
+    const profileURL = await buildProfileLink();
+
+    console.log(profileURL);
+
+    const shareOptions: ShareOptions = {
+      title: userData?.displayName,
+      message: `Visit this ${appName} profile - ${userData?.displayName}`,
+      url: profileURL,
+      subject: `View Profile`,
+      failOnCancel: true,
+      showAppsToView: true,
+    };
+
+    try {
+      const ShareResponse = await Share.open(shareOptions);
+    } catch (err) {
+      console.log('INVITE ERROR', err);
+    }
+  };
+
   const displayDeleteModal = (postId: string) => {
     setPostIdForDeletion(postId);
     setShowDeleteBox(true);
@@ -425,6 +472,11 @@ const UserProfileScreen = () => {
       </Text>
 
       {/* TODO: Check if it's your profile and show buttons accordingly */}
+
+      <TouchableOpacity style={{marginTop: 50}} onPress={shareProfile}>
+        <Text>Share the profile</Text>
+      </TouchableOpacity>
+
       <View className="flex justify-evenly flex-row mt-8 w-full">
         {myAccount ? (
           <>
