@@ -19,7 +19,6 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import FriendRequestScreen from '../screens/FriendRequestScreen';
 import LikesScreen from '../screens/LikesScreen';
 import ManageSentRequestsScreen from '../screens/ManageSentRequestsScreen';
-import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -73,37 +72,6 @@ export default function Navigator() {
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
-  }, []);
-
-  // LISTEN LINK WHEN APP IS IN BACKGROUND / KILLED / QUIT
-  useEffect(() => {
-    dynamicLinks()
-      .getInitialLink()
-      .then((link: any) => {
-        if (link?.url.includes('https://chatpost/profile')) {
-          // ...set initial route as offers screen
-          console.log('matched');
-        } else {
-          console.log('no match');
-        }
-      });
-  }, []);
-
-  const handleDynamicLink = (link: any) => {
-    // Handle dynamic link inside your own application
-    if (link?.url.includes('https://chatpost/profile')) {
-      // ...navigate to your offers screen
-      console.log('matched');
-    } else {
-      console.log('no match');
-    }
-  };
-
-  // LISTEN LINK WHEN APP IS IN FOREGROUND
-  useEffect(() => {
-    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-    // When the component is unmounted, remove the listener
-    return () => unsubscribe();
   }, []);
 
   return (

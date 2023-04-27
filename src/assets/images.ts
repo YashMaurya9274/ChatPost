@@ -38,6 +38,7 @@ const ImageLinks = {
   aboutInfo: require('./images/aboutInfo.png'),
   share: {
     curvedRightShareArrow: require('./images/curvedRightShareArrow.png'),
+    shareThreeDots: require('./images/shareThreeDots.png'),
   },
 };
 

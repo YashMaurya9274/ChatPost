@@ -25,6 +25,7 @@ import {
 import {selectUser} from '../slices/userSlice';
 import {RootStackParamList} from './RootNavigator';
 import {appName} from '../constants';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 export type TabStackParamList = {
   Home: undefined;
@@ -65,6 +66,46 @@ const TabNavigator = () => {
       fetchTotalNewUnseenChats();
     }
   }, [isFocused]);
+
+  // LISTEN LINK WHEN APP IS IN BACKGROUND / KILLED / QUIT
+  useEffect(() => {
+    dynamicLinks()
+      .getInitialLink()
+      .then((link: any) => {
+        if (link) {
+          // Handle dynamic link inside your own application
+          if (link.url.includes('https://chatpost/profile')) {
+            // ...navigate to your offers screen
+            const url: string = link.url;
+            const profileId = url.slice(url.lastIndexOf('/') + 1);
+            navigation.navigate('UserProfile', {
+              userId: profileId,
+            });
+          }
+        }
+      });
+  }, []);
+
+  const handleDynamicLink = (link: any) => {
+    if (link) {
+      // Handle dynamic link inside your own application
+      if (link.url.includes('https://chatpost/profile')) {
+        // ...navigate to your offers screen
+        const url: string = link.url;
+        const profileId = url.slice(url.lastIndexOf('/') + 1);
+        navigation.navigate('UserProfile', {
+          userId: profileId,
+        });
+      }
+    }
+  };
+
+  // LISTEN LINK WHEN APP IS IN FOREGROUND
+  useEffect(() => {
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    // When the component is unmounted, remove the listener
+    return () => unsubscribe();
+  }, []);
 
   // ChatPost, ConfabPost, PingPost, CapTM -> Chat & Post - The Messenger
   useLayoutEffect(() => {

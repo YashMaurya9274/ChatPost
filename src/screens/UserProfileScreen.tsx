@@ -372,18 +372,17 @@ const UserProfileScreen = () => {
   };
 
   async function buildProfileLink() {
-    const link = await dynamicLinks().buildLink({
+    const link = await dynamicLinks().buildShortLink({
       link: `https://chatpost/profile/${userId}`,
       // domainUriPrefix is created in your Firebase console
       domainUriPrefix: 'https://chatpost.page.link',
       android: {
         packageName: 'com.chatpost',
-        fallbackUrl: 'https://www.youtube.com',
+
+        // By default it goes to play store link if not installed
+        fallbackUrl: 'https://portfolio-website-deb64.firebaseapp.com/',
       },
       // social: {}
-      // analytics: {
-      //   campaign: userId,
-      // },
       // optional setup which updates Firebase analytics campaign
       // "banner". This also needs setting up before hand
       analytics: {
@@ -397,11 +396,11 @@ const UserProfileScreen = () => {
   const shareProfile = async () => {
     const profileURL = await buildProfileLink();
 
-    console.log(profileURL);
-
     const shareOptions: ShareOptions = {
       title: userData?.displayName,
-      message: `Visit this ${appName} profile - ${userData?.displayName}`,
+      message: `Checkout ${myAccount ? 'my' : 'this'} ${appName} profile - ${
+        userData?.displayName
+      }`,
       url: profileURL,
       subject: `View Profile`,
       failOnCancel: true,
@@ -462,20 +461,26 @@ const UserProfileScreen = () => {
         </Text>
       </View>
 
-      <Text className="ml-[100px] text-base text-gray-600 dark:text-gray-400">
-        {userPosts?.length! > 0 && userPosts?.length}
-        {userPosts?.length === 0
-          ? 'No Posts'
-          : userPosts?.length === 1
-          ? ' Post'
-          : ' Posts'}
-      </Text>
+      <View className="flex flex-row justify-between ml-[100px] pr-2">
+        <Text className="text-base text-gray-600 dark:text-gray-400">
+          {userPosts?.length! > 0 && userPosts?.length}
+          {userPosts?.length === 0
+            ? 'No Posts'
+            : userPosts?.length === 1
+            ? ' Post'
+            : ' Posts'}
+        </Text>
 
-      {/* TODO: Check if it's your profile and show buttons accordingly */}
-
-      <TouchableOpacity style={{marginTop: 50}} onPress={shareProfile}>
-        <Text>Share the profile</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          className="mt-3 p-[8px] bg-gray-300/90 dark:bg-gray-400/20 rounded-full"
+          onPress={shareProfile}>
+          <Image
+            source={ImageLinks.share.shareThreeDots}
+            style={{tintColor: scheme === 'light' ? '#4B5558' : '#E6E6E6'}}
+            className="h-5 w-5 mx-auto"
+          />
+        </TouchableOpacity>
+      </View>
 
       <View className="flex justify-evenly flex-row mt-8 w-full">
         {myAccount ? (

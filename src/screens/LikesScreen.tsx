@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   useColorScheme,
+  StatusBar,
 } from 'react-native';
 import React, {useState, useEffect, useLayoutEffect} from 'react';
 import ImageLinks from '../assets/images';
@@ -101,6 +102,10 @@ const LikesScreen = () => {
 
   return (
     <View className="bg-white flex-1 dark:bg-[#151515]">
+      <StatusBar
+        barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
+        backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
+      />
       <View className="bg-gray-200 dark:bg-[#323232] mx-auto w-[95%] mt-3 h-[1px] mb-3" />
       <FlatList
         data={userLikes}
