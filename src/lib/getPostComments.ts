@@ -7,7 +7,11 @@ const getPostComments = async (client: SanityClient, postId: string) => {
         ...,
         "postComments": *[_type == "comments" && post._ref == '${postId}'] | order(_createdAt desc) {
           ...,
-          user->
+          user -> {
+            _id,
+            displayName,
+            photoURL
+          }
         }
       }
     `;

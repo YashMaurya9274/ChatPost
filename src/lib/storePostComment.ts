@@ -1,35 +1,20 @@
-import {SANITY_API_TOKEN} from '@env';
-import {PostComment} from '../types/typings';
-import mutationUrl from './mutationUrl';
+import {SanityClient} from '@sanity/client';
 
 const storePostComment = async (
-  comment: PostComment,
-  comments: StoreComment[],
+  commentObj: PostComment,
+  commentForPost: StoreComment,
   postId: string,
+  client: SanityClient,
 ) => {
-  const mutations = [
-    {
-      create: comment,
-    },
-    {
-      patch: {
-        id: postId,
-        set: {
-          postComments: comments,
-        },
-      },
-    },
-  ];
-
-  const response = await fetch(mutationUrl, {
-    method: 'post',
-    headers: {
-      'Content-type': 'application/json',
-      Authorization: `Bearer ${SANITY_API_TOKEN}`,
-    },
-    body: JSON.stringify({mutations}),
+  client.create(commentObj).then(() => {
+    client
+      .patch(postId)
+      .setIfMissing({postComments: []})
+      .insert('after', 'postComments[-1]', [commentForPost])
+      .commit({
+        autoGenerateArrayKeys: true,
+      });
   });
-  const result = await response.json();
 };
 
 export default storePostComment;

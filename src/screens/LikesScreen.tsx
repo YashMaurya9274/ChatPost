@@ -22,7 +22,7 @@ import {client} from '../lib/client';
 import UserComponent from '../components/UserComponent';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-export type LikesRequestScreenNavigationProp = NativeStackNavigationProp<
+export type LikesScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Likes'
 >;
@@ -31,7 +31,7 @@ type LikesScreenRouteProp = RouteProp<RootStackParamList, 'Likes'>;
 
 const LikesScreen = () => {
   const [userLikes, setUserLikes] = useState<LikedUser[]>([]);
-  const navigation = useNavigation<LikesRequestScreenNavigationProp>();
+  const navigation = useNavigation<LikesScreenNavigationProp>();
   const {
     params: {postId, likesLength},
   } = useRoute<LikesScreenRouteProp>();

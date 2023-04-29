@@ -1,4 +1,4 @@
-import {View, FlatList, useColorScheme} from 'react-native';
+import {View, FlatList} from 'react-native';
 import React, {useLayoutEffect, useState, useEffect} from 'react';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigator/RootNavigator';
@@ -19,7 +19,6 @@ export type ManageSentRequestsScreenNavigationProp = NativeStackNavigationProp<
 
 const ManageSentRequestsScreen = () => {
   const navigation = useNavigation<ManageSentRequestsScreenNavigationProp>();
-  const scheme = useColorScheme();
   const [sentRequests, setSentRequests] = useState<
     FriendRequest[] | undefined
   >();

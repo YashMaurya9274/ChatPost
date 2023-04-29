@@ -17,7 +17,6 @@ import {RootStackParamList} from '../navigator/RootNavigator';
 import {MaterialTopTabNavigationProp} from '@react-navigation/material-top-tabs';
 import {TabStackParamList} from '../navigator/TabNavigator';
 import {client} from '../lib/client';
-// import useFetchPostListener from '../hooks/useFetchPostListener';
 import getPosts from '../lib/getPosts';
 import deletePost from '../lib/deletePost';
 import DeleteModal from '../components/DeleteModal';
@@ -30,7 +29,6 @@ export type HomeScreenNavigationProp = CompositeNavigationProp<
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const scheme = useColorScheme();
-  // const {posts} = useFetchPostListener(client);
   const [posts, setPosts] = useState<Post[]>([]);
   const isFocused = useIsFocused();
   const [showDeleteBox, setShowDeleteBox] = useState<boolean>(false);

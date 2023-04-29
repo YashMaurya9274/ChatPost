@@ -67,37 +67,36 @@ const TabNavigator = () => {
     }
   }, [isFocused]);
 
-  // LISTEN LINK WHEN APP IS IN BACKGROUND / KILLED / QUIT
-  useEffect(() => {
-    dynamicLinks()
-      .getInitialLink()
-      .then((link: any) => {
-        if (link) {
-          // Handle dynamic link inside your own application
-          if (link.url.includes('https://chatpost/profile')) {
-            // ...navigate to your offers screen
-            const url: string = link.url;
-            const profileId = url.slice(url.lastIndexOf('/') + 1);
-            navigation.navigate('UserProfile', {
-              userId: profileId,
-            });
-          }
-        }
-      });
-  }, []);
-
-  const handleDynamicLink = (link: any) => {
+  const dynamicLinkingRouting = (link: any) => {
     if (link) {
       // Handle dynamic link inside your own application
       if (link.url.includes('https://chatpost/profile')) {
-        // ...navigate to your offers screen
         const url: string = link.url;
         const profileId = url.slice(url.lastIndexOf('/') + 1);
         navigation.navigate('UserProfile', {
           userId: profileId,
         });
+      } else if (link.url.includes('https://chatpost/post')) {
+        const url: string = link.url;
+        const postId = url.slice(url.lastIndexOf('/') + 1);
+        navigation.navigate('Post', {
+          postId,
+        });
       }
     }
+  };
+
+  // LISTEN LINK WHEN APP IS IN BACKGROUND / KILLED / QUIT
+  useEffect(() => {
+    dynamicLinks()
+      .getInitialLink()
+      .then((link: any) => {
+        dynamicLinkingRouting(link);
+      });
+  }, []);
+
+  const handleDynamicLink = (link: any) => {
+    dynamicLinkingRouting(link);
   };
 
   // LISTEN LINK WHEN APP IS IN FOREGROUND
