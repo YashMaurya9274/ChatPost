@@ -43,9 +43,10 @@ import DeleteModal from '../components/DeleteModal';
 import deletePost from '../lib/deletePost';
 import {Overlay} from '@rneui/themed';
 import SearchBar from '../components/SearchBar';
-import dynamicLinks from '@react-native-firebase/dynamic-links';
 import Share, {ShareOptions} from 'react-native-share';
 import {appName} from '../constants';
+import {buildShareLink} from '../lib/buildShareLink';
+import ShareButton from '../components/ShareButton';
 
 export type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -371,30 +372,8 @@ const UserProfileScreen = () => {
     );
   };
 
-  async function buildProfileLink() {
-    const link = await dynamicLinks().buildShortLink({
-      link: `https://chatpost/profile/${userId}`,
-      // domainUriPrefix is created in your Firebase console
-      domainUriPrefix: 'https://chatpost.page.link',
-      android: {
-        packageName: 'com.chatpost',
-
-        // By default it goes to play store link if not installed
-        fallbackUrl: 'https://portfolio-website-deb64.firebaseapp.com/',
-      },
-      // social: {}
-      // optional setup which updates Firebase analytics campaign
-      // "banner". This also needs setting up before hand
-      analytics: {
-        campaign: 'banner',
-      },
-    });
-
-    return link;
-  }
-
   const shareProfile = async () => {
-    const profileURL = await buildProfileLink();
+    const profileURL = await buildShareLink('profile', userId);
 
     const shareOptions: ShareOptions = {
       title: userData?.displayName,
@@ -471,15 +450,7 @@ const UserProfileScreen = () => {
             : ' Posts'}
         </Text>
 
-        <TouchableOpacity
-          className="mt-3 p-[8px] bg-gray-300/90 dark:bg-gray-400/20 rounded-full"
-          onPress={shareProfile}>
-          <Image
-            source={ImageLinks.share.shareThreeDots}
-            style={{tintColor: scheme === 'light' ? '#4B5558' : '#E6E6E6'}}
-            className="h-5 w-5 mx-auto"
-          />
-        </TouchableOpacity>
+        <ShareButton style={{marginTop: 12}} onPress={shareProfile} />
       </View>
 
       <View className="flex justify-evenly flex-row mt-8 w-full">

@@ -20,6 +20,8 @@ import {selectUser} from '../slices/userSlice';
 import TimeAgo from 'react-native-timeago';
 import moment from 'moment';
 import RNBottomSheet from './RNBottomSheet';
+import Share, {ShareOptions} from 'react-native-share';
+import {buildShareLink} from '../lib/buildShareLink';
 
 type Props = {
   post: Post;
@@ -125,13 +127,8 @@ const PostComponent = ({
   //   else setPauseVideo(true);
   // };
 
-  const getUserData = async () => {
+  const navigateToUserProfile = async () => {
     if (!fromUserProfileScreen) {
-      // await fetchUserData(post.user._id!).then((resUserData: UserData) => {
-      //   navigation.navigate('UserProfile', {
-      //     userData: resUserData,
-      //   });
-      // });
       navigation.navigate('UserProfile', {
         userId: post.user._id!,
       });
@@ -146,7 +143,7 @@ const PostComponent = ({
   };
 
   const handleLikePost = async () => {
-    let tempLikes = likes;
+    let tempLikes = likes || [];
     if (checkUserLiked(likes)) {
       tempLikes?.splice(getUserLikedIndex(), 1);
       setLiked(false);
@@ -156,7 +153,7 @@ const PostComponent = ({
         _ref: user.uid,
         _key: user.uid,
       };
-      setLikes([...likes!, userLike]);
+      setLikes([...(likes || []), userLike]);
       tempLikes = [...tempLikes!, userLike];
       setLiked(true);
     }
@@ -171,12 +168,31 @@ const PostComponent = ({
     });
   };
 
+  const handleSharePost = async () => {
+    const postURL = await buildShareLink('post', post._id!);
+
+    const shareOptions: ShareOptions = {
+      title: post.title,
+      message: 'Checkout this post from ChatPost App',
+      url: postURL,
+      subject: `View Post`,
+      failOnCancel: true,
+      showAppsToView: true,
+    };
+
+    try {
+      const ShareResponse = await Share.open(shareOptions);
+    } catch (err) {
+      console.log('POST SHARE ERROR', err);
+    }
+  };
+
   return (
     <View className="rounded-lg shadow-slate-900 shadow-2xl bg-[#ebedef] mx-4 mt-4 last:mb-4 dark:bg-[#262626]">
       {/* UPPER PART */}
       <View className="flex flex-row items-center justify-between px-3 mt-3">
         <View className="flex flex-row items-center space-x-3">
-          <TouchableOpacity activeOpacity={0.5} onPress={getUserData}>
+          <TouchableOpacity activeOpacity={0.5} onPress={navigateToUserProfile}>
             <Image
               className="h-10 w-10 rounded-full"
               source={{uri: post.user.photoURL}}
@@ -184,7 +200,7 @@ const PostComponent = ({
           </TouchableOpacity>
           <View className="max-w-[70%]">
             <Text
-              onPress={getUserData}
+              onPress={navigateToUserProfile}
               className="text-gray-700 text-base font-bold w-full dark:text-gray-200">
               {post.user.displayName}
             </Text>
@@ -397,6 +413,19 @@ const PostComponent = ({
         onBackButtonPress={() => setModalVisible(false)}
         bottomSheetHeight={100}>
         <View>
+          <TouchableOpacity
+            className="flex flex-row items-center mr-auto space-x-2 px-4 py-2"
+            onPress={() => {
+              setModalVisible(false);
+              handleSharePost();
+            }}>
+            <Image
+              className="h-6 w-6 mt-1"
+              style={{tintColor: '#a7a7a7'}}
+              source={ImageLinks.share.shareThreeDots}
+            />
+            <Text className="text-gray-300 mt-1 text-lg">Share Post</Text>
+          </TouchableOpacity>
           {post.user._id === user.uid && (
             <TouchableOpacity
               className="flex flex-row items-center mr-auto space-x-2 px-4 py-2"
@@ -409,7 +438,7 @@ const PostComponent = ({
                 style={{tintColor: '#FF5959'}}
                 source={ImageLinks.deleteIcon}
               />
-              <Text className="text-[#FF5959] text-lg">Delete Post</Text>
+              <Text className="text-[#FF5959] mt-1 text-lg">Delete Post</Text>
             </TouchableOpacity>
           )}
         </View>

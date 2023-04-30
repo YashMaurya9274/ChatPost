@@ -40,6 +40,7 @@ const ImageLinks = {
     curvedRightShareArrow: require('./images/curvedRightShareArrow.png'),
     shareThreeDots: require('./images/shareThreeDots.png'),
   },
+  send: require('./images/send.png'),
 };
 
 export default ImageLinks;
