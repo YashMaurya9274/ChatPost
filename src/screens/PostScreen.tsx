@@ -80,8 +80,8 @@ const PostScreen = () => {
   }, [comments]);
 
   useEffect(() => {
-    fetchPostData();
-  }, []);
+    if (isFocused) fetchPostData();
+  }, [isFocused]);
 
   useEffect(() => {
     if (isFocused && post) {

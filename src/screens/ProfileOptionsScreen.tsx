@@ -14,7 +14,7 @@ import {RootStackParamList} from '../navigator/RootNavigator';
 import ImageLinks from '../assets/images';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-import {profileOptions} from '../lib/profileOptions';
+import {profileOptions} from '../lib/options';
 import ProfileOptionComponent from '../components/ProfileOptionComponent';
 import {PROFILE_OPTIONS} from '../enums';
 import Share, {ShareOptions} from 'react-native-share';
