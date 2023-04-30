@@ -28,6 +28,9 @@ import getPost from '../lib/getPost';
 import TimeAgo from 'react-native-timeago';
 import moment from 'moment';
 import LoaderComponent from '../components/LoaderComponent';
+import ShareButton from '../components/ShareButton';
+import {buildShareLink} from '../lib/buildShareLink';
+import Share, {ShareOptions} from 'react-native-share';
 
 export type PostScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -43,6 +46,7 @@ const PostScreen = () => {
   const {
     params: {postId},
   } = useRoute<PostScreenRouteProp>();
+  // const postId = 'Fgjio7hQJRSwPAG3HKqtSM';
 
   const [showWholeContent, setShowWholeContent] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -135,6 +139,25 @@ const PostScreen = () => {
     handleLikePost(likes, setLiked, setLikes, user.uid, postId);
   };
 
+  const handleSharePost = async () => {
+    const postURL = await buildShareLink('post', postId);
+
+    const shareOptions: ShareOptions = {
+      title: post?.title,
+      message: 'Checkout this post from ChatPost App',
+      url: postURL,
+      subject: `View Post`,
+      failOnCancel: true,
+      showAppsToView: true,
+    };
+
+    try {
+      const ShareResponse = await Share.open(shareOptions);
+    } catch (err) {
+      console.log('POST SHARE ERROR', err);
+    }
+  };
+
   if (!post) return <LoaderComponent />;
 
   return (
@@ -182,7 +205,9 @@ const PostScreen = () => {
           </View>
 
           {/* RIGHT */}
-          <View></View>
+          <View>
+            <ShareButton onPress={handleSharePost} />
+          </View>
         </View>
 
         {/* MIDDLE PART */}
