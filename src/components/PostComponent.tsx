@@ -22,6 +22,9 @@ import moment from 'moment';
 import RNBottomSheet from './RNBottomSheet';
 import Share, {ShareOptions} from 'react-native-share';
 import {buildShareLink} from '../lib/buildShareLink';
+import {postOptions} from '../lib/options';
+import {POST_OPTIONS} from '../enums';
+import PostOptionComponent from './PostOptionComponent';
 
 type Props = {
   post: Post;
@@ -166,6 +169,19 @@ const PostComponent = ({
       postId: post._id!,
       likesLength: likes?.length!,
     });
+  };
+
+  const handlePostOptionFunctions = (title: string) => {
+    setModalVisible(false);
+
+    switch (title) {
+      case POST_OPTIONS.SHARE_POST:
+        handleSharePost();
+        break;
+      case POST_OPTIONS.DELETE_POST:
+        displayDeleteModal(post._id!);
+        break;
+    }
   };
 
   const handleSharePost = async () => {
@@ -413,34 +429,27 @@ const PostComponent = ({
         onBackButtonPress={() => setModalVisible(false)}
         bottomSheetHeight={100}>
         <View>
-          <TouchableOpacity
-            className="flex flex-row items-center mr-auto space-x-2 px-4 py-2"
-            onPress={() => {
-              setModalVisible(false);
-              handleSharePost();
-            }}>
-            <Image
-              className="h-6 w-6 mt-1"
-              style={{tintColor: '#a7a7a7'}}
-              source={ImageLinks.share.shareThreeDots}
-            />
-            <Text className="text-gray-300 mt-1 text-lg">Share Post</Text>
-          </TouchableOpacity>
-          {post.user._id === user.uid && (
-            <TouchableOpacity
-              className="flex flex-row items-center mr-auto space-x-2 px-4 py-2"
-              onPress={() => {
-                setModalVisible(false);
-                displayDeleteModal(post._id!);
-              }}>
-              <Image
-                className="h-6 w-6 mt-1"
-                style={{tintColor: '#FF5959'}}
-                source={ImageLinks.deleteIcon}
-              />
-              <Text className="text-[#FF5959] mt-1 text-lg">Delete Post</Text>
-            </TouchableOpacity>
-          )}
+          {postOptions.map(postOption => {
+            if (post.user._id !== user.uid) {
+              if (postOption.title !== POST_OPTIONS.DELETE_POST) {
+                return (
+                  <PostOptionComponent
+                    key={postOption.title}
+                    postOption={postOption}
+                    handlePostOptionFunctions={handlePostOptionFunctions}
+                  />
+                );
+              }
+            } else {
+              return (
+                <PostOptionComponent
+                  key={postOption.title}
+                  postOption={postOption}
+                  handlePostOptionFunctions={handlePostOptionFunctions}
+                />
+              );
+            }
+          })}
         </View>
       </RNBottomSheet>
     </View>

@@ -10,3 +10,13 @@ export enum PROFILE_OPTIONS {
   INVITE_YOUR_FRIENDS = 'Invite Your Friends',
   ABOUT = 'About',
 }
+
+export enum OPTIONS_COLOR {
+  LIGHT_THEME_COLOR = '#646d7a',
+  DARK_THEME_COLOR = '#BFBFBF',
+}
+
+export enum POST_OPTIONS {
+  SHARE_POST = 'Share Post',
+  DELETE_POST = 'Delete Post',
+}
