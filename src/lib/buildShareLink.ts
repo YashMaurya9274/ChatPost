@@ -1,8 +1,8 @@
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 
-export const buildShareLink = async (target: string, id: string) => {
+export const buildShareLink = async (screen: string, id: string) => {
   const link = await dynamicLinks().buildShortLink({
-    link: `https://chatpost/${target}/${id}`,
+    link: `https://chatpost.com/${screen}/${id}`,
     // domainUriPrefix is created in your Firebase console
     domainUriPrefix: 'https://chatpost.page.link',
     android: {

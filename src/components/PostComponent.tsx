@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   useColorScheme,
   Animated,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useState, useRef} from 'react';
 import ImageLinks from '../assets/images';
@@ -251,7 +252,10 @@ const PostComponent = ({
           {post.title}
         </Text>
         {post.subTitle && (
-          <View className="-mt-4 mb-5">
+          <ScrollView
+            nestedScrollEnabled
+            showsVerticalScrollIndicator={false}
+            className="-mt-2 mb-5 max-h-72">
             <Text className="text-gray-500 text-sm dark:text-gray-400">
               {showWholeContent
                 ? post.subTitle
@@ -268,7 +272,7 @@ const PostComponent = ({
                 </Text>
               )}
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         )}
       </View>
 

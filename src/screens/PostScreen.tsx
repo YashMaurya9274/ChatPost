@@ -162,7 +162,7 @@ const PostScreen = () => {
 
   return (
     <View className="bg-white flex-1 dark:bg-[#151515]">
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <StatusBar
           barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
           backgroundColor={scheme === 'dark' ? '#151515' : 'white'}
@@ -216,7 +216,10 @@ const PostScreen = () => {
             {post?.title}
           </Text>
           {post?.subTitle && (
-            <ScrollView nestedScrollEnabled className="-mt-3 mb-5 max-h-72">
+            <ScrollView
+              nestedScrollEnabled
+              showsVerticalScrollIndicator={false}
+              className="-mt-3 mb-5 max-h-72">
               <Text className="text-gray-500 text-sm dark:text-gray-400">
                 {showWholeContent
                   ? post.subTitle

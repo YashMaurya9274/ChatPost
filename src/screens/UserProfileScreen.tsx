@@ -389,7 +389,7 @@ const UserProfileScreen = () => {
     try {
       const ShareResponse = await Share.open(shareOptions);
     } catch (err) {
-      console.log('INVITE ERROR', err);
+      console.log('PROFILE SHARE ERROR', err);
     }
   };
 
