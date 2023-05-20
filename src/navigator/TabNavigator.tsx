@@ -70,13 +70,13 @@ const TabNavigator = () => {
   const dynamicLinkingRouting = (link: any) => {
     if (link) {
       // Handle dynamic link inside your own application
-      if (link.url.includes('https://chatpost/profile')) {
+      if (link.url.includes('https://chatpost.com/profile')) {
         const url: string = link.url;
         const profileId = url.slice(url.lastIndexOf('/') + 1);
         navigation.navigate('UserProfile', {
           userId: profileId,
         });
-      } else if (link.url.includes('https://chatpost/post')) {
+      } else if (link.url.includes('https://chatpost.com/post')) {
         const url: string = link.url;
         const postId = url.slice(url.lastIndexOf('/') + 1);
         navigation.navigate('Post', {
