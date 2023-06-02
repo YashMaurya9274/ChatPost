@@ -205,7 +205,7 @@ const PostComponent = ({
   };
 
   return (
-    <View className="rounded-lg shadow-slate-900 shadow-2xl bg-[#ebedef] mx-4 mt-4 last:mb-4 dark:bg-[#262626]">
+    <View className="rounded-md shadow-slate-900 shadow-2xl bg-[#ebedef] mt-4 last:mb-4 dark:bg-[#262626]">
       {/* UPPER PART */}
       <View className="flex flex-row items-center justify-between px-3 mt-3">
         <View className="flex flex-row items-center space-x-3">
