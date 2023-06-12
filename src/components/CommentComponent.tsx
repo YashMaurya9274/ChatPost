@@ -31,46 +31,94 @@ const CommentComponent = ({comment, deleteComment}: Props) => {
   };
 
   return (
-    <View className="flex flex-row space-x-2 p-3">
-      <TouchableOpacity activeOpacity={0.5} onPress={navigateToUserProfile}>
-        <Image
-          source={{
-            uri: comment?.user.photoURL || user.photoURL,
-          }}
-          className="h-8 w-8 rounded-full mt-1"
-        />
-      </TouchableOpacity>
+    <View className="flex">
+      <View className="flex flex-row space-x-2 p-3">
+        <TouchableOpacity activeOpacity={0.5} onPress={navigateToUserProfile}>
+          <Image
+            source={{
+              uri: comment?.user.photoURL || user.photoURL,
+            }}
+            className="h-8 w-8 rounded-full mt-1"
+          />
+        </TouchableOpacity>
 
-      <View className="flex flex-1 pt-2 pb-3 px-3 bg-[#F0F2F5] dark:bg-[#2c2d2e] rounded-2xl">
-        <View className="flex flex-row items-center space-x-3">
-          <Text className="font-bold text-[15px] text-gray-700 dark:text-gray-200">
-            {comment?.user.displayName || user.displayName}
-          </Text>
+        <View className="flex flex-1 pt-2 pb-3 px-3 bg-[#F0F2F5] dark:bg-[#2c2d2e] rounded-2xl">
+          <View className="flex flex-row items-center space-x-3">
+            <Text className="font-bold text-[15px] text-gray-700 dark:text-gray-200">
+              {comment?.user.displayName || user.displayName}
+            </Text>
 
-          <Text className="text-gray-500 dark:text-gray-400">
-            <TimeAgo time={comment._createdAt! || new Date()} hideAgo={true} />
+            <Text className="text-gray-500 dark:text-gray-400">
+              <TimeAgo
+                time={comment._createdAt! || new Date()}
+                hideAgo={true}
+              />
+            </Text>
+          </View>
+
+          <Text className="text-gray-700 dark:text-gray-300">
+            {showWholeComment
+              ? comment.comment
+              : showMore
+              ? comment.comment.slice(0, 100) + '...'
+              : comment.comment.slice(0, 100)}
           </Text>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => setShowWholeComment(!showWholeComment)}>
+            {showMore && (
+              <Text className="text-xs underline text-gray-500 font-bold dark:text-gray-300">
+                {!showWholeComment ? 'Show More' : 'Show Less'}
+              </Text>
+            )}
+          </TouchableOpacity>
         </View>
 
-        <Text className="text-gray-700 dark:text-gray-300">
-          {showWholeComment
-            ? comment.comment
-            : showMore
-            ? comment.comment.slice(0, 100) + '...'
-            : comment.comment.slice(0, 100)}
-        </Text>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => setShowWholeComment(!showWholeComment)}>
-          {showMore && (
-            <Text className="text-xs underline text-gray-500 font-bold dark:text-gray-300">
-              {!showWholeComment ? 'Show More' : 'Show Less'}
-            </Text>
-          )}
-        </TouchableOpacity>
+        {(comment.user._id === user.uid || !comment.user._id) && (
+          <TouchableOpacity
+            activeOpacity={0.4}
+            onPress={() => deleteComment(comment._id)}>
+            <Image
+              className="h-5 w-5 mt-1"
+              style={{tintColor: '#FF5959'}}
+              source={ImageLinks.deleteIcon}
+            />
+          </TouchableOpacity>
+        )}
       </View>
 
-      {(comment.user._id === user.uid || !comment.user._id) && (
+      {/* #TODO: Replies Will Go Here */}
+      <View className="flex flex-row space-x-2 p-3 ml-14">
+        <TouchableOpacity activeOpacity={0.5} onPress={navigateToUserProfile}>
+          <Image
+            source={{
+              uri: comment?.user.photoURL || user.photoURL,
+            }}
+            className="h-7 w-7 rounded-full mt-1"
+          />
+        </TouchableOpacity>
+        <View className="flex flex-1 pt-2 pb-3 px-3 bg-[#F0F2F5] dark:bg-[#2c2d2e] rounded-2xl">
+          <View className="flex flex-row items-center space-x-3">
+            <Text className="font-bold text-[15px] text-gray-700 dark:text-gray-200">
+              {comment?.user.displayName || user.displayName}
+            </Text>
+
+            <Text className="text-gray-500 dark:text-gray-400">
+              <TimeAgo
+                time={comment._createdAt! || new Date()}
+                hideAgo={true}
+              />
+            </Text>
+          </View>
+
+          <Text className="text-gray-700 dark:text-gray-300">
+            {showWholeComment
+              ? comment.comment
+              : showMore
+              ? comment.comment.slice(0, 100) + '...'
+              : comment.comment.slice(0, 100)}
+          </Text>
+        </View>
         <TouchableOpacity
           activeOpacity={0.4}
           onPress={() => deleteComment(comment._id)}>
@@ -80,7 +128,7 @@ const CommentComponent = ({comment, deleteComment}: Props) => {
             source={ImageLinks.deleteIcon}
           />
         </TouchableOpacity>
-      )}
+      </View>
     </View>
   );
 };
