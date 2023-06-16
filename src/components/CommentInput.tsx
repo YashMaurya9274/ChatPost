@@ -5,8 +5,14 @@ import {
   Image,
   useColorScheme,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import ImageLinks from '../assets/images';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  CommentInputType,
+  selectFocusCommentInput,
+  setFocusCommentInput,
+} from '../slices/focusCommentInputSlice';
 
 type Props = {
   comment: string;
@@ -22,6 +28,32 @@ const CommentInput = ({
   userPhoto,
 }: Props) => {
   const scheme = useColorScheme();
+  const inputRef = useRef<TextInput>(null);
+  const dispatch = useDispatch();
+  const [replyToUserName, setReplyToUserName] = useState('');
+
+  const focusCommentInput: CommentInputType = useSelector(
+    selectFocusCommentInput,
+  );
+
+  useEffect(() => {
+    if (focusCommentInput.focusComment) {
+      inputRef.current?.focus();
+      setReplyToUserName(focusCommentInput.commentUserName!);
+      dispatch(
+        setFocusCommentInput({
+          focusCommentInput: false,
+          commentUserName: '',
+        }),
+      );
+    }
+  }, [focusCommentInput.focusComment]);
+
+  useEffect(() => {
+    if (replyToUserName) {
+      onChangeComment(replyToUserName + ' ');
+    }
+  }, [replyToUserName]);
 
   return (
     <View
@@ -30,6 +62,7 @@ const CommentInput = ({
       }`}>
       <Image source={{uri: userPhoto}} className="h-9 w-9 rounded-full" />
       <TextInput
+        ref={inputRef}
         value={comment}
         onChangeText={onChangeComment}
         className="flex-1 text-[16px] bg-[#F0F2F5] text-gray-700 max-h-20 rounded-xl py-2 px-3 dark:bg-[#3A3B3C] dark:text-gray-300"
