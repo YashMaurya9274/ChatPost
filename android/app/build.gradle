@@ -212,6 +212,12 @@ android {
         }
     }
     signingConfigs {
+        release {
+            storeFile file('chatpost.keystore')
+            storePassword 'chatpost'
+            keyAlias 'chatpost'
+            keyPassword 'chatpost'
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
@@ -229,6 +235,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
 
